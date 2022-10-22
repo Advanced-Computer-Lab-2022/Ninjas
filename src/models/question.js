@@ -1,10 +1,3 @@
-// {
-//     questionText, //type: string. required
-//     MCQs, //array of type string, required
-//     userAnswer, //string, default:null
-//     correctAnswer, //string, required
-//     totalCredit //number, required
-//     }
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const questionSchema = new Schema({
@@ -18,7 +11,7 @@ const questionSchema = new Schema({
     },
     userAnswer: {
         type: String,
-        deafult:null,
+        default:null,
         required:false
     },
     correctAnswer: {
