@@ -35,6 +35,11 @@ const accountSchema = new Schema({
     country: {
         type: String,
         enum: countryEnums
+    },
+    type: {
+        type: String,
+        enum: ['INSTRUCTOR','ADMIN','GUEST','CORPORATE_TRAINEE','INDIVIDUAL_TRAINEE',],
+        required: true
     }
 })
 
