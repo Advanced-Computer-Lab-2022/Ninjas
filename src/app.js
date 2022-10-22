@@ -10,7 +10,7 @@ const app = express();
 const port = process.env.PORT || "8000";
 const account = require('./models/account');
 const InstructorToCourses = require('./models/InstructorToCourses');
-
+const courseRatings = require('./models/courseRatings');
 mongoose.connect(mongoURI)
 .then(()=>{
   console.log("MongoDB is now connected!")
