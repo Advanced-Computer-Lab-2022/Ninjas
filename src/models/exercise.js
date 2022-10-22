@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const { questionSchema } = require('./question')
-    ;
+const { questionSchema } = require('./question');
 
 const exerciseSchema = new Schema({
-
+    title: {
+        type:String,
+        required: true
+    },
     courseId: {
         type: Schema.Types.ObjectId,
         required: true
