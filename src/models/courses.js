@@ -36,5 +36,8 @@ const coursesSchema = new Schema({
     }
 })
 
+const countryFactor = new Map();
+
+
 const Course = mongoose.model('Course', coursesSchema);
 module.exports = Course;

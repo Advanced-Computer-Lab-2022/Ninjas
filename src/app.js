@@ -1,18 +1,26 @@
-
 const express = require("express");
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const userRouter = require("./routers/userRouter");
+const bodyParser = require("body-parser");
 dotenv.config();
 
-const mongoURI = process.env.mongoURI;
+const mongoURI = 'mongodb+srv://ninjasacl:0000@ninjasdb.7zekcbd.mongodb.net/test';
 console.log(mongoURI);
 
 const app = express();
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+app.use(bodyParser.json());
+
+module.exports = app;
 const port = process.env.PORT || "8000";
-const account = require('./models/account');
-const InstructorToCourses = require('./models/InstructorToCourses');
-const question = require('./models/question');
-const courseRatings = require('./models/courseRatings');
+
+// if you see the /, go use the userRouter
+app.use('/',userRouter);
+
+
 mongoose.connect(mongoURI)
 .then(()=>{
   console.log("MongoDB is now connected!")
