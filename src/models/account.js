@@ -39,4 +39,4 @@ const accountSchema = new Schema({
 })
 
 const Account = mongoose.model('Account', accountSchema);
-module.exports = Account;
+module.exports = {Account, accountSchema};
