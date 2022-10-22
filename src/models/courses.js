@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const { accountSchema } = require('./account');
+const { exerciseSchema } = require('./exercise');
 const { subtitleSchema } = require('./subtitle');
 
 const coursesSchema = new Schema({
@@ -33,11 +34,23 @@ const coursesSchema = new Schema({
     },
     subtitles: {
        type: [subtitleSchema]
+    },
+    exercises: {
+        type: [exerciseSchema]
     }
 })
 
-const countryFactor = new Map();
-
+const countryPriceDetails = new Map();
+countryPriceDetails.set('Egypt', {
+    factor: 20,
+    discount:10,
+    currency: 'EGP'
+})
+countryPriceDetails.set('France', {
+    factor: 5,
+    discount:5,
+    currency: 'EUR'
+})
 
 const Course = mongoose.model('Course', coursesSchema);
-module.exports = Course;
+module.exports = {Course, countryPriceDetails};
