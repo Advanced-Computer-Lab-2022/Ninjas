@@ -10,17 +10,18 @@ const userController = {
         instructor = null, totalHours = null
     }) {
 
-        if (subject == null &&
-            minPrice == null && maxPrice == null &&
-            rating == null && title == null &&
-            instructor == null && totalHours == null) {
-            return await Course.find();
-        }
+   
 
         const user = await Account.findOne({ _id: userId }, { country: 1 });
         console.log('heheee');
 
-        const courses = await Course.find({
+        const courses = 
+          (subject == null &&
+            minPrice == null && maxPrice == null &&
+            rating == null && title == null &&
+            instructor == null && totalHours == null)?
+            await Course.find() :
+            await Course.find({
             '$or': [
                 { subject: { '$regex': "/^" + subject + "/", '$options': 'i' } },
                 { rating },
@@ -34,7 +35,7 @@ const userController = {
                 { price: { $gte: minPrice, $lte: maxPrice } }
             ]
         });
-        console.log(courses);
+       
 
         let details = countryPriceDetails.get(user.country);
         console.log(details);
@@ -42,7 +43,8 @@ const userController = {
             // price = price x factor x discount
             courses[i].price = courses[i].price * details.factor * ((100 - details.discount) / 100);
         }
-        return courses;
+        console.log(courses);
+        return {courses,currency:details.currency};
     }
 }
 
