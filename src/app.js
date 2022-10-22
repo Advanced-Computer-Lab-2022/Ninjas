@@ -1,3 +1,4 @@
+
 const express = require("express");
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -10,6 +11,7 @@ const app = express();
 const port = process.env.PORT || "8000";
 const account = require('./models/account');
 const InstructorToCourses = require('./models/InstructorToCourses');
+const question = require('./models/question');
 const courseRatings = require('./models/courseRatings');
 mongoose.connect(mongoURI)
 .then(()=>{
@@ -20,5 +22,8 @@ mongoose.connect(mongoURI)
   })
 })
 .catch(err => console.log(err));
+
+
+
 
 
