@@ -5,8 +5,9 @@ const userRouter = require("./routers/userRouter");
 const bodyParser = require("body-parser");
 dotenv.config();
 
-const mongoURI = 'mongodb+srv://ninjasacl:0000@ninjasdb.7zekcbd.mongodb.net/test';
+const mongoURI = process.env.mongoURI;
 console.log(mongoURI);
+
 
 const app = express();
 app.use(bodyParser.urlencoded({
