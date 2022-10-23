@@ -6,17 +6,16 @@ const adminCreateAccountsController =
    async adminCreateAccounts ({userType,accountType,username,password,firstName,lastName,gender,country})
    {try{
          const notUnique = await Account.findOne({ username });
-        // console.log(notUnique);
-        // console.log('////////////////////////////');
+       
          if(!notUnique){
          const saved =  await Account.create({username:username,password:password,firstName:firstName,lastName:lastName,gender:gender,country:country,type:accountType});
-          //await saved.save;
+          
           return true;
         }
         throw new DomainError("username is not unique",400);
     }
     catch(err){
- console.log(err);
+
        if (err instanceof DomainError ){throw err;}
        if (err._message && err._message == 'Account validation failed'  ){   throw new DomainError('validation Error',400);}
         throw new DomainError('error internally',500);  
