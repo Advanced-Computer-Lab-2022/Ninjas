@@ -24,7 +24,7 @@ userRouter.post('/selectCountry', async (req,res) => {
     if (userType == 'ADMIN') {
         res.status(401).json({ message: "unauthorized user." });
     }
-    if (selectedCountry) {
+    if (!selectedCountry) {
         res.status(400).json({ message: "please select a country."});
     }
 
