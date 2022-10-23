@@ -16,4 +16,15 @@ instructorRouter.get('/view', async (req, res) => {
         instructorController.getViewResult({ username });
     res.status(200).json({ result: viewResults });
 })
+
+instructorRouter.get('/Searchfilter', async (req, res) => {
+    const { username , userId , title , subject , instructor , minPrice , maxPrice
+    } = req.body;
+
+    const SearchResults = await
+        instructorController.getSearchResult({ username, userId , title , subject , instructor , minPrice , maxPrice });
+    res.status(200).json({ result: SearchResults });
+
+})
+
 module.exports = instructorRouter;
