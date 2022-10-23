@@ -1,21 +1,27 @@
+const DomainError = require("../error/domainError");
 const { Account } = require("../models/account")
 
 const adminCreateAccountsController = 
 {
-   async adminCreateAccounts (userType,accountType,username,password,firstName,lastName,gender,country)
+   async adminCreateAccounts ({userType,accountType,username,password,firstName,lastName,gender,country})
    {try{
-         const notUnique = Account.findOne({ username });
+         const notUnique = await Account.findOne({ username });
+        // console.log(notUnique);
+        // console.log('////////////////////////////');
          if(!notUnique){
-         const saved = new Account({type:accountType,username,password,firstName,lastName,gender,country});
-          saved.save;
+         const saved =  await Account.create({username:username,password:password,firstName:firstName,lastName:lastName,gender:gender,country:country,type:accountType});
+          //await saved.save;
           return true;
         }
-        return false;
+        throw new DomainError("username is not unique",400);
     }
-    catch(err)
-    {
-        throw err;
-    }
+    catch(err){
+ console.log(err);
+       if (err instanceof DomainError ){throw err;}
+       if (err._message && err._message == 'Account validation failed'  ){   throw new DomainError('validation Error',400);}
+        throw new DomainError('error internally',500);  
+   
+}
    }
 }
 module.exports = adminCreateAccountsController;

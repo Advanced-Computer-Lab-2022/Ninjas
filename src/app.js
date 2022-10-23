@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const adminRouter = require("./routers/adminRouter");
 const instructorRouter = require("./routers/instructorRouter");
 
-const mongoURI = "mongodb+srv://ninjasacl:0000@ninjasdb.7zekcbd.mongodb.net/test";
+const mongoURI = process.env.mongoURI;
 console.log(mongoURI);
 
 
@@ -18,10 +18,10 @@ app.use(bodyParser.json());
 
 module.exports = app;
 const port = process.env.PORT || "8000";
-
+app.use('/admin',adminRouter);
 // if you see the /, go use the userRouter
 app.use('/',userRouter);
-app.use('/admin',adminRouter)
+
 //if you see the /, go use the instructorRouter
 app.use('/', instructorRouter);
 

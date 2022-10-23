@@ -1,19 +1,24 @@
 const express =require('express');
 const adminCreateAccountsController = require('../controllers/adminCreateAccountsController');
+const DomainError = require('../error/domainError');
 const adminRouter= express.Router();
 
-adminRouter.post('/admin/create',async(req,res)=>{
+adminRouter.post('/create',async(req,res)=>{
   try{  const {userType,accountType,username,password,firstName,lastName,gender,country} =req.body;
-    if (userType != 'ADMIN' || !userType) {
+    if (userType != 'ADMIN' ) {
         res.status(401).json({ message: "unauthorized user." });
     }
-   const flag= await adminCreateAccountsController.adminCreateAccounts(accountType,username,password,firstName,lastName,gender,country);
+    else{
+   const flag= await adminCreateAccountsController.adminCreateAccounts({accountType,username,password,firstName,lastName,gender,country});
    if (!flag)
    res.status(500).json({ message: "notCreated" });
-   res.status(201).json({ message: "created" });
-     }
+ else  res.status(201).json({ message: "created" });
+      }  }
 catch(err){
-    res.status(500).json(err);
+ if (err instanceof DomainError ){
+    res.status(err.code).json({code:err.code, message:err.message})
+  }else{
+    res.status(500).json({err});}
       }
 })
 
