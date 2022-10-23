@@ -13,7 +13,6 @@ const userController = {
    
 
         const user = await Account.findOne({ _id: userId }, { country: 1 });
-        console.log('heheee');
 
         const courses = 
           (subject == null &&
@@ -38,13 +37,19 @@ const userController = {
        
 
         let details = countryPriceDetails.get(user.country);
-        console.log(details);
         for (var i = 0; i < courses.length; i++) {
             // price = price x factor x discount
             courses[i].price = courses[i].price * details.factor * ((100 - details.discount) / 100);
         }
         console.log(courses);
         return {courses,currency:details.currency};
+    },
+    async changeUserCountry({ userId, selectedCountry }) {
+        //update the user's record in the database
+        await Account.updateOne(
+            { _id: userId }, // gets the user whose id is userId
+            { country: selectedCountry } //changes the country to the selected one
+        )
     }
 }
 

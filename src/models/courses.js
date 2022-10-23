@@ -37,6 +37,12 @@ const coursesSchema = new Schema({
     },
     exercises: {
         type: [exerciseSchema]
+    },
+    discount: {
+        type: Number,
+        min: 0,
+        max: 100,
+        required: true
     }
 })
 
