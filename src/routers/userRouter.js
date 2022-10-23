@@ -24,6 +24,9 @@ userRouter.post('/selectCountry', async (req,res) => {
     if (userType == 'ADMIN') {
         res.status(401).json({ message: "unauthorized user." });
     }
+    if (selectedCountry) {
+        res.status(400).json({ message: "please select a country."});
+    }
 
     await userController.changeUserCountry({ userId, selectedCountry });
     // status 201 "no_content" is usually rendered when the response does not have any data in it,
