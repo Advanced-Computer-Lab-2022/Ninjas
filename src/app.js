@@ -3,9 +3,10 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const userRouter = require("./routers/userRouter");
 const bodyParser = require("body-parser");
+const adminRouter = require("./routers/adminRouter");
 const instructorRouter = require("./routers/instructorRouter");
 
-const mongoURI = process.env.MONGO_URI;
+const mongoURI = process.env.mongoURI;
 console.log(mongoURI);
 
 
@@ -17,7 +18,7 @@ app.use(bodyParser.json());
 
 module.exports = app;
 const port = process.env.PORT || "8000";
-
+app.use('/admin',adminRouter);
 // if you see the /, go use the userRouter
 app.use('/',userRouter);
 
