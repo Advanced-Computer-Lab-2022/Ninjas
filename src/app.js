@@ -1,11 +1,10 @@
 const express = require("express");
 const mongoose = require('mongoose');
-const dotenv = require('dotenv');
+require('dotenv').config();
 const userRouter = require("./routers/userRouter");
 const bodyParser = require("body-parser");
-dotenv.config();
 
-const mongoURI = process.env.mongoURI;
+const mongoURI = process.env.MONGO_URI;
 console.log(mongoURI);
 
 
