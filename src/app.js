@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 require('dotenv').config();
 const userRouter = require("./routers/userRouter");
 const bodyParser = require("body-parser");
+const instructorRouter = require("./routers/instructorRouter");
 
 const mongoURI = process.env.MONGO_URI;
 console.log(mongoURI);
@@ -19,6 +20,9 @@ const port = process.env.PORT || "8000";
 
 // if you see the /, go use the userRouter
 app.use('/',userRouter);
+
+//if you see the /, go use the instructorRouter
+app.use('/', instructorRouter);
 
 
 mongoose.connect(mongoURI)
