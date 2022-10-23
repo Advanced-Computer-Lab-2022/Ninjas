@@ -3,9 +3,10 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const userRouter = require("./routers/userRouter");
 const bodyParser = require("body-parser");
+const adminRouter = require("./routers/adminRouter");
 dotenv.config();
 
-const mongoURI = process.env.mongoURI;
+const mongoURI = "mongodb+srv://ninjasacl:0000@ninjasdb.7zekcbd.mongodb.net/test";
 console.log(mongoURI);
 
 
@@ -20,7 +21,7 @@ const port = process.env.PORT || "8000";
 
 // if you see the /, go use the userRouter
 app.use('/',userRouter);
-
+app.use('/admin',adminRouter)
 
 mongoose.connect(mongoURI)
 .then(()=>{

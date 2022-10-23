@@ -8,7 +8,7 @@ userRouter.get('/search', async (req, res) => {
     } = req.body;
 
     //snipped can be moved to controller
-    if (userType == 'ADMIN') {
+    if (userType == 'ADMIN' || !userType) {
         res.status(401).json({ message: "unauthorized user." });
     }
     console.log('fff');
