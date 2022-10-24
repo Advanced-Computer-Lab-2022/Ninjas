@@ -23,9 +23,6 @@ userRouter.get('/search', async (req, res) => {
 
 userRouter.post('/selectCountry', async (req,res) => {
     const { userId, userType, selectedCountry } = req.body;
-    console.log(userId)
-    console.log(userType)
-    console.log(selectedCountry)
     //snipped can be moved to controller
     if (userType == 'ADMIN') {
         res.status(401).json({ message: "unauthorized user." });
