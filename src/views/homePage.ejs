@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <style>
+        body {
+            background-color: lightblue;
+        }
+    </style>
+<head>
+    Welcome! &#128515;
+</head>
+
+<body>
+    <form method="POST" action='/selectCountry'>
+        <hr>
+        You want to change your country?<br>
+        <p>You know, the country field should be a drop down list, but I don't know how to get the enum from the backend :(
+        + don't worry, I tested this on my method "selectCountry" and it works, the change is reflected on the database too
+        </p>
+        <input type="text" name="userId" placeholder = "User ID" required oninvalid="alert('you must enter a user ID')">
+        <br>
+        <select name="userType" id="userType">
+            <option value="GUEST">Guest</option>
+            <option value="INSTRUCTOR">Instructor</option>
+            <option value="INDIVIDUAL_TRAINEE">Individual trainee</option>
+            <option value="CORPORATE_TRAINEE">Corporate trainee</option>
+          </select>
+          <br><br>
+        <input type="text" name="selectedCountry" placeholder = "Country" required oninvalid="alert('you must choose a country')">
+        <br>
+        <input type="submit" value="Change Country">
+        <hr>
+    </form>
+</body>
