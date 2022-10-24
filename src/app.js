@@ -5,6 +5,7 @@ const userRouter = require("./routers/userRouter");
 const bodyParser = require("body-parser");
 const adminRouter = require("./routers/adminRouter");
 const instructorRouter = require("./routers/instructorRouter");
+var path = require('path');
 
 const mongoURI = process.env.mongoURI;
 console.log(mongoURI);
@@ -24,6 +25,12 @@ app.use('/',userRouter);
 
 //if you see the /, go use the instructorRouter
 app.use('/', instructorRouter);
+
+//telling server if u want to find the views go to src/views (as __dirname is file directory)
+app.set('views', path.join(__dirname, 'views'));
+
+//telling the server that views have ejs files (not plain html)
+app.set('view engine', 'ejs');
 
 
 mongoose.connect(mongoURI)
