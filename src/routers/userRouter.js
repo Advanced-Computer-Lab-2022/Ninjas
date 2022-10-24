@@ -2,6 +2,10 @@ const express = require("express");
 const userController = require("../controllers/userController");
 const userRouter = new express.Router();
 
+userRouter.get('/', (req, res) => {
+    res.render('homePage');
+});
+
 userRouter.get('/search', async (req, res) => {
     const {
         userId, userType, subject, minPrice, maxPrice, rating, title, instructor, totalHours
@@ -19,7 +23,9 @@ userRouter.get('/search', async (req, res) => {
 
 userRouter.post('/selectCountry', async (req,res) => {
     const { userId, userType, selectedCountry } = req.body;
-
+    console.log(userId)
+    console.log(userType)
+    console.log(selectedCountry)
     //snipped can be moved to controller
     if (userType == 'ADMIN') {
         res.status(401).json({ message: "unauthorized user." });
