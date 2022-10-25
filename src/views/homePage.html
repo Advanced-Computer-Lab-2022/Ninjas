@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    body {
+        background-color: lightblue;
+    }
+</style>
+
+<head>
+    Welcome! &#128515;
+</head>
+
+<body>
+    <!-- endpoint /selectCountry partition -->
+    <form method="post" action='/selectCountry'>
+        <hr>
+        You want to change your country?<br>
+        <p>You know, the country field should be a drop down list, but I don't know how to get the enum from the backend
+            :(
+            + don't worry, I tested this on my method "selectCountry" and it works, the change is reflected on the
+            database too
+        </p>
+        <input type="text" name="userId" placeholder="User ID" required oninvalid="alert('you must enter a user ID')">
+        <br>
+        <select name="userType" id="userType">
+            <option value="GUEST">Guest</option>
+            <option value="INSTRUCTOR">Instructor</option>
+            <option value="INDIVIDUAL_TRAINEE">Individual trainee</option>
+            <option value="CORPORATE_TRAINEE">Corporate trainee</option>
+        </select>
+        <br><br>
+        <input type="text" name="selectedCountry" placeholder="Country" required
+            oninvalid="alert('you must choose a country')">
+        <br>
+        <input type="submit" value="Change Country">
+        <hr>
+    </form>
+
+    <!-- endpoint /search partition -->
+    <form method="get" action='/search'>
+        <hr>
+        Search for a course
+        <br>
+        <input type="text" name="userId" placeholder="User ID" required oninvalid="alert('you must enter a user ID')">
+        <br>
+        <select name="userType" id="userType">
+            <option value="GUEST">Guest</option>
+            <option value="INSTRUCTOR">Instructor</option>
+            <option value="INDIVIDUAL_TRAINEE">Individual trainee</option>
+            <option value="CORPORATE_TRAINEE">Corporate trainee</option>
+        </select>
+        <br><br>
+        title
+        <input type="text" name="title" placeholder="Course Title">
+        <br>
+        subject
+        <input type="text" name="subject" placeholder="Subject">
+        <br>
+        totalHours
+        <input type="number" name="totalHours" min="0" max="100" step="1">
+        <br>
+        rating
+        <input type="number" name="rating" min="0" max="5" step="0.1">
+        <br>
+        price range
+        <input type="number" name="minPrice" min="0" max="10000" step="1" placeholder="min">
+        <input type="number" name="maxPrice" min="0" max="10000" step="1" placeholder="max">
+        <br>
+        instructor
+        <input type="text" name="instructor" placeholder="instructor first name">
+        <br>
+        <input type="submit" value="Find">
+        <hr>
+    </form>
+
+    <!-- endpoint /create partition -->
+    <form method="post" action='/admin/create'>
+        <hr>
+        ADMIN: create new user account
+        <br>
+        <input type="text" name="userId" placeholder="your own User ID" required
+            oninvalid="alert('you must enter a user ID')">
+        <br>
+        New Account details
+        <br>
+        username
+        <input type="text" name="username" placeholder="username" minlength="6" maxlength="200">
+        <br>
+        password
+        <input type="text" name="password" placeholder="password" minlength="6" maxlength="200">
+        <br>
+        account type
+        <select name="accountType" id="userType">
+            <option value="INSTRUCTOR">Instructor</option>
+            <option value="CORPORATE_TRAINEE">Corporate trainee</option>
+        </select>
+        <br>
+        first name
+        <input type="text" name="firstName" placeholder="password" minlength="2" maxlength="200">
+        <br>
+        last name
+        <input type="text" name="lastName" placeholder="password" minlength="2" maxlength="200">
+        <br>
+        gender
+        <select name="gender" id="gender">
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female trainee</option>
+            <option value="NOT SPECIFIED">Not specified (wara el D)</option>
+        </select>
+        <br>
+        country, 3ayzen ne2lebha dropdown list hhhhh
+        <input type="text" name="country" placeholder="country" minlength="2" maxlength="200">
+        <br>
+        <hr>
+    </form>
+
+
+</body>
