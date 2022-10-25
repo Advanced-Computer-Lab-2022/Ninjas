@@ -1,7 +1,12 @@
 const express = require("express");
 const userController = require("../controllers/userController");
 const userRouter = new express.Router();
+const path = require('path');
 
+userRouter.get('/', (req, res) => {
+    // here we are telling the response to find the html file and send it as a response
+    res.sendFile(path.resolve('views/homePage.html'));
+});
 userRouter.get('/search', async (req, res) => {
     const {
         userId, userType, subject, minPrice, maxPrice, rating, title, instructor, totalHours
