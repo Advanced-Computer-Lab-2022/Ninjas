@@ -2,11 +2,10 @@ const mongoose = require('mongoose');
 const { Account } = require("../models/account");
 const { Course , countryPriceDetails } = require("../models/courses");
 const { InstructorToCourses } = require("../models/InstructorToCourses");
-//const { db } = require("../models/question");
 const { exerciseSchema } = require('../models/exercise');
 //const { create } = require("../models/InstructorToCourses");
 const { subtitleSchema, Subtitle } = require('../models/subtitle');
-const DomainError = require('../error/domainError');
+const DomainError = require("../error/domainError");
 var subtitlesArray=[subtitleSchema];
 var Totalhrs = 0;
 
@@ -15,11 +14,13 @@ const instructorController = {
     async getViewResult({
 
         username
-    }) { 
+    }) {
+      try{
       const result=[]
       const courses=  await Course.find({
         
     })
+
     for(var i=0;i<courses.length;i++){
         for(var j=0;j<courses[i].instructors.length;j++){
             if(courses[i].instructors[j].username==username){
@@ -31,13 +32,18 @@ const instructorController = {
 
     }
     //console.log(result);
-    return{result};
+    return{result};}
+    catch(err){
+          throw new DomainError('error internally',500);  
+    }
 
  },
     async getSearchResult({
 
         username, userId , title , subject , instructor , minPrice , maxPrice 
     }) { 
+    
+    try{
 
       const final = [];  
 
@@ -90,7 +96,9 @@ const instructorController = {
         final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
     }
    // console.log(courses);
-    return {final};
+    return {final};}
+    catch(err){
+     throw new DomainError('error internally',500);  }
 
 
 },
