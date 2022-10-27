@@ -6,6 +6,7 @@ const { InstructorToCourses } = require("../models/InstructorToCourses");
 const { exerciseSchema } = require('../models/exercise');
 //const { create } = require("../models/InstructorToCourses");
 const { subtitleSchema, Subtitle } = require('../models/subtitle');
+const DomainError = require('../error/domainError');
 var subtitlesArray=[subtitleSchema];
 var Totalhrs = 0;
 
@@ -139,7 +140,10 @@ async createcourse ({instructorId, subject , title, price , summary , subtitles,
     await Newcourse.save();
     return Newcourse
     } catch(error) {
-        console.log(error)
+        if (err._message && err._message == 'Account validation failed'  ){   throw new DomainError('validation Error',400);}
+        throw new DomainError('error internally',500);  
+   
+
     }
 
 
