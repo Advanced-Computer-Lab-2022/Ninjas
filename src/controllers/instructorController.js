@@ -3,6 +3,13 @@ const { Account } = require("../models/account");
 const { Course , countryPriceDetails } = require("../models/courses");
 const { InstructorToCourses } = require("../models/InstructorToCourses");
 //const { db } = require("../models/question");
+const { exerciseSchema } = require('../models/exercise');
+//const { create } = require("../models/InstructorToCourses");
+const { subtitleSchema, Subtitle } = require('../models/subtitle');
+var subtitlesArray=[subtitleSchema];
+var Totalhrs = 0;
+
+
 const instructorController = {
     async getViewResult({
 
@@ -26,10 +33,6 @@ const instructorController = {
     return{result};
 
  },
-
-
-
-
     async getSearchResult({
 
         username, userId , title , subject , instructor , minPrice , maxPrice 
@@ -87,6 +90,57 @@ const instructorController = {
     }
    // console.log(courses);
     return {final};
+
+
+},
+async addsubtitle (subArray){ 
+for (var i =0; i<subArray.length; i++) {
+
+
+    const sub = new Subtitle({
+        text : subArray[i].text,
+        hours : subArray[i].hours
+    }) 
+    await sub.save()
+   subtitlesArray.push (sub);
+}
+   console.log(subtitlesArray)
+    return subtitlesArray 
+
+},
+
+async calculateHours (subArray){ 
+    for (var i =0; i<subArray.length; i++) {
+
+    Totalhrs += subArray[i].hours;
+    }
+    return Totalhrs
+
+},
+
+
+async createcourse ({instructorId, subject , title, price , summary , subtitles, discount}) {
+    const thisInstructor = await Account.findOne({_id: instructorId})
+    console.log(thisInstructor)
+    try {
+    Totalhrs = 0;
+    subtitlesArray = [];
+    const Newcourse = new Course({
+        subject : subject,
+        price : price,
+        subtitles : await this.addsubtitle(subtitles), ///should it be empty array as exercises --1....
+        summary : summary,
+        title : title,
+        totalHours : await this.calculateHours(subtitles),  ///--1 if so how total hours will be calculated....
+        exercises : [],
+        discount,
+        instructors:[thisInstructor]
+    })
+    await Newcourse.save();
+    return Newcourse
+    } catch(error) {
+        console.log(error)
+    }
 
 
 }
