@@ -47,6 +47,7 @@ instructorRouter.get('/Searchfilter', async (req, res) => {
 
 //Do we need this....
 instructorRouter.post('/createcourse', async (req, res) => {
+    try{
 //subtitels = [{text,hours}]
     const { instructorId, subject , title, price , summary, subtitles ,discount
     } = req.body;
@@ -54,7 +55,14 @@ instructorRouter.post('/createcourse', async (req, res) => {
 const CreateResults = await
     instructorController.createcourse({ instructorId, subject , title, price , summary , subtitles, discount});
     res.status(200).json({ result: CreateResults });
+    }
+    catch(err){
+        if (err instanceof DomainError ){
+            res.status(err.code).json({code:err.code, message:err.message})
+          }else{
+            res.status(500).json({err});}
 
+    }
  
 
 })

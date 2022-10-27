@@ -130,7 +130,7 @@ async calculateHours (subArray){
 
 async createcourse ({instructorId, subject , title, price , summary , subtitles, discount}) {
     const thisInstructor = await Account.findOne({_id: instructorId})
-    console.log(thisInstructor)
+   // console.log(thisInstructor)
     try {
     Totalhrs = 0;
     subtitlesArray = [];
@@ -147,8 +147,12 @@ async createcourse ({instructorId, subject , title, price , summary , subtitles,
     })
     await Newcourse.save();
     return Newcourse
-    } catch(error) {
-        console.log(error)
+    } catch(err) {
+        console.log(err)
+        if (err._message && err._message == 'Course validation failed'  ){   throw new DomainError('validation Error',400);}
+        throw new DomainError('error internally',500);  
+   
+
     }
 
 
