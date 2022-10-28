@@ -25,6 +25,22 @@ userRouter.get('/search', async (req, res) => {
     res.status(200).json({ result: searchResults });
 })
 
+userRouter.get('/viewAllCourses', async (req,res) => {
+    //should return only the title, total hours, and rating
+    const { courses } = await userController.getSearchResult({ userId: '635acedda1fea642e98ec4b3'}); //gets all courses
+    res.write('<h1>Search results</h1> <hr>')
+    let currentString; //this will be modified to be written in the response
+    for (var i=0; i<courses.length; i++) {
+        currentString = '<p> Course title: ' + courses[i].title + '<br>' +
+        'Total hours: ' + courses[i].totalHours +'<br>' +
+        'Rating: '+ courses[i].rating+'<br>' +
+        '</p> <hr>';
+        res.write(currentString);
+    }
+    res.status(200).send();
+
+})
+
 userRouter.post('/selectCountry', async (req,res) => {
     try {
     const { userId, selectedCountry } = req.body;
