@@ -5,7 +5,7 @@ const userRouter = require("./routers/userRouter");
 const bodyParser = require("body-parser");
 const instructorRouter = require("./routers/instructorRouter");
 
-const mongoURI = process.env.MONGO_URI;
+const mongoURI = 'mongodb+srv://ninjasacl:0000@ninjasdb.7zekcbd.mongodb.net/test' ;
 console.log(mongoURI);
 
 
