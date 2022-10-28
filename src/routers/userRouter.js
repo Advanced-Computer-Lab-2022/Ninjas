@@ -33,10 +33,20 @@ userRouter.post('/selectCountry', async (req,res) => {
         res.status(400).json({ message: "please select a country."});
     }
 
-    await userController.changeUserCountry({ userId, selectedCountry });
+    let updatedUser = await userController.changeUserCountry({ userId, selectedCountry });
+
+    var responseDetails = 
+    'your ID: ' + updatedUser._id + '<br>' +
+    'your first name: ' + updatedUser.firstName + '<br>' +
+    'your last name: ' + updatedUser.lastName + '<br>' +
+    'your country:'  + updatedUser.country + '<br>';
+
+    res.write("<h1> Country changed successfully </h1>");
+    res.write("<p>Here are the new user details </p> <br>");
+    res.write(responseDetails);
     // status 201 "no_content" is usually rendered when the response does not have any data in it,
     // and is commonly used in cases where a record is updated.
-    res.status(201).json({ message: "country changed successfully" });
+    res.status(201).send();
 })
 
 module.exports = userRouter;

@@ -46,9 +46,10 @@ const userController = {
     },
     async changeUserCountry({ userId, selectedCountry }) {
         //update the user's record in the database
-        await Account.updateOne(
+        return await Account.findOneAndUpdate(
             { _id: userId }, // gets the user whose id is userId
-            { country: selectedCountry } //changes the country to the selected one
+            { country: selectedCountry }, //changes the country to the selected one
+            { new: true }
         )
     }
 }
