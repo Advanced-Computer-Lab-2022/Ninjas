@@ -11,6 +11,7 @@ userRouter.get('/search', async (req, res) => {
     const {
         userId, userType, subject, minPrice, maxPrice, rating, title, instructor, totalHours
     } = req.body;
+    
 
     //snipped can be moved to controller
     if (userType == 'ADMIN' || !userType) {
