@@ -12,14 +12,14 @@ const userController = {
     }) {
 
    
-
+try{
         const user = await Account.findOne({ _id: userId }, { country: 1 });
-
+         console.log(user);
         const courses = 
-          (subject == null &&
-            minPrice == null && maxPrice == null &&
-            rating == null && title == null &&
-            instructor == null && totalHours == null)?
+          (subject == null  &&
+            minPrice == "null" && maxPrice == "null" &&
+            rating =="null" && title == null &&
+            instructor == null && totalHours == null )?
             await Course.find() :
             await Course.find({
             '$or': [
@@ -44,6 +44,10 @@ const userController = {
         }
         console.log(courses);
         return {courses,currency:details.currency};
+    }
+    catch(err){
+        console.log(err);
+    }
     },
     async changeUserCountry({ userId, selectedCountry }) {
         //update the user's record in the database
@@ -60,6 +64,7 @@ const userController = {
         );
 
         } catch (error) {
+         
             if (error.name == 'ValidationError') {
                 const errorMessages = Object.values(error.errors).map(val => val.message);
                 throw new DomainError(errorMessages, 400);
