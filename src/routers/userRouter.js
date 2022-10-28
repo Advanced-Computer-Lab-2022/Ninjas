@@ -1,7 +1,15 @@
 const express = require("express");
 const userController = require("../controllers/userController");
 const userRouter = new express.Router();
+const path = require('path');
 
+userRouter.get('/', (req, res) => {
+    // here we are telling the response to find the html file and send it as a response
+    res.sendFile(path.resolve('views/homePage.html'));
+});
+userRouter.get('/selectCountryPage', (req,res) => {
+    res.sendFile(path.resolve('views/selectCountry.html'));
+})
 userRouter.get('/search', async (req, res) => {
     const {
         userId, userType, subject, minPrice, maxPrice, rating, title, instructor, totalHours
@@ -18,8 +26,8 @@ userRouter.get('/search', async (req, res) => {
 })
 
 userRouter.post('/selectCountry', async (req,res) => {
+    try {
     const { userId, userType, selectedCountry } = req.body;
-
     //snipped can be moved to controller
     if (userType == 'ADMIN') {
         res.status(401).json({ message: "unauthorized user." });
@@ -31,7 +39,12 @@ userRouter.post('/selectCountry', async (req,res) => {
     await userController.changeUserCountry({ userId, selectedCountry });
     // status 201 "no_content" is usually rendered when the response does not have any data in it,
     // and is commonly used in cases where a record is updated.
-    res.status(201).json({ message: "country changed successfully" });
+    res.write('<h1> Country changed successfully </h1>')
+    res.write('<p>your country is now '+ selectedCountry + '</p>')
+    res.status(201).send();
+} catch (error) {
+    res.status(error.code).send(error.message);
+}
 })
 
 module.exports = userRouter;

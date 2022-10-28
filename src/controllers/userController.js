@@ -1,3 +1,4 @@
+const DomainError = require("../error/domainError");
 const { Account } = require("../models/account");
 const { Course, countryPriceDetails } = require("../models/courses");
 const { Exercise } = require("../models/exercise");
@@ -46,10 +47,21 @@ const userController = {
     },
     async changeUserCountry({ userId, selectedCountry }) {
         //update the user's record in the database
+        try {
         await Account.updateOne(
             { _id: userId }, // gets the user whose id is userId
             { country: selectedCountry } //changes the country to the selected one
         )
+        } catch (error) {
+            if (error.name == 'ValidationError') {
+                const errorMessages = Object.values(error.errors).map(val => val.message);
+                throw new DomainError(errorMessages, 400);
+            }
+            else {
+                console.log(error);
+                throw new DomainError("internal error", 500);
+            }
+        }
     }
 }
 
