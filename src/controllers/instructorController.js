@@ -186,25 +186,37 @@ async calculateHours (subArray){
 },
 
 
-async createcourse ({instructorId, subject , title, price , summary , subtitles, discount}) {
+
+async createcourse ({instructorId, subject , title, price , summary , subtitles}) {
     const thisInstructor = await Account.findOne({_id: instructorId})
    // console.log(thisInstructor)
     try {
     Totalhrs = 0;
-    subtitlesArray = [];
-    const Newcourse = new Course({
+    const subtitlesArray = [];
+    const myArray = subtitles.split(",");
+    for(var i=0; i<myArray.length;i++){
+        var s = new Subtitle({
+            text : myArray[i].split(":")[0].toString(),
+            hours : parseInt(myArray[i].split(":")[1])
+        })
+       //s.save();
+        subtitlesArray.push(s);
+    }
+    
+    const Newcourse =  new Course({
         subject : subject,
         price : price,
-        subtitles : await this.addsubtitle(subtitles), ///should it be empty array as exercises --1....
+        subtitles : subtitlesArray , ///should it be empty array as exercises --1....
         summary : summary,
         title : title,
-        totalHours : await this.calculateHours(subtitles),  ///--1 if so how total hours will be calculated....
+        totalHours:10,
+        totalHours : await this.calculateHours(subtitlesArray),  ///--1 if so how total hours will be calculated....
         exercises : [],
-        discount,
         instructors:[thisInstructor]
     })
-    await Newcourse.save();
-    return Newcourse
+    
+    Newcourse.save();
+    //return Newcourse
     } catch(err) {
         console.log(err)
         if (err._message && err._message == 'Course validation failed'  ){   throw new DomainError('validation Error',400);}
@@ -215,8 +227,7 @@ async createcourse ({instructorId, subject , title, price , summary , subtitles,
 
 
 }
-
-
 }
+
 
     module.exports = instructorController;

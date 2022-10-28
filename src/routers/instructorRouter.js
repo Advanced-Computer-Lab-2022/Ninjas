@@ -6,6 +6,15 @@ const path = require('path')
 instructorRouter.get('/', async (req,res) => {
   res.sendFile(path.resolve('views/instructorGeneral.html'))
 })
+instructorRouter.get('/createCo', async (req, res) => {
+  
+  res.sendFile(path.resolve('views/createCourseInst.html'));
+  
+})
+
+
+
+
 instructorRouter.get('/view', async (req, res) => {
     try{
     const username = req.query.username;
@@ -107,24 +116,29 @@ instructorRouter.get('/filter', async (req, res) => {
 
 //Do we need this....
 instructorRouter.post('/createcourse', async (req, res) => {
-    try{
-//subtitels = [{text,hours}]
-    const { instructorId, subject , title, price , summary, subtitles ,discount
-    } = req.body;
-    
-const CreateResults = await
-    instructorController.createcourse({ instructorId, subject , title, price , summary , subtitles, discount});
-    res.status(200).json({ result: CreateResults });
-    }
-    catch(err){
-        if (err instanceof DomainError ){
-            res.status(err.code).json({code:err.code, message:err.message})
-          }else{
-            res.status(500).json({err});}
+  try{
+   
+    const {instructorId,subject,title,price,summary,subtitles}= req.body;
 
-    }
- 
+//subtitels = [{text,hours}]
+  console.log(instructorId,subject,title,price,summary,subtitles);
+const CreateResults = await
+  instructorController.createcourse({ instructorId, subject , title, price , summary , subtitles});
+ //CreateResults.save();
+  res.write('<h1> course created successfully</h1>');
+  res.status(200).send();
+  
+  }
+  catch(err){
+      if (err instanceof DomainError ){
+          res.status(err.code).json({code:err.code, message:err.message})
+        }else{
+          res.status(500).json({err});}
+
+  }
+
 
 })
+ 
 
 module.exports = instructorRouter;
