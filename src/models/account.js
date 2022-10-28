@@ -22,13 +22,11 @@ const accountSchema = new Schema({
     },
     firstName: {
         type: String,
-        required:true,
         min:2,
         max:100
     },
     lastName: {
         type: String,
-        required:true,
         min:2,
         max:100
     },
@@ -37,18 +35,18 @@ const accountSchema = new Schema({
         trim: true,
         lowercase: true,
         unique: true,
-        required: 'Email address is required',
         validate: [validateEmail, 'Please fill a valid email address'],
         match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please fill a valid email address']
     },
     gender: {
         type: String,
         enum: ['MALE','FEMALE'],
-        required: true
+       
     },
     country: {
         type: String,
-        enum: countryEnums
+        enum: countryEnums,
+        default: 'United States',
     },
     type: {
         type: String,

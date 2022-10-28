@@ -2,6 +2,7 @@ const express = require("express");
 const userController = require("../controllers/userController");
 const userRouter = new express.Router();
 const path = require('path');
+const DomainError = require("../error/domainError");
 
 userRouter.get('/', (req, res) => {
     // here we are telling the response to find the html file and send it as a response
@@ -12,10 +13,13 @@ userRouter.get('/selectCountryPage', (req,res) => {
 })
 userRouter.get('/search', async (req, res) => {
     const {
-        userId, userType, subject, minPrice, maxPrice, rating, title, instructor, totalHours
+        userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
     } = req.body;
 
     //snipped can be moved to controller
+
+
+
     if (userType == 'ADMIN' || !userType) {
         res.status(401).json({ message: "unauthorized user." });
     }
@@ -58,5 +62,49 @@ userRouter.post('/selectCountry', async (req,res) => {
     res.status(error.code).send(error.message);
 }
 })
+
+
+
+userRouter.get('/viewAndFilterCourses', async (req, res) => {
+   try{ 
+   
+    const {
+        userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
+    } = req.query;
+
+   
+
+    const searchResults = await
+        userController.getSearchResult({ userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours });
+
+        let currentString="";
+        for (var i=0; i<searchResults.courses.length; i++) {
+            currentString += '<p> Course title: ' + searchResults.courses[i].title + '<br>' +
+            'Total hours: ' + searchResults.courses[i].totalHours +'<br>' +
+            'Rating: '+ searchResults.courses[i].rating+'<br>' +
+             'Price: '+ searchResults.courses[i].price+' '+searchResults.currency+'<br>' +
+             'Subject: '+ searchResults.courses[i].subject+'<br>' +
+            'instructor: '+ searchResults.courses[i].instructors[0].firstName +" "+
+            searchResults.courses[i].instructors[0].lastName+'<br>' +
+            '</p> <hr>';
+         
+           
+        }
+       
+        res.status(200).send(currentString);
+}
+catch(err){
+    console.log(err);
+    if (err instanceof DomainError ){
+        res.status(err.code).send( err.message)
+      }else{
+        res.status(500).send({err});}
+          }
+
+})
+
+userRouter.get('/viewFilterCourses',(req,res)=>{
+    res.sendFile(path.resolve('views/viewCoursesWithPrice.html'))
+  })
 
 module.exports = userRouter;

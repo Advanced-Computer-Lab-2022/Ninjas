@@ -4,6 +4,8 @@ const { Course, countryPriceDetails } = require("../models/courses");
 const { Exercise } = require("../models/exercise");
 
 const userController = {
+
+
     async getSearchResult({
         userId = null, subject = null,
         minPrice = null, maxPrice = null,
@@ -12,39 +14,58 @@ const userController = {
     }) {
 
    
+try{
+        const user = await Account.findOne({ _id: userId }, { country: 1 }).catch(()=>{
+        throw new DomainError("Wrong Id",400)});
 
-        const user = await Account.findOne({ _id: userId }, { country: 1 });
+         
+      let courses;
+        if   (subject == "null"  &&
+            rating =="null" && title == '' &&
+            instructor == ''  ){
+                 courses =  await Course.find() }else{
 
-        const courses = 
-          (subject == null &&
-            minPrice == null && maxPrice == null &&
-            rating == null && title == null &&
-            instructor == null && totalHours == null)?
-            await Course.find() :
-            await Course.find({
-            '$or': [
-                { subject: { '$regex': "/^" + subject + "/", '$options': 'i' } },
-                { rating },
-                { title: { '$regex': "/^" + title + "/", '$options': 'i' } },
-                { totalHours },
-                {
-                    instructors: {
-                        $elemMatch: { firstName: "/^" + instructor + "/" }
-                    }
-                },
-                { price: { $gte: minPrice, $lte: maxPrice } }
-            ]
+         let queryArray=[];
+         if (subject != "null"){queryArray.push( { subject: { '$regex': "" + subject , '$options': 'i' } })}
+         if (rating != "null"){queryArray.push(   { rating: rating })}
+         if (title != ''){queryArray.push(  { title: { '$regex': "" + title , '$options': 'i' } })}
+         if (instructor != ''){queryArray.push(   {  instructors: { $elemMatch: { firstName: { '$regex': "" + instructor , '$options': 'i' } }  } })}
+               
+       //  console.log(queryArray)
+         
+         courses =   await Course.find({
+            '$and': queryArray
         });
-       
+    }
 
         let details = countryPriceDetails.get(user.country);
         for (var i = 0; i < courses.length; i++) {
             // price = price x factor x discount
             courses[i].price = courses[i].price * details.factor * ((100 - details.discount) / 100);
+            if (minPrice != "null"&& courses[i].price<minPrice){
+                delete courses[i];
+            }
+            if (maxPrice != "null"&& courses[i].price>maxPrice){
+                courses.splice(i, 1);
+            }
         }
-        console.log(courses);
+      //  console.log(courses);
         return {courses,currency:details.currency};
+    }
+    catch(err){
+        //console.log(err);
+        if (err instanceof DomainError ){throw err;}
+        throw new DomainError('error internally',500);  
+    }
     },
+
+
+
+
+
+
+
+
     async changeUserCountry({ userId, selectedCountry }) {
         //update the user's record in the database
         try {
@@ -60,6 +81,7 @@ const userController = {
         );
 
         } catch (error) {
+         
             if (error.name == 'ValidationError') {
                 const errorMessages = Object.values(error.errors).map(val => val.message);
                 throw new DomainError(errorMessages, 400);
