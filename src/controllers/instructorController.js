@@ -16,6 +16,7 @@ const instructorController = {
         username
     }) {
       try{
+    console.log(username);
       const result=[]
       const courses=  await Course.find({
         
@@ -23,7 +24,8 @@ const instructorController = {
 
     for(var i=0;i<courses.length;i++){
         for(var j=0;j<courses[i].instructors.length;j++){
-            if(courses[i].instructors[j].username==username){
+            console.log(username)
+            if(courses[i].instructors[j].username && courses[i].instructors[j].username==username){
                result.push(courses[i].title); 
                break;
             }
@@ -32,8 +34,9 @@ const instructorController = {
 
     }
     //console.log(result);
-    return{result};}
+    return result;}
     catch(err){
+          console.log(err)
           throw new DomainError('error internally',500);  
     }
 

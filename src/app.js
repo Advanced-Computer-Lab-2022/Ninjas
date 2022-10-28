@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const adminRouter = require("./routers/adminRouter");
 const instructorRouter = require("./routers/instructorRouter");
 const path = require('path');
-const mongoURI = process.env.mongoURI;
+const mongoURI = process.env.mongo_URI;
 console.log(mongoURI);
 
 
