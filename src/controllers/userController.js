@@ -48,17 +48,26 @@ const userController = {
     async changeUserCountry({ userId, selectedCountry }) {
         //update the user's record in the database
         try {
+
+        const thisUserType = await Account.findOne({ _id: userId }, { type:1 });
+        //admins should not change their country
+        if (thisUserType.type == 'ADMIN')
+        throw new DomainError("Unauthorized user: Admin", 401)
+
         await Account.updateOne(
             { _id: userId }, // gets the user whose id is userId
             { country: selectedCountry } //changes the country to the selected one
-        )
+        );
+
         } catch (error) {
             if (error.name == 'ValidationError') {
                 const errorMessages = Object.values(error.errors).map(val => val.message);
                 throw new DomainError(errorMessages, 400);
             }
+            if (error.code == 401 ) { //unauthorized user
+                throw new DomainError("Unauthorized user: Admin", 401)
+            }
             else {
-                console.log(error);
                 throw new DomainError("internal error", 500);
             }
         }

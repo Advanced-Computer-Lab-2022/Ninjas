@@ -27,13 +27,9 @@ userRouter.get('/search', async (req, res) => {
 
 userRouter.post('/selectCountry', async (req,res) => {
     try {
-    const { userId, userType, selectedCountry } = req.body;
-    //snipped can be moved to controller
-    if (userType == 'ADMIN') {
-        res.status(401).json({ message: "unauthorized user." });
-    }
-    if (!selectedCountry) {
-        res.status(400).json({ message: "please select a country."});
+    const { userId, selectedCountry } = req.body;
+    if (!selectedCountry || !userId) {
+        res.status(400).send('<h1>Please enter a country AND a user ID.</h1>')
     }
 
     await userController.changeUserCountry({ userId, selectedCountry });
