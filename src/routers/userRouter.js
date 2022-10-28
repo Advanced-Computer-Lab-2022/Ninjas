@@ -67,7 +67,7 @@ userRouter.post('/selectCountry', async (req,res) => {
 
 userRouter.get('/viewAndFilterCourses', async (req, res) => {
    try{ 
-    console.log(req.query)
+   
     const {
         userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
     } = req.query;
@@ -77,20 +77,24 @@ userRouter.get('/viewAndFilterCourses', async (req, res) => {
     const searchResults = await
         userController.getSearchResult({ userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours });
 
-
-        for (var i=0; i<searchResults.length; i++) {
-            currentString = '<p> Course title: ' + searchResults[i].title + '<br>' +
-            'Total hours: ' + searchResults[i].totalHours +'<br>' +
-            'Rating: '+ searchResults[i].rating+'<br>' +
-            + 'Price: '+ searchResults[i].price+'<br>' +
-            + 'Subject: '+ searchResults[i].subject+'<br>' +
-            + 'instructor: '+ searchResults[i].instructors+'<br>' +
+        let currentString="";
+        for (var i=0; i<searchResults.courses.length; i++) {
+            currentString += '<p> Course title: ' + searchResults.courses[i].title + '<br>' +
+            'Total hours: ' + searchResults.courses[i].totalHours +'<br>' +
+            'Rating: '+ searchResults.courses[i].rating+'<br>' +
+             'Price: '+ searchResults.courses[i].price+' '+searchResults.currency+'<br>' +
+             'Subject: '+ searchResults.courses[i].subject+'<br>' +
+            'instructor: '+ searchResults.courses[i].instructors[0].firstName +" "+
+            searchResults.courses[i].instructors[0].lastName+'<br>' +
             '</p> <hr>';
-            res.write(currentString);
+         
+           
         }
-        res.status(200).send();
+       
+        res.status(200).send(currentString);
 }
 catch(err){
+    console.log(err);
     if (err instanceof DomainError ){
         res.status(err.code).send( err.message)
       }else{
