@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    body {
+        background-color: lightblue;
+    }
+</style>
+
+<head>
+    My Courses! &#128515;
+</head>
+
+<body>
+
+    <br>
+    <form method="get" action='/view' > <!--set onsubmit="return false"-->
+        <h2>Username:
+    </h2>
+    <input type="text" name="username" placeholder="Username" id="username" required
+        oninvalid="alert('you must enter your username')">
+<input type="submit" value="Add" onClick="add(document.getElementById('username').value)">
+<p id="result"> </p>
+
+    </form>
+
+    <br>
+
+</body>
+ 

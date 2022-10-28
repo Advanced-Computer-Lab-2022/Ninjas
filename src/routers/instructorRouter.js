@@ -2,12 +2,14 @@ const express = require("express");
 const instructorController = require("../controllers/instructorController");
 const instructorRouter = new express.Router();
 const DomainError = require('../error/domainError');
-
+const path = require('path')
+instructorRouter.get('/', async (req,res) => {
+  res.sendFile(path.resolve('views/instructorGeneral.html'))
+})
 instructorRouter.get('/view', async (req, res) => {
     try{
-    const { username
-    } = req.body;
-    
+    const username = req.query.username;
+    console.log(username);
     // if (userType != 'Instructor') {
     //     res.status(401).json({ message: "unauthorized user." });
     // }
@@ -16,7 +18,10 @@ instructorRouter.get('/view', async (req, res) => {
 
     const viewResults = await
         instructorController.getViewResult({ username });
-    res.status(200).json({ result: viewResults });}
+    
+
+    res.status(200).json(viewResults); 
+    }
     catch(err){
         if (err instanceof DomainError ){
            res.status(err.code).json({code:err.code, message:err.message})
@@ -24,6 +29,10 @@ instructorRouter.get('/view', async (req, res) => {
            res.status(500).json({err});}
              }
 
+})
+
+instructorRouter.get('/viewPage', async (req, res) => {
+  res.sendFile(path.resolve('views/viewCoursesInst.html'));
 })
 
 instructorRouter.get('/Searchfilter', async (req, res) => {
