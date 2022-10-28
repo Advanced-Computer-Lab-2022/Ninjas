@@ -12,18 +12,94 @@
 
 <body>
 
-    <br>
-    <form method="get" action='/view' > <!--set onsubmit="return false"-->
-        <h2>Username:
-    </h2>
-    <input type="text" name="username" placeholder="Username" id="username" required
+   
+    <form method="get" action='/view' > 
+        <h3>Username:</h3>
+
+        <input type="text" name="username" placeholder="Username" id="username" required
         oninvalid="alert('you must enter your username')">
-<input type="submit" value="Add" onClick="add(document.getElementById('username').value)">
-<p id="result"> </p>
+   
+     <input type="submit" value="View Courses" onClick="add(document.getElementById('username').value)">
+
+    </form>
+    <hr>
+
+    <form method="get" action='/SearchInst' > 
+        <h3>Username:</h3>
+
+        <input type="text" name="username" placeholder="Username" id="username" required
+        oninvalid="alert('you must enter your username')">
+        <br>
+        <h3>User ID:</h3>
+    
+        <input type="text" name="userId" placeholder="User ID" id="userId" required
+        oninvalid="alert('you must enter your id')">
+    
+     <input type="text" name="search" placeholder="search" id="searchword" required
+        oninvalid="alert('you must enter your username')">
+    
+     <input type="submit" value="Search" 
+     onClick="add(document.getElementById('userId').value,document.getElementById('username').value, 
+     document.getElementById('searchword').value)">
+
+
+
+    </form>
+    <br>
+    <hr>
+    <br>
+    <form method="get" action='/filter' > 
+        <h4>Username:</h4>
+
+        <input type="text" name="username" placeholder="Username" id="username" required
+        oninvalid="alert('you must enter your username')">
+        <br>
+        <h4>User ID:</h4>
+    
+        <input type="text" name="userId" placeholder="User ID" id="userId" required
+        oninvalid="alert('you must enter your id')">
+
+        <br>
+        <h4>Subject</h4>
+    
+        <select name="subject">
+            <option value="">-</option>
+            <option value="science">Science</option>
+            <option value="Math">Math</option>
+            <option value="English">English</option> 
+        </select>
+
+        <br>
+
+        <h4>Minimum Price</h4>
+
+        <select name="minPrice">
+            <option value="">-</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option> 
+        </select>
+
+        <br>
+
+        <h4>Maximum Price</h4>
+
+        <select name="maxPrice">
+            <option value="">-</option>
+            <option value="270">270</option>
+            <option value="30">30</option>
+            <option value="20">20</option>
+            <option value="10">10</option> 
+        </select>
+    
+     <input type="submit" value="Filter" 
+     onClick="add(document.getElementById('userId').value,document.getElementById('username').value, 
+     document.getElementById('subject').value,document.getElementById('minPrice').value,document.getElementById('maxPrice').value)">
+    <br>
 
     </form>
 
-    <br>
+
 
 </body>
  
