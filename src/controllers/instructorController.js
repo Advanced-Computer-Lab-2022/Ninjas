@@ -16,7 +16,6 @@ const instructorController = {
         username
     }) {
       try{
-    console.log(username);
       const result=[]
       const courses=  await Course.find({
         
@@ -24,7 +23,6 @@ const instructorController = {
 
     for(var i=0;i<courses.length;i++){
         for(var j=0;j<courses[i].instructors.length;j++){
-            console.log(username)
             if(courses[i].instructors[j].username && courses[i].instructors[j].username==username){
                result.push(courses[i].title); 
                break;
@@ -41,12 +39,79 @@ const instructorController = {
     }
 
  },
-    async getSearchResult({
+ async getSearchResult({
 
-        username, userId , title , subject , instructor , minPrice , maxPrice 
+    username, search, userId
+}) { 
+
+try{
+  const final = [];  
+
+  const result3=[]
+  const courses=  await Course.find({
+    
+})
+for(var i=0;i<courses.length;i++){
+    for(var j=0;j<courses[i].instructors.length;j++){
+        if(courses[i].instructors[j].username && courses[i].instructors[j].username==username){
+           result3.push(courses[i]); 
+           break;
+        }
+        
+    }
+
+}
+
+
+  const user = await Account.findOne({ _id: userId }, { country: 1 });
+
+    for (var i = 0; i<result3.length ; i++ ){
+        if(result3[i].subject.toString().includes(search) || result3[i].title.toString().includes(search)){
+
+            final.push(result3[i]);
+            
+        }
+        else{
+
+            for(var j=0; j<result3[i].instructors.length ; j++){
+
+                if(result3[i].instructors[j].firstName.toString().includes(search) || 
+                result3[i].instructors[j].lastName.toString().includes(search) ||
+                result3[i].instructors[j].username.toString().includes(search)
+                ){
+                    final.push(result3[i])
+
+                }
+
+            }
+
+        }
+    
+
+    }
+let details = countryPriceDetails.get(user.country);
+for (var i = 0; i < final.length; i++) {
+    // price = price x factor x discount
+    final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
+}
+// console.log(courses);
+return final;}
+catch(err){
+ throw new DomainError('error internally',500);  }
+
+
+},
+    async getFilterResult({
+
+        username, userId , subject , minPrice , maxPrice 
     }) { 
     
     try{
+        console.log(username)
+        console.log(userId)
+        console.log(subject)
+        console.log(minPrice)
+        console.log(maxPrice)
 
       const final = [];  
 
@@ -54,9 +119,10 @@ const instructorController = {
       const courses=  await Course.find({
         
     })
+
     for(var i=0;i<courses.length;i++){
         for(var j=0;j<courses[i].instructors.length;j++){
-            if(courses[i].instructors[j].username==username){
+            if(courses[i].instructors[j].username && courses[i].instructors[j].username==username){
                result3.push(courses[i]); 
                break;
             }
@@ -65,33 +131,19 @@ const instructorController = {
 
     }
     
+    
       const user = await Account.findOne({ _id: userId }, { country: 1 });
 
         for (var i = 0; i<result3.length ; i++ ){
-            if(result3[i].subject.toString().includes(subject) || result3[i].title.toString().includes(title) || 
-            (result3[i].price >= minPrice && result3[i].price <= maxPrice)){
-
+            if(result3[i].subject.toString().includes(subject) || (result3[i].price >= minPrice && result3[i].price <= maxPrice)){
                 final.push(result3[i]);
                 
             }
-            else{
-
-                for(var j=0; j<result3[i].instructors.length ; j++){
-
-                    if(result3[i].instructors[j].firstName.toString().includes(instructor) || 
-                    result3[i].instructors[j].lastName.toString().includes(instructor) ||
-                    result3[i].instructors[j].username.toString().includes(instructor)
-                    ){
-                        final.push(result3[i])
-
-                    }
-
-                }
-
-            }
+           
         
     
         }
+        
 
     let details = countryPriceDetails.get(user.country);
     for (var i = 0; i < final.length; i++) {
@@ -99,12 +151,15 @@ const instructorController = {
         final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
     }
    // console.log(courses);
-    return {final};}
+    return final;}
     catch(err){
      throw new DomainError('error internally',500);  }
 
 
 },
+
+
+
 async addsubtitle (subArray){ 
 for (var i =0; i<subArray.length; i++) {
 
