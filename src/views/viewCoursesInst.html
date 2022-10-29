@@ -14,17 +14,18 @@
 
    
     <form method="get" action='/view' > 
-        <h3>Username:</h3>
+        <h3>Your Username:</h3>
 
         <input type="text" name="username" placeholder="Username" id="username" required
         oninvalid="alert('you must enter your username')">
    
-     <input type="submit" value="View Courses" onClick="add(document.getElementById('username').value)">
+     <input type="submit" value="View all my Courses" onClick="add(document.getElementById('username').value)">
 
     </form>
     <hr>
 
     <form method="get" action='/SearchInst' > 
+        <h3>Search Courses</h3>
         <h3>Username:</h3>
 
         <input type="text" name="username" placeholder="Username" id="username" required
@@ -38,7 +39,7 @@
      <input type="text" name="search" placeholder="search" id="searchword" required
         oninvalid="alert('you must enter your username')">
     
-     <input type="submit" value="Search" 
+     <input type="submit" value="Search in my courses" 
      onClick="add(document.getElementById('userId').value,document.getElementById('username').value, 
      document.getElementById('searchword').value)">
 
@@ -49,6 +50,8 @@
     <hr>
     <br>
     <form method="get" action='/filter' > 
+        <h3>Filter Courses</h3>
+
         <h4>Username:</h4>
 
         <input type="text" name="username" placeholder="Username" id="username" required
