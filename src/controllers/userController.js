@@ -15,6 +15,7 @@ const userController = {
 
    
 try{
+    // lw 7d msh mwgod hytl3 null ?? for next sprints
         const user = await Account.findOne({ _id: userId }, { country: 1 }).catch(()=>{
         throw new DomainError("Wrong Id",400)});
 
