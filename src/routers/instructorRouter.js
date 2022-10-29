@@ -2,7 +2,8 @@ const express = require("express");
 const instructorController = require("../controllers/instructorController");
 const instructorRouter = new express.Router();
 const DomainError = require('../error/domainError');
-const path = require('path')
+const path = require('path');
+const { create } = require("../models/question");
 instructorRouter.get('/', async (req,res) => {
   res.sendFile(path.resolve('views/instructorGeneral.html'))
 })
@@ -17,10 +18,17 @@ instructorRouter.get('/view', async (req, res) => {
 
 
     const viewResults = await
-        instructorController.getViewResult({ username });
-    
+        instructorController.getViewResult({ username }); 
 
-    res.status(200).json(viewResults); 
+        res.write('<h1>Search results</h1> <hr>')
+        let currentString;
+        for (var i=0; i<viewResults.length; i++) {
+              currentString = '<p> Course title: ' + viewResults[i] + '<br>' 
+              '</p> <hr>';
+          res.write(currentString);
+          }
+        res.status(200).send();
+    
     }
     catch(err){
         if (err instanceof DomainError ){
@@ -33,6 +41,17 @@ instructorRouter.get('/view', async (req, res) => {
 
 instructorRouter.get('/viewPage', async (req, res) => {
   res.sendFile(path.resolve('views/viewCoursesInst.html'));
+})
+instructorRouter.get('/createCo', async (req, res) => {
+  
+  res.sendFile(path.resolve('views/createCourseInst.html'));
+  
+})
+
+instructorRouter.get('/selectCountry', async (req, res) => {
+  
+  res.sendFile(path.resolve('views/selectCountry.html'));
+  
 })
 
 instructorRouter.get('/SearchInst', async (req, res) => {
@@ -108,13 +127,17 @@ instructorRouter.get('/filter', async (req, res) => {
 //Do we need this....
 instructorRouter.post('/createcourse', async (req, res) => {
     try{
+     
+      const {instructorId,subject,title,price,summary,subtitles}= req.body;
+
 //subtitels = [{text,hours}]
-    const { instructorId, subject , title, price , summary, subtitles ,discount
-    } = req.body;
-    
+    console.log(instructorId,subject,title,price,summary,subtitles);
 const CreateResults = await
-    instructorController.createcourse({ instructorId, subject , title, price , summary , subtitles, discount});
-    res.status(200).json({ result: CreateResults });
+    instructorController.createcourse({ instructorId, subject , title, price , summary , subtitles});
+   //CreateResults.save();
+    res.write('<h1> course created successfully</h1>');
+    res.status(200).send();
+    
     }
     catch(err){
         if (err instanceof DomainError ){

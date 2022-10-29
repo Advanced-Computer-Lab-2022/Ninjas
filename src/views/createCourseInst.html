@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    body {
+        background-color: lightblue;
+    }
+</style>
+
+<head>
+    My Courses! &#128515;
+</head>
+
+<body>
+    <form method="post" action='/createcourse' > 
+        <h3>subject:</h3>
+
+        <input type="text" name="subject" placeholder="subject" id="subject" required
+        oninvalid="alert('you must enter a subject')">
+        <br>
+        <h3>user Id:</h3>
+    
+        <input type="text" name="instructorId" placeholder="User ID" id="userId" required
+        oninvalid="alert('you must enter your id')">
+         
+        <input type="text" name="title" placeholder="title" id="title" required
+        oninvalid="alert('you must enter a title')">
+
+        <input type="text" name="price" placeholder="price" id="price" required
+        oninvalid="alert('you must enter a price')">
+
+        <input type="text" name="summary" placeholder="summary" id="summary" required
+        oninvalid="alert('you must enter a summary')">
+
+        <h4>Please enter subtitles as Subtitle1 : hours, Subtitle2 : hours, etc</h4>
+
+        <input type="text" name="subtitles" placeholder="subtitles" id="subtitles" required
+        oninvalid="alert('you must enter subtitles')">
+
+        <input type="submit" value="Create" 
+        onClick="add( document.getElementById('subject').value,document.getElementById('userId').value,document.getElementById('title').value, 
+        document.getElementById('price').value, document.getElementById('summary').value, document.getElementById('subtitles').value)">
+
+ 
+        </form>
+
+</body>  

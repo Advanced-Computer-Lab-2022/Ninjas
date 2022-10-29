@@ -29,7 +29,8 @@ const coursesSchema = new Schema({
         required: true
     },
     instructors: {
-        type: [accountSchema]
+        type: [accountSchema],
+        required: true
         
     },
     subtitles: {
@@ -41,8 +42,7 @@ const coursesSchema = new Schema({
     discount: {
         type: Number,
         min: 0,
-        max: 100,
-        required: true
+        max: 100
     }
 })
 
