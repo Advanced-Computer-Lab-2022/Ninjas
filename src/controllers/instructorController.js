@@ -96,7 +96,7 @@ for (var i = 0; i < final.length; i++) {
     final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
 }
 // console.log(courses);
-return final;}
+return {final,currency:details.currency};}
 catch(err){
  throw new DomainError('error internally',500);  }
 
