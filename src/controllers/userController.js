@@ -29,7 +29,8 @@ try{
          if (subject != "null"){queryArray.push( { subject: { '$regex': "" + subject , '$options': 'i' } })}
          if (rating != "null"){queryArray.push(   { rating: rating })}
          if (title != ''){queryArray.push(  { title: { '$regex': "" + title , '$options': 'i' } })}
-         if (instructor != ''){queryArray.push(   {  instructors: { $elemMatch: { firstName: { '$regex': "" + instructor , '$options': 'i' } }  } })}
+         if (instructor != ''){queryArray.push(   {  instructors: { $elemMatch: {'$or':[ {firstName: { '$regex': "" + instructor , '$options': 'i' }},
+         {lastName: { '$regex': "" + instructor , '$options': 'i' }}] }  } })}
                
        //  console.log(queryArray)
          
@@ -43,7 +44,7 @@ try{
             // price = price x factor x discount
             courses[i].price = courses[i].price * details.factor * ((100 - details.discount) / 100);
             if (minPrice != "null"&& courses[i].price<minPrice){
-                delete courses[i];
+                courses.splice(i, 1);
             }
             if (maxPrice != "null"&& courses[i].price>maxPrice){
                 courses.splice(i, 1);
