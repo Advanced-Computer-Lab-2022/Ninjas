@@ -63,7 +63,8 @@ for(var i=0;i<courses.length;i++){
 }
 
 
-  const user = await Account.findOne({ _id: userId }, { country: 1 });
+  const user = await Account.findOne({ _id: userId }, { country: 1 }).catch(()=>{
+    throw new DomainError("Wrong Id",400)});;
 
     for (var i = 0; i<result3.length ; i++ ){
         if(result3[i].subject.toString().includes(search) || result3[i].title.toString().includes(search)){
@@ -133,7 +134,8 @@ catch(err){
     }
     
     
-      const user = await Account.findOne({ _id: userId }, { country: 1 });
+      const user = await Account.findOne({ _id: userId }, { country: 1 }).catch(()=>{
+        throw new DomainError("Wrong Id",400)});;
 
       let details = countryPriceDetails.get(user.country);
     for (var i = 0; i < result3.length; i++) {
@@ -222,7 +224,8 @@ async calculateHours (subArray){
 
 
 async createcourse ({instructorId, subject , title, price , summary , subtitles}) {
-    const thisInstructor = await Account.findOne({_id: instructorId})
+    const thisInstructor = await Account.findOne({_id: instructorId}).catch(()=>{
+        throw new DomainError("Wrong Id",400)});
    // console.log(thisInstructor)
     try {
     Totalhrs = 0;
