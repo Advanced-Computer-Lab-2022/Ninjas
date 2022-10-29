@@ -55,7 +55,7 @@ userRouter.get('/viewAllCourses', async (req, res) => {
             userId, subject, rating, title, instructor, totalHours
         } = req.query;
 
-        const { type } = await Account.findOne({ _id: userId }, { type: 1 });
+        const { type } = await Account.findOne({ _id: userId }, { type: 1 }).catch((err)=>{ throw new DomainError("you are not autherized",401)});
         if (type == 'ADMIN') {
             throw new DomainError("unauthorized user: admin", 401);
         }
