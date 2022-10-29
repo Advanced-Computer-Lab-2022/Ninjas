@@ -30,18 +30,29 @@ userRouter.get('/search', async (req, res) => {
 })
 
 userRouter.get('/viewAllCourses', async (req,res) => {
+    try {
+    const {
+        userId, subject, rating, title, instructor, totalHours
+    } = req.query;
+
     //should return only the title, total hours, and rating
-    const { courses } = await userController.getSearchResult({ userId: '635acedda1fea642e98ec4b3'}); //gets all courses
+    const { courses } = await userController.getSearchResult({userId, subject, rating, title, instructor, totalHours}); //gets all courses
     res.write('<h1>Search results</h1> <hr>')
     let currentString; //this will be modified to be written in the response
     for (var i=0; i<courses.length; i++) {
         currentString = '<p> Course title: ' + courses[i].title + '<br>' +
         'Total hours: ' + courses[i].totalHours +'<br>' +
         'Rating: '+ courses[i].rating+'<br>' +
+        'Subject: '+ courses[i].subject+'<br>' +
+        'instructor: '+ courses[i].instructors[0].firstName +" "+
+        courses[i].instructors[0].lastName+'<br>' +
         '</p> <hr>';
         res.write(currentString);
     }
     res.status(200).send();
+} catch(err) {
+    res.status(err.code).send(err.message);
+}
 
 })
 
@@ -106,5 +117,9 @@ catch(err){
 userRouter.get('/viewFilterCourses',(req,res)=>{
     res.sendFile(path.resolve('views/viewCoursesWithPrice.html'))
   })
+
+userRouter.get('/viewAllCoursesPage', (req,res) => {
+    res.sendFile(path.resolve('views/viewCourseNoPrice.html'));
+})
 
 module.exports = userRouter;
