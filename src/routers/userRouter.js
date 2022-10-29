@@ -109,8 +109,11 @@ userRouter.get('/viewAndFilterCourses', async (req, res) => {
         userController.getSearchResult({ userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours });
 
         let currentString="";
+        let viewButtonString;
+        
         for (var i=0; i<searchResults.courses.length; i++) {
-            currentString += '<p> Course title: ' + searchResults.courses[i].title + '<br>' +
+            viewButtonString = "";
+            currentString = '<p> Course title: ' + searchResults.courses[i].title + '<br>' +
             'Total hours: ' + searchResults.courses[i].totalHours +'<br>' +
             'Rating: '+ searchResults.courses[i].rating+'<br>' +
              'Price: '+ searchResults.courses[i].price+' '+searchResults.currency+'<br>' +
@@ -118,11 +121,24 @@ userRouter.get('/viewAndFilterCourses', async (req, res) => {
             'instructor: '+ searchResults.courses[i].instructors[0].firstName +" "+
             searchResults.courses[i].instructors[0].lastName+'<br>' +
             '</p> <hr>';
-         
-           
+            viewButtonString += "<button onclick=\"alert(\'Course Details: \\nSubtitles: \\n"
+
+            for (var j = 0; j < searchResults.courses[i].subtitles.length; j++) {
+                viewButtonString += "Subtitle " + (j + 1) + ": " + searchResults.courses[i].subtitles[j].text + ", total hours: " + searchResults.courses[i].subtitles[j].hours + "\\n"
+            }
+
+            viewButtonString += "Exercises: \\n"
+            for (var k = 0; k < searchResults.courses[i].exercises.length; k++) {
+                viewButtonString += "Exercise " + (k + 1) + ": " + searchResults.courses[i].exercises[k].title + "\\n"
+            }
+
+            viewButtonString += "\')\">View details</button>";
+            currentString += viewButtonString + '<hr>'
+       
+            res.write(currentString);
         }
        
-        res.status(200).send(currentString);
+        res.status(200).send();
 }
 catch(err){
     console.log(err);
