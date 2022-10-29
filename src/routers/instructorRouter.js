@@ -91,14 +91,14 @@ instructorRouter.get('/SearchInst', async (req, res) => {
         instructorController.getSearchResult({ username, search, userId });
     res.write('<h1>Search results</h1> <hr>')
     let currentString;
-    for (var i=0; i<SearchResults.length; i++) {
-          currentString = '<p> Course title: ' + SearchResults[i].title + '<br>' +
-          'Total hours: ' + SearchResults[i].totalHours +'<br>' +
-          'Rating: '+ SearchResults[i].rating+'<br>' +
-          'Price: '+ SearchResults[i].price+'<br>'+
-          'Summary: '+ SearchResults[i].summary+'<br>'
-          'Subtitles: '+ SearchResults[i].subtitles+'<br>'+
-          'Exercises: '+ SearchResults[i].exercises+'<br>'
+    for (var i=0; i<SearchResults.final.length; i++) {
+          currentString = '<p> Course title: ' + SearchResults.final[i].title + '<br>' +
+          'Total hours: ' + SearchResults.final[i].totalHours +'<br>' +
+          'Rating: '+ SearchResults.final[i].rating+'<br>' +
+          'Price: '+ SearchResults.final[i].price+" "+SearchResults.currency+'<br>'+
+          'Summary: '+ SearchResults.final[i].summary+'<br>'
+          'Subtitles: '+ SearchResults.final[i].subtitles+'<br>'+
+          'Exercises: '+ SearchResults.final[i].exercises+'<br>'
           '</p> <hr>';
       res.write(currentString);
       }
