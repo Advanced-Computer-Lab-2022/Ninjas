@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    body {
+        background-color: lightblue;
+    }
+</style>
+
+<form method="get" action='/viewAllCourses'>
+    <br>
+    <input type="text" name="userId" placeholder="User ID" required oninvalid="alert('you must enter a user ID')">
+    <br>
+   <hr>
+    Search
+    <input type="text" name="title" placeholder="Course Title">
+    <br>
+    instructor
+    <input type="text" name="instructor" placeholder="instructor first name">
+    <br>
+   <hr>
+    Filter
+    <br>
+    subject
+    <select name="subject" id="subject">
+        <option value=null>choose</option>
+        <option value="Computer Science">CS</option>
+        <option value="English">English</option>
+        <option value="Biology">Biology</option>
+    </select>
+    <br>
+    rating
+    <select name="rating" id="rating">
+        <option value=null>choose</option>
+        <option value=1>1</option>
+        <option value=2>2</option>
+        <option value=3>3</option>
+        <option value=4>4</option>
+        <option value=5>5</option>
+    </select>
+    <br>
+
+    <hr>
+    <input type="submit" value="View">
+
+</form>

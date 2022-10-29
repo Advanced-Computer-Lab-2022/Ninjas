@@ -261,8 +261,7 @@ async createcourse ({instructorId, subject , title, price , summary , subtitles}
 
 
 }
-
-
 }
+
 
     module.exports = instructorController;

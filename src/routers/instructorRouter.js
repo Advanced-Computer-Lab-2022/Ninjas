@@ -7,6 +7,15 @@ const { create } = require("../models/question");
 instructorRouter.get('/', async (req,res) => {
   res.sendFile(path.resolve('views/instructorGeneral.html'))
 })
+instructorRouter.get('/createCo', async (req, res) => {
+  
+  res.sendFile(path.resolve('views/createCourseInst.html'));
+  
+})
+
+
+
+
 instructorRouter.get('/view', async (req, res) => {
     try{
     const username = req.query.username;
@@ -145,9 +154,7 @@ const CreateResults = await
           }else{
             res.status(500).json({err});}
 
-    }
- 
-
 })
+ 
 
 module.exports = instructorRouter;

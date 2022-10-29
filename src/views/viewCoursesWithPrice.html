@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    body {
+        background-color: lightblue;
+    }
+</style>
+
+<head>
+    View Courses 
+</head>
+
+<body>
+
+    <br>
+    <form method="get" action='/viewAndFilterCourses'  > <!--set onsubmit="return false"-->
+       
+        <br>
+        <input type="text" name="userId" placeholder="User ID" required oninvalid="alert('you must enter a user ID')">
+        <br>
+       <hr>
+        Search
+        <input type="text" name="title" placeholder="Course Title">
+        <br>
+        instructor
+        <input type="text" name="instructor" placeholder="instructor first name">
+        <br>
+       <hr>
+        Filter
+        <br>
+        min price
+        <select name="minPrice" id="minPrice">
+            <option value=null>choose</option>
+            <option value=0>Free</option>
+            <option value=100>100</option>
+            <option value=1000>1000</option>
+            <option value=3000>3000</option>
+        </select>
+        <br>
+        max price
+        <select name="maxPrice" id="maxPrice">
+            <option value=null>choose</option>
+            <option value=100>100</option>
+            <option value=1000>1000</option>
+            <option value=10000>10000</option>
+            <option value=30000>30000</option>
+        </select>
+        <br>
+        subject
+        <select name="subject" id="subject">
+            <option value=null>choose</option>
+            <option value="CS">CS</option>
+            <option value="English">English</option>
+            <option value="Biology">Biology</option>
+        </select>
+        <br>
+        rating
+        <select name="rating" id="rating">
+            <option value=null>choose</option>
+            <option value=0>0</option>
+            <option value=1>1</option>
+            <option value=2>2</option>
+            <option value=3>3</option>
+            <option value=4>4</option>
+            <option value=5>5</option>
+        </select>
+        <br>
+
+        <hr>
+        <input type="submit" value="View">
+
+        
+    </form>
+
+    <br>
+
+</body>
+ 

@@ -1,0 +1,52 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<style>
+    body {
+        background-color: lightblue;
+    }
+</style>
+
+<head>
+    Welcome Admin;
+</head>
+
+<body >
+
+<form method="post" action='/admin/create'>
+    <hr>
+    <br>
+    <input type="text" name="userId" placeholder="your own User ID" required
+        oninvalid="alert('you must enter a user ID')">
+    <!-- <br>
+   <input type=”hidden” name="userType" value="ADMIN"> -->
+   <br>
+   <hr>
+   CREATE NEW USER
+ 
+   
+    <br>
+    New Account details
+    <br>
+    username
+    <input type="text" name="username" placeholder="username" minlength="6" maxlength="200">
+    <br>
+    password
+    <input type="text" name="password" placeholder="password" minlength="6" maxlength="200">
+    <br>
+    account type
+    <select name="accountType" id="userType">
+        <option value="INSTRUCTOR">Instructor</option>
+        <option value="CORPORATE_TRAINEE">Corporate trainee</option>
+        <option value="ADMIN">Admin</option>
+    </select>
+    <br>
+    <input type="submit" value="add new user">
+    <hr>
+  
+</form>
+
+
+
+</body>
