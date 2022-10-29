@@ -133,14 +133,14 @@ instructorRouter.get('/filter', async (req, res) => {
         instructorController.getFilterResult({ username, userId , subject , minPrice , maxPrice });
     res.write('<h1>Filter results</h1> <hr>')
     let currentString;
-    for (var i=0; i<FilterResult.length; i++) {
-              currentString = '<p> Course title: ' + FilterResult[i].title + '<br>' +
-              'Total hours: ' + FilterResult[i].totalHours +'<br>' +
-              'Rating: '+ FilterResult[i].rating+'<br>' +
-              'Price: '+ FilterResult[i].price+" "+ FilterResult.currency + '<br>'+ 
-              'Summary: '+ FilterResult[i].summary+" "+'<br>'
-              'Subtitles: '+ FilterResult[i].subtitles+" "+'<br>'+
-              'Exercises: '+ FilterResult[i].exercises+" "+'<br>'
+    for (var i=0; i<FilterResult.final2.length; i++) {
+              currentString = '<p> Course title: ' + FilterResult.final2[i].title + '<br>' +
+              'Total hours: ' + FilterResult.final2[i].totalHours +'<br>' +
+              'Rating: '+ FilterResult.final2[i].rating+'<br>' +
+              'Price: '+ FilterResult.final2[i].price+" "+ FilterResult.currency + '<br>'+ 
+              'Summary: '+ FilterResult.final2[i].summary+" "+'<br>'
+              'Subtitles: '+ FilterResult.final2[i].subtitles+" "+'<br>'+
+              'Exercises: '+ FilterResult.final2[i].exercises+" "+'<br>'
               '</p> <hr>';
           res.write(currentString);
           }
