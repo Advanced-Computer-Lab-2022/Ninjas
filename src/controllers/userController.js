@@ -71,7 +71,8 @@ try{
         //update the user's record in the database
         try {
 
-        const thisUserType = await Account.findOne({ _id: userId }, { type:1 });
+        const thisUserType = await Account.findOne({ _id: userId }, { type:1 }).catch(()=>{
+            throw new DomainError("Wrong Id",400)});
         //admins should not change their country
         if (thisUserType.type == 'ADMIN')
         throw new DomainError("Unauthorized user: Admin", 401)
@@ -82,7 +83,7 @@ try{
         );
 
         } catch (error) {
-         
+            console.log(error)
             if (error.name == 'ValidationError') {
                 const errorMessages = Object.values(error.errors).map(val => val.message);
                 throw new DomainError(errorMessages, 400);
