@@ -6,6 +6,7 @@ const DomainError = require("../error/domainError");
 const { Course } = require("../models/courses");
 const { Exercise } = require("../models/exercise");
 const question = require("../models/question");
+const { Account } = require("../models/account");
 
 userRouter.get('/', (req, res) => {
     // here we are telling the response to find the html file and send it as a response
@@ -13,7 +14,23 @@ userRouter.get('/', (req, res) => {
 });
 userRouter.get('/selectCountryPage', (req,res) => {
     res.sendFile(path.resolve('views/selectCountry.html'));
-})
+});
+userRouter.get('/viewGuestIndividualTrainee', (req,res) => {
+    res.sendFile(path.resolve('views/guestIndividualHome.html'));
+});
+userRouter.get('/viewInstructorHomePage', (req,res) => {
+    res.sendFile(path.resolve('views/instructorGeneral.html'));
+});
+userRouter.get('/viewCourseWithoutPrice', (req,res) => {
+    res.sendFile(path.resolve('views/viewCourseNoPrice.html'));
+});
+userRouter.get('/viewCorporateTrainee', (req,res) => {
+    res.sendFile(path.resolve('views/corporateTrainee.html'));
+});
+userRouter.get('/viewCoursesWithPricePage', (req,res) => {
+    res.sendFile(path.resolve('views/viewCoursesWithPrice.html'));
+});
+
 userRouter.get('/search', async (req, res) => {
     const {
         userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
@@ -38,6 +55,10 @@ userRouter.get('/viewAllCourses', async (req, res) => {
             userId, subject, rating, title, instructor, totalHours
         } = req.query;
 
+        const { type } = await Account.findOne({ _id: userId }, { type: 1 });
+        if (type == 'ADMIN') {
+            throw new DomainError("unauthorized user: admin", 401);
+        }
         //should return only the title, total hours, and rating
         const { courses } = await userController.getSearchResult({ userId, subject, rating, title, instructor, totalHours, minPrice: "null", maxPrice: "null" }); //gets all courses
         res.write('<h1>Search results</h1> <hr>')
@@ -54,6 +75,7 @@ userRouter.get('/viewAllCourses', async (req, res) => {
                 'instructor: ' + courses[i].instructors[0].firstName + " " +
                 courses[i].instructors[0].lastName + '<br>' +
                 '</p> <hr>';
+            if (type != 'CORPORATE_TRAINEE') {
             viewButtonString += "<button onclick=\"alert(\'Course Details: \\nSubtitles: \\n"
 
             for (var j = 0; j < courses[i].subtitles.length; j++) {
@@ -66,11 +88,13 @@ userRouter.get('/viewAllCourses', async (req, res) => {
             }
 
             viewButtonString += "\')\">View details</button>";
+        }
             currentString += viewButtonString + '<hr>'
             res.write(currentString);
         }
         res.status(200).send();
     } catch (err) {
+        console.log(err);
         res.status(err.code).send(err.message);
     }
 
