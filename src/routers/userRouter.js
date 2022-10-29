@@ -126,7 +126,12 @@ userRouter.get('/viewAndFilterCourses', async (req, res) => {
     const {
         userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
     } = req.query;
-
+  
+    const {type} = await Account.findOne({_id:userId},{type:1}).catch((err)=>{ throw new DomainError("you are not autherized",401)});
+  
+   if(type == 'ADMIN' || type == 'CORPORATE_TRAINEE' ){
+    throw new DomainError("you are not autherized",401)
+   }
    
 
     const searchResults = await
