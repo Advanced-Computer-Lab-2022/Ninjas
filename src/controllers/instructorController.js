@@ -179,7 +179,7 @@ catch(err){
 
     
    // console.log(courses);
-    return final2;}
+    return {final2,currency:details.currency};}
     catch(err){
      throw new DomainError('error internally',500);  }
 
