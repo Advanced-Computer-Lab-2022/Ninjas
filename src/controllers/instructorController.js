@@ -63,7 +63,8 @@ for(var i=0;i<courses.length;i++){
 }
 
 
-  const user = await Account.findOne({ _id: userId }, { country: 1 });
+  const user = await Account.findOne({ _id: userId }, { country: 1 }).catch(()=>{
+    throw new DomainError("Wrong Id",400)});;
 
     for (var i = 0; i<result3.length ; i++ ){
         if(result3[i].subject.toString().includes(search) || result3[i].title.toString().includes(search)){
@@ -133,7 +134,8 @@ catch(err){
     }
     
     
-      const user = await Account.findOne({ _id: userId }, { country: 1 });
+      const user = await Account.findOne({ _id: userId }, { country: 1 }).catch(()=>{
+        throw new DomainError("Wrong Id",400)});;
 
       let details = countryPriceDetails.get(user.country);
     for (var i = 0; i < result3.length; i++) {
@@ -149,16 +151,7 @@ catch(err){
             else if(subject==""){final.push(result3[i]);}
         }
         
-        // if((parseInt(minPrice)>0 || parseInt(maxPrice)<10000)){
-        //     console.log("ana gwaaaaaaaa");
-        // for(var j=0;j<final.length;j++){
-        //     if(final[j].price<parseInt(minPrice)){
-        //         final.splice(j,1)
-        //     }
-        //     if(final[j].price>parseInt(maxPrice)){
-        //         final.splice(j,1)
-        //     }
-        // }}
+       
         for(j=0;j<final.length;j++){
         if(maxPrice !="" && minPrice==""){
             if(final[j].price<=parseInt(maxPrice)){
@@ -186,7 +179,7 @@ catch(err){
 
     
    // console.log(courses);
-    return final2;}
+    return {final2,currency:details.currency};}
     catch(err){
      throw new DomainError('error internally',500);  }
 
@@ -222,7 +215,8 @@ async calculateHours (subArray){
 
 
 async createcourse ({instructorId, subject , title, price , summary , subtitles}) {
-    const thisInstructor = await Account.findOne({_id: instructorId})
+    const thisInstructor = await Account.findOne({_id: instructorId}).catch(()=>{
+        throw new DomainError("Wrong Id",400)});
    // console.log(thisInstructor)
     try {
     Totalhrs = 0;
