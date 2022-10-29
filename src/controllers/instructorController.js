@@ -151,16 +151,7 @@ catch(err){
             else if(subject==""){final.push(result3[i]);}
         }
         
-        // if((parseInt(minPrice)>0 || parseInt(maxPrice)<10000)){
-        //     console.log("ana gwaaaaaaaa");
-        // for(var j=0;j<final.length;j++){
-        //     if(final[j].price<parseInt(minPrice)){
-        //         final.splice(j,1)
-        //     }
-        //     if(final[j].price>parseInt(maxPrice)){
-        //         final.splice(j,1)
-        //     }
-        // }}
+       
         for(j=0;j<final.length;j++){
         if(maxPrice !="" && minPrice==""){
             if(final[j].price<=parseInt(maxPrice)){
