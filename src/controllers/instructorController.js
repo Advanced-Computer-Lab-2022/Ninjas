@@ -103,7 +103,7 @@ catch(err){
 },
     async getFilterResult({
 
-        username, userId , subject , minPrice , maxPrice 
+        username, userId , subject , minPrice, maxPrice  
     }) { 
     
     try{
@@ -114,6 +114,7 @@ catch(err){
         console.log(maxPrice)
 
       const final = [];  
+      const final2=[];
 
       const result3=[]
       const courses=  await Course.find({
@@ -134,24 +135,58 @@ catch(err){
     
       const user = await Account.findOne({ _id: userId }, { country: 1 });
 
+      let details = countryPriceDetails.get(user.country);
+    for (var i = 0; i < result3.length; i++) {
+        // price = price x factor x discount
+        result3[i].price = result3[i].price * details.factor * ((100 - details.discount) / 100);
+    }
+
         for (var i = 0; i<result3.length ; i++ ){
-            if(result3[i].subject.toString().includes(subject) || (result3[i].price >= minPrice && result3[i].price <= maxPrice)){
+            if(result3[i].subject.toString().toLowerCase().includes(subject.toLowerCase())  ){
                 final.push(result3[i]);
                 
             }
-           
-        
-    
+            else if(subject==""){final.push(result3[i]);}
         }
         
+        // if((parseInt(minPrice)>0 || parseInt(maxPrice)<10000)){
+        //     console.log("ana gwaaaaaaaa");
+        // for(var j=0;j<final.length;j++){
+        //     if(final[j].price<parseInt(minPrice)){
+        //         final.splice(j,1)
+        //     }
+        //     if(final[j].price>parseInt(maxPrice)){
+        //         final.splice(j,1)
+        //     }
+        // }}
+        for(j=0;j<final.length;j++){
+        if(maxPrice !="" && minPrice==""){
+            if(final[j].price<=parseInt(maxPrice)){
+                final2.push(final[j]);
+            }}
+        if(minPrice != "" && maxPrice==""){
+        
+            if(final[j].price>=parseInt(minPrice)){
+                final2.push(final[j]);
+            }}
+        if(minPrice!="" && minPrice!=""){
+            if(final[j].price>=parseInt(minPrice) && final[j].price<=parseInt(maxPrice)){
+                final2.push(final[j]);
+            }
+        }
+            
+        if(minPrice=="" && maxPrice==""){
+        final2.push(final[j]);
+            }}
+        
+        
+        console.log(final2.length);
+        
+        
 
-    let details = countryPriceDetails.get(user.country);
-    for (var i = 0; i < final.length; i++) {
-        // price = price x factor x discount
-        final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
-    }
+    
    // console.log(courses);
-    return final;}
+    return final2;}
     catch(err){
      throw new DomainError('error internally',500);  }
 
@@ -184,7 +219,6 @@ async calculateHours (subArray){
     return Totalhrs
 
 },
-
 
 
 async createcourse ({instructorId, subject , title, price , summary , subtitles}) {
