@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const { videoSchema } = require('./video');
 
 const subtitleSchema = new Schema({
-    text:{
+    text: {
         type: String,
         required: true
     },
@@ -11,8 +11,8 @@ const subtitleSchema = new Schema({
         type: Number,
         required: true
     },
-    videoTitles:{
-        type:videoSchema
+    videoTitles: {
+        type: videoSchema
     }
 })
 

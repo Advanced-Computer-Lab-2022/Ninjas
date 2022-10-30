@@ -7,25 +7,26 @@
 </style>
 
 <head>
-    View Courses 
+    View Courses
 </head>
 
 <body>
 
     <br>
-    <form method="get" action='/viewAndFilterCourses'  > <!--set onsubmit="return false"-->
-       
+    <form method="get" action='/viewAndFilterCourses'>
+        <!--set onsubmit="return false"-->
+
         <br>
         <input type="text" name="userId" placeholder="User ID" required oninvalid="alert('you must enter a user ID')">
         <br>
-       <hr>
+        <hr>
         Search
         <input type="text" name="title" placeholder="Course Title">
         <br>
         instructor
         <input type="text" name="instructor" placeholder="instructor first name">
         <br>
-       <hr>
+        <hr>
         Filter
         <br>
         min price
@@ -69,10 +70,9 @@
         <hr>
         <input type="submit" value="View">
 
-        
+
     </form>
 
     <br>
 
 </body>
- 

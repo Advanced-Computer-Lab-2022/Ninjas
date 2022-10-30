@@ -10,15 +10,15 @@ const courseRatingSchema = new Schema({
     },
     courseId: {
         type: Schema.Types.ObjectId,
-        required:true
+        required: true
     },
     rating: {
         type: Number,
-        required:true,
-        min:0,
-        max:5
+        required: true,
+        min: 0,
+        max: 5
     },
-   
+
 })
 
 const CourseRating = mongoose.model('CourseRating', courseRatingSchema);

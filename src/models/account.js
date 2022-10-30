@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const countryEnums = require('../Enums/countryEnums')
 const Schema = mongoose.Schema;
 
-var validateEmail = function(email) {
+var validateEmail = function (email) {
     var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     return re.test(email)
 };
@@ -11,24 +11,24 @@ const accountSchema = new Schema({
     username: {
         type: String,
         required: true,
-        min:6,
-        max:100
+        min: 6,
+        max: 100
     },
     password: {
         type: String,
-        required:true,
-        min:6,
-        max:100
+        required: true,
+        min: 6,
+        max: 100
     },
     firstName: {
         type: String,
-        min:2,
-        max:100
+        min: 2,
+        max: 100
     },
     lastName: {
         type: String,
-        min:2,
-        max:100
+        min: 2,
+        max: 100
     },
     email: {
         type: String,
@@ -40,8 +40,8 @@ const accountSchema = new Schema({
     },
     gender: {
         type: String,
-        enum: ['MALE','FEMALE'],
-       
+        enum: ['MALE', 'FEMALE'],
+
     },
     country: {
         type: String,
@@ -50,10 +50,10 @@ const accountSchema = new Schema({
     },
     type: {
         type: String,
-        enum: ['INSTRUCTOR','ADMIN','GUEST','CORPORATE_TRAINEE','INDIVIDUAL_TRAINEE',],
+        enum: ['INSTRUCTOR', 'ADMIN', 'GUEST', 'CORPORATE_TRAINEE', 'INDIVIDUAL_TRAINEE',],
         required: true
     }
 })
 
 const Account = mongoose.model('Account', accountSchema);
-module.exports = {Account, accountSchema};
+module.exports = { Account, accountSchema };
