@@ -12,34 +12,33 @@
 
 <body>
 
-   
-    <form method="get" action='/view' > 
+
+    <form method="get" action='/view'>
         <h3>Your Username:</h3>
 
         <input type="text" name="username" placeholder="Username" id="username" required
-        oninvalid="alert('you must enter your username')">
-   
-     <input type="submit" value="View all my Courses" onClick="add(document.getElementById('username').value)">
+            oninvalid="alert('you must enter your username')">
+
+        <input type="submit" value="View all my Courses" onClick="add(document.getElementById('username').value)">
 
     </form>
     <hr>
 
-    <form method="get" action='/SearchInst' > 
+    <form method="get" action='/SearchInst'>
         <h3>Search Courses</h3>
         <h3>Username:</h3>
 
         <input type="text" name="username" placeholder="Username" id="username" required
-        oninvalid="alert('you must enter your username')">
+            oninvalid="alert('you must enter your username')">
         <br>
         <h3>User ID:</h3>
-    
+
         <input type="text" name="userId" placeholder="User ID" id="userId" required
-        oninvalid="alert('you must enter your id')">
-    
-     <input type="text" name="search" placeholder="search" id="searchword">
-    
-     <input type="submit" value="Search in my courses" 
-     onClick="add(document.getElementById('userId').value,document.getElementById('username').value, 
+            oninvalid="alert('you must enter your id')">
+
+        <input type="text" name="search" placeholder="search" id="searchword">
+
+        <input type="submit" value="Search in my courses" onClick="add(document.getElementById('userId').value,document.getElementById('username').value, 
      document.getElementById('searchword').value)">
 
 
@@ -48,27 +47,27 @@
     <br>
     <hr>
     <br>
-    <form method="get" action='/filter' > 
+    <form method="get" action='/filter'>
         <h3>Filter Courses</h3>
 
         <h4>Username:</h4>
 
         <input type="text" name="username" placeholder="Username" id="username" required
-        oninvalid="alert('you must enter your username')">
+            oninvalid="alert('you must enter your username')">
         <br>
         <h4>User ID:</h4>
-    
+
         <input type="text" name="userId" placeholder="User ID" id="userId" required
-        oninvalid="alert('you must enter your id')">
+            oninvalid="alert('you must enter your id')">
 
         <br>
         <h4>Subject</h4>
-    
+
         <select name="subject">
             <option value="">-</option>
             <option value="science">Science</option>
             <option value="Math">Math</option>
-            <option value="biology">Biology</option> 
+            <option value="biology">Biology</option>
         </select>
 
         <br>
@@ -80,7 +79,7 @@
             <option value="0">0</option>
             <option value="100">100</option>
             <option value="200">200</option>
-            <option value="10000">10000</option> 
+            <option value="10000">10000</option>
         </select>
 
         <br>
@@ -92,17 +91,16 @@
             <option value="270">270</option>
             <option value="2000">2000</option>
             <option value="7000">7000</option>
-            <option value="10000">10000</option> 
+            <option value="10000">10000</option>
         </select>
-    
-     <input type="submit" value="Filter" 
-     onClick="add(document.getElementById('userId').value,document.getElementById('username').value, 
+
+        <input type="submit" value="Filter"
+            onClick="add(document.getElementById('userId').value,document.getElementById('username').value, 
      document.getElementById('subject').value,document.getElementById('minPrice').value,document.getElementById('maxPrice').value)">
-    <br>
+        <br>
 
     </form>
 
 
 
 </body>
- 

@@ -15,11 +15,11 @@ const coursesSchema = new Schema({
     },
     price: {
         type: Number,
-        required:true
+        required: true
     },
     totalHours: {
         type: Number,
-        required:true
+        required: true
     },
     summary: {
         type: String,
@@ -32,17 +32,17 @@ const coursesSchema = new Schema({
     instructors: {
         type: [accountSchema],
         required: true
-        
+
     },
     subtitles: {
-       type: [subtitleSchema]
+        type: [subtitleSchema]
     },
     exercises: {
         type: [exerciseSchema]
     },
     discount: {
         type: Number,
-        default:0,
+        default: 0,
         min: 0,
         max: 100,
     }
@@ -51,14 +51,14 @@ const coursesSchema = new Schema({
 const countryPriceDetails = new Map();
 countryPriceDetails.set('Egypt', {
     factor: 20,
-    discount:10,
+    discount: 10,
     currency: 'EGP'
 })
 countryPriceDetails.set('France', {
     factor: 5,
-    discount:5,
+    discount: 5,
     currency: 'EUR'
 })
 
 const Course = mongoose.model('Course', coursesSchema);
-module.exports = {Course, countryPriceDetails};
+module.exports = { Course, countryPriceDetails };

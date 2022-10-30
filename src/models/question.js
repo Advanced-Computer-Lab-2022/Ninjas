@@ -7,16 +7,16 @@ const questionSchema = new Schema({
     },
     mcqs: {
         type: Array,
-        required:true
+        required: true
     },
     userAnswer: {
         type: String,
-        default:null,
-        required:false
+        default: null,
+        required: false
     },
     correctAnswer: {
         type: String,
-        required:true
+        required: true
     },
     totalCredit: {
         type: Number,

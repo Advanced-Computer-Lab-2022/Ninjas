@@ -4,7 +4,7 @@ const { questionSchema } = require('./question');
 
 const exerciseSchema = new Schema({
     title: {
-        type:String,
+        type: String,
         required: true
     },
     courseId: {

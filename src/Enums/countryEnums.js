@@ -106,7 +106,6 @@ const countryEnums = [
     'Iraq',
     'Ireland',
     'Isle Of Man',
-    'Israel',
     'Italy',
     'Jamaica',
     'Japan',
