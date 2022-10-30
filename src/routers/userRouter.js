@@ -78,10 +78,10 @@ userRouter.get('/viewAllCourses', async (req, res) => {
             if (type != 'CORPORATE_TRAINEE') {
                 viewButtonString += "<button onclick=\"alert(\'Course Details: \\nSubtitles: \\n"
 
-            for (var j = 0; j < courses[i].subtitles.length; j++) {
-                viewButtonString += "Subtitle " + (j + 1) + ": " + courses[i].subtitles[j].text + ", total hours: " + courses[i].subtitles[j].hours
-                 + ", video title: " + courses[i].subtitles[j].videoTitles.title + "\\n"
-            }
+                for (var j = 0; j < courses[i].subtitles.length; j++) {
+                    viewButtonString += "Subtitle " + (j + 1) + ": " + courses[i].subtitles[j].text + ", total hours: " + courses[i].subtitles[j].hours
+                        + ", video title: " + courses[i].subtitles[j].videoTitles.title + "\\n"
+                }
 
                 viewButtonString += "Exercises: \\n"
                 for (var k = 0; k < courses[i].exercises.length; k++) {
@@ -156,7 +156,7 @@ userRouter.get('/viewAndFilterCourses', async (req, res) => {
             for (var j = 0; j < searchResults.courses[i].subtitles.length; j++) {
                 console.log(searchResults.courses[i].subtitles[j])
                 viewButtonString += "Subtitle " + (j + 1) + ": " + searchResults.courses[i].subtitles[j].text + ", total hours: " + searchResults.courses[i].subtitles[j].hours
-                 + ", video title: " + searchResults.courses[i].subtitles[j].videoTitles.title + "\\n"
+                    + ", video title: " + searchResults.courses[i].subtitles[j].videoTitles.title + "\\n"
             }
 
             viewButtonString += "Exercises: \\n"
