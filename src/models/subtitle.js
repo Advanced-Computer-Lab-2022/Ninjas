@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const { videoSchema } = require('./video');
 
 const subtitleSchema = new Schema({
     text:{
@@ -9,6 +10,9 @@ const subtitleSchema = new Schema({
     hours: {
         type: Number,
         required: true
+    },
+    videoTitles:{
+        type:videoSchema
     }
 })
 
