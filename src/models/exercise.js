@@ -9,16 +9,13 @@ const exerciseSchema = new Schema({
     },
     courseId: {
         type: Schema.Types.ObjectId,
-        required: true
     },
     questions: {
-        type: [questionSchema],
-        required: true
+        type: [],
     },
     totalGrade: {
         type: Number,
-        required: true
-    },
+    }
 
 })
 

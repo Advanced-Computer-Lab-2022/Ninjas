@@ -28,7 +28,6 @@ instructorRouter.get('/view', async (req, res) => {
 
     const { type } = await Account.findOne({ "username" : req.query.username }, { type: 1 });
     if (type != 'INSTRUCTOR') {
-        console.log("hennaaaa")
         throw new DomainError("unauthorized user: not an instructor", 401);
     }
     
@@ -39,12 +38,30 @@ instructorRouter.get('/view', async (req, res) => {
         instructorController.getViewResult({ username }); 
 
         res.write('<h1>Search results</h1> <hr>')
-        let currentString;
+        let currentString="";
+        let viewButtonString;
         for (var i=0; i<viewResults.length; i++) {
-              currentString = '<p> Course title: ' + viewResults[i] + '<br>' 
+              viewButtonString="";
+              currentString = '<p> Course title: ' + viewResults[i].title + '<br>' 
               '</p> <hr>';
-          res.write(currentString);
-          }
+              viewButtonString += "<button onclick=\"alert(\'Course Details: \\nSubtitles: \\n"
+
+              for (var j = 0; j < viewResults[i].subtitles.length; j++) {
+                  viewButtonString += "Subtitle " + (j + 1) + ": " + viewResults[i].subtitles[j].text + ", total hours: " + viewResults[i].subtitles[j].hours +  
+                  ", Video Title: " + viewResults[i].subtitles[j].videoTitles.title + "\\n"
+              }
+  
+              viewButtonString += "Exercises: \\n"
+              for (var k = 0; k < viewResults[i].exercises.length; k++) {
+                  viewButtonString += "Exercise " + (k + 1) + ": " + viewResults[i].exercises[k].title + "\\n"
+              }
+  
+              viewButtonString += "\')\">View details</button>";
+              currentString += viewButtonString + '<hr>';
+              console.log(viewButtonString)
+              res.write(currentString);
+        }
+          
         res.status(200).send();
     
     }
@@ -90,20 +107,34 @@ instructorRouter.get('/SearchInst', async (req, res) => {
     const SearchResults = await
         instructorController.getSearchResult({ username, search, userId });
     res.write('<h1>Search results</h1> <hr>')
-    let currentString;
+    let currentString="";
+    let viewButtonString;
     for (var i=0; i<SearchResults.final.length; i++) {
+          viewButtonString = "";
           currentString = '<p> Course title: ' + SearchResults.final[i].title + '<br>' +
           'Total hours: ' + SearchResults.final[i].totalHours +'<br>' +
           'Rating: '+ SearchResults.final[i].rating+'<br>' +
           'Price: '+ SearchResults.final[i].price+" "+SearchResults.currency+'<br>'+
-          'Summary: '+ SearchResults.final[i].summary+'<br>'
-          'Subtitles: '+ SearchResults.final[i].subtitles+'<br>'+
-          'Exercises: '+ SearchResults.final[i].exercises+'<br>'
+          'Summary: '+ SearchResults.final[i].summary+'<br>'+
           '</p> <hr>';
-      res.write(currentString);
+            viewButtonString += "<button onclick=\"alert(\'Course Details: \\nSubtitles: \\n"
+
+            for (var j = 0; j < SearchResults.final[i].subtitles.length; j++) {
+                viewButtonString += "Subtitle " + (j + 1) + ": " + SearchResults.final[i].subtitles[j].text + ", total hours: " + SearchResults.final[i].subtitles[j].hours +  
+                ", Video Title: " + SearchResults.final[i].subtitles[j].videoTitles.title + "\\n"
+            }
+
+            viewButtonString += "Exercises: \\n"
+            for (var k = 0; k < SearchResults.final[i].exercises.length; k++) {
+                viewButtonString += "Exercise " + (k + 1) + ": " + SearchResults.final[i].exercises[k].title + "\\n"
+            }
+
+            viewButtonString += "\')\">View details</button>";
+            currentString += viewButtonString + '<hr>';
+            console.log(viewButtonString)
+            res.write(currentString);
       }
     res.status(200).send();
-    //res.status(200).json({ result: SearchResults });
   }
     catch(err){
         if (err instanceof DomainError ){
@@ -128,22 +159,36 @@ instructorRouter.get('/filter', async (req, res) => {
      }
 
 
-
     const FilterResult = await
         instructorController.getFilterResult({ username, userId , subject , minPrice , maxPrice });
     res.write('<h1>Filter results</h1> <hr>')
-    let currentString;
+    let currentString=" ";
+    let viewButtonString;
     for (var i=0; i<FilterResult.final2.length; i++) {
-              currentString = '<p> Course title: ' + FilterResult.final2[i].title + '<br>' +
-              'Total hours: ' + FilterResult.final2[i].totalHours +'<br>' +
-              'Rating: '+ FilterResult.final2[i].rating+'<br>' +
-              'Price: '+ FilterResult.final2[i].price+" "+ FilterResult.currency + '<br>'+ 
-              'Summary: '+ FilterResult.final2[i].summary+" "+'<br>'
-              'Subtitles: '+ FilterResult.final2[i].subtitles+" "+'<br>'+
-              'Exercises: '+ FilterResult.final2[i].exercises+" "+'<br>'
-              '</p> <hr>';
-          res.write(currentString);
-          }
+      viewButtonString = "";
+      currentString = '<p> Course title: ' + FilterResult.final2[i].title + '<br>' +
+      'Total hours: ' + FilterResult.final2[i].totalHours +'<br>' +
+      'Rating: '+ FilterResult.final2[i].rating+'<br>' +
+      'Price: '+ FilterResult.final2[i].price+" "+FilterResult.currency+'<br>'+
+      'Summary: '+ FilterResult.final2[i].summary+'<br>'+
+      '</p> <hr>';
+        viewButtonString += "<button onclick=\"alert(\'Course Details: \\nSubtitles: \\n"
+
+        for (var j = 0; j < FilterResult.final2[i].subtitles.length; j++) {
+            viewButtonString += "Subtitle " + (j + 1) + ": " + FilterResult.final2[i].subtitles[j].text + ", total hours: " + FilterResult.final2[i].subtitles[j].hours +  
+            ", Video Title: " + FilterResult.final2[i].subtitles[j].videoTitles.title + "\\n"
+        }
+
+        viewButtonString += "Exercises: \\n"
+        for (var k = 0; k < FilterResult.final2[i].exercises.length; k++) {
+            viewButtonString += "Exercise " + (k + 1) + ": " + FilterResult.final2[i].exercises[k].title + "\\n"
+        }
+
+        viewButtonString += "\')\">View details</button>";
+        currentString += viewButtonString + '<hr>';
+        res.write(currentString);
+  }
+
         res.status(200).send();
    }
 
@@ -161,7 +206,7 @@ instructorRouter.get('/filter', async (req, res) => {
 instructorRouter.post('/createcourse', async (req, res) => {
     try{
      
-      const {instructorId,subject,title,price,summary,subtitles}= req.body;
+      const {instructorId,subject,title,price,summary,subtitles,exercises}= req.body;
 
       const { type } = await Account.findOne({ _id: instructorId }, { type: 1 });
      if (type != 'INSTRUCTOR') {
@@ -171,7 +216,7 @@ instructorRouter.post('/createcourse', async (req, res) => {
 
 
 const CreateResults = await
-    instructorController.createcourse({ instructorId, subject , title, price , summary , subtitles});
+    instructorController.createcourse({ instructorId, subject , title, price , summary , subtitles,exercises});
    //CreateResults.save();
     res.write('<h1> course created successfully</h1>');
     res.status(200).send();

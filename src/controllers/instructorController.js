@@ -6,6 +6,8 @@ const { exerciseSchema } = require('../models/exercise');
 //const { create } = require("../models/InstructorToCourses");
 const { subtitleSchema, Subtitle } = require('../models/subtitle');
 const DomainError = require("../error/domainError");
+const { Video } = require('../models/video');
+const { Exercise } = require('../models/exercise');
 var subtitlesArray=[subtitleSchema];
 var Totalhrs = 0;
 
@@ -24,7 +26,7 @@ const instructorController = {
     for(var i=0;i<courses.length;i++){
         for(var j=0;j<courses[i].instructors.length;j++){
             if(courses[i].instructors[j].username && courses[i].instructors[j].username==username){
-               result.push(courses[i].title); 
+               result.push(courses[i]); 
                break;
             }
             
@@ -214,22 +216,39 @@ async calculateHours (subArray){
 },
 
 
-async createcourse ({instructorId, subject , title, price , summary , subtitles}) {
+async createcourse ({instructorId, subject , title, price , summary , subtitles,exercises}) {
     const thisInstructor = await Account.findOne({_id: instructorId}).catch(()=>{
         throw new DomainError("Wrong Id",400)});
    // console.log(thisInstructor)
     try {
     Totalhrs = 0;
     const subtitlesArray = [];
+    const exArray = [];
     const myArray = subtitles.split(",");
+    const myArrayEx = exercises.split(",");
     for(var i=0; i<myArray.length;i++){
+        var v =new Video({
+            title:myArray[i].split(":")[2].toString()
+        })
         var s = new Subtitle({
             text : myArray[i].split(":")[0].toString(),
-            hours : parseInt(myArray[i].split(":")[1])
+            hours : parseInt(myArray[i].split(":")[1]),
+            videoTitles: v
         })
+
        //s.save();
         subtitlesArray.push(s);
     }
+
+    for(var j=0; j<myArrayEx.length;j++){
+        var e =new Exercise({
+            title:myArrayEx[j].toString()
+        })
+        console.log(e);
+     exArray.push(e);
+
+    }
+
     
     const Newcourse =  new Course({
         subject : subject,
@@ -239,7 +258,7 @@ async createcourse ({instructorId, subject , title, price , summary , subtitles}
         title : title,
         totalHours:10,
         totalHours : await this.calculateHours(subtitlesArray),  ///--1 if so how total hours will be calculated....
-        exercises : [],
+        exercises : exArray,
         instructors:[thisInstructor]
     })
     

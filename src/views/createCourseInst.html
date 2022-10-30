@@ -37,9 +37,16 @@
         <input type="text" name="subtitles" placeholder="subtitles" id="subtitles" required
         oninvalid="alert('you must enter subtitles')">
 
+        <h4>Please enter subtitles as Exercise Title1 1, Exercise Title2, ... etc</h4>
+
+
+        <input type="text" name="exercises" placeholder="exercises" id="exercises" required
+        oninvalid="alert('you must enter subtitles')">
+
         <input type="submit" value="Create" 
         onClick="add( document.getElementById('subject').value,document.getElementById('userId').value,document.getElementById('title').value, 
-        document.getElementById('price').value, document.getElementById('summary').value, document.getElementById('subtitles').value)">
+        document.getElementById('price').value, document.getElementById('summary').value, document.getElementById('subtitles').value),
+        document.getElementById('summary').value, document.getElementById('exercises').value">
 
  
         </form>
