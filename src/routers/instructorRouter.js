@@ -24,9 +24,7 @@ instructorRouter.get('/view', async (req, res) => {
 
 
     const username = req.query.username;
-
-
-    const { type } = await Account.findOne({ "username": req.query.username }, { type: 1 });
+    const { type } =await Account.findOne({ "username": req.query.username }, { type: 1 }).catch((err)=>{throw new DomainError("username doesn't exist",401)});
     if (type != 'INSTRUCTOR') {
       throw new DomainError("unauthorized user: not an instructor", 401);
     }
@@ -70,7 +68,7 @@ instructorRouter.get('/view', async (req, res) => {
 
       res.status(err.code).json({ code: err.code, message: err.message })
     } else {
-      res.status(500).json({ err });
+      res.status(500).json({code:401,message:"username incorrect"});
     }
   }
 
@@ -138,7 +136,7 @@ instructorRouter.get('/SearchInst', async (req, res) => {
     if (err instanceof DomainError) {
       res.status(err.code).json({ code: err.code, message: err.message })
     } else {
-      res.status(500).json({ err });
+      res.status(500).json({code:401,message:"Username or id incorrect" });
     }
   }
 
@@ -195,7 +193,7 @@ instructorRouter.get('/filter', async (req, res) => {
     if (err instanceof DomainError) {
       res.status(err.code).json({ code: err.code, message: err.message })
     } else {
-      res.status(500).json({ err });
+      res.status(500).json({ code:401,message:"Username or id incorrect" });
     }
   }
 
