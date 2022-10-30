@@ -7,7 +7,6 @@ const adminRouter = require("./routers/adminRouter");
 const instructorRouter = require("./routers/instructorRouter");
 const path = require('path');
 const mongoURI = process.env.mongoURI;
-console.log(mongoURI);
 
 
 const app = express();

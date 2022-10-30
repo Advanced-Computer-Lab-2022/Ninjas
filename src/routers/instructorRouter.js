@@ -58,7 +58,6 @@ instructorRouter.get('/view', async (req, res) => {
   
               viewButtonString += "\')\">View details</button>";
               currentString += viewButtonString + '<hr>';
-              console.log(viewButtonString)
               res.write(currentString);
         }
           
@@ -68,7 +67,6 @@ instructorRouter.get('/view', async (req, res) => {
     catch(err){
 
         if (err instanceof DomainError ){
-          console.log("hennaaaa")
 
            res.status(err.code).json({code:err.code, message:err.message})
          }else{
@@ -131,7 +129,6 @@ instructorRouter.get('/SearchInst', async (req, res) => {
 
             viewButtonString += "\')\">View details</button>";
             currentString += viewButtonString + '<hr>';
-            console.log(viewButtonString)
             res.write(currentString);
       }
     res.status(200).send();
@@ -193,7 +190,6 @@ instructorRouter.get('/filter', async (req, res) => {
    }
 
     catch(err){
-        console.log(".....")
         if (err instanceof DomainError ){
            res.status(err.code).json({code:err.code, message:err.message})
          }else{

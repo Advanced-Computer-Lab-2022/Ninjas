@@ -23,7 +23,6 @@ adminRouter.post('/create',async(req,res)=>{
  
      }
 catch(err){
-  console.log(err);
  if (err instanceof DomainError ){
     res.status(err.code).send( err.message)
   }else{

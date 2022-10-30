@@ -33,7 +33,6 @@ try{
          if (instructor != ''){queryArray.push(   {  instructors: { $elemMatch: {'$or':[ {firstName: { '$regex': "" + instructor , '$options': 'i' }},
          {lastName: { '$regex': "" + instructor , '$options': 'i' }}] }  } })}
                
-       //  console.log(queryArray)
          
          courses =   await Course.find({
             '$and': queryArray
@@ -51,11 +50,9 @@ try{
                 courses.splice(i, 1);
             }
         }
-      //  console.log(courses);
         return {courses,currency:details.currency};
     }
     catch(err){
-        //console.log(err);
         if (err instanceof DomainError ){throw err;}
         throw new DomainError('error internally',500);  
     }
@@ -84,7 +81,6 @@ try{
         );
 
         } catch (error) {
-            console.log(error)
             if (error.name == 'ValidationError') {
                 const errorMessages = Object.values(error.errors).map(val => val.message);
                 throw new DomainError(errorMessages, 400);

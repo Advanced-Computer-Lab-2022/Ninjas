@@ -33,10 +33,8 @@ const instructorController = {
         }
 
     }
-    //console.log(result);
     return result;}
     catch(err){
-          console.log(err)
           throw new DomainError('error internally',500);  
     }
 
@@ -97,7 +95,6 @@ for (var i = 0; i < final.length; i++) {
     // price = price x factor x discount
     final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
 }
-// console.log(courses);
 return {final,currency:details.currency};}
 catch(err){
  throw new DomainError('error internally',500);  }
@@ -110,12 +107,6 @@ catch(err){
     }) { 
     
     try{
-        console.log(username)
-        console.log(userId)
-        console.log(subject)
-        console.log(minPrice)
-        console.log(maxPrice)
-
       const final = [];  
       const final2=[];
 
@@ -175,12 +166,10 @@ catch(err){
             }}
         
         
-        console.log(final2.length);
         
         
 
     
-   // console.log(courses);
     return {final2,currency:details.currency};}
     catch(err){
      throw new DomainError('error internally',500);  }
@@ -201,7 +190,6 @@ for (var i =0; i<subArray.length; i++) {
     await sub.save()
    subtitlesArray.push (sub);
 }
-   console.log(subtitlesArray)
     return subtitlesArray 
 
 },
@@ -219,7 +207,6 @@ async calculateHours (subArray){
 async createcourse ({instructorId, subject , title, price , summary , subtitles,exercises}) {
     const thisInstructor = await Account.findOne({_id: instructorId}).catch(()=>{
         throw new DomainError("Wrong Id",400)});
-   // console.log(thisInstructor)
     try {
     Totalhrs = 0;
     const subtitlesArray = [];
@@ -244,7 +231,6 @@ async createcourse ({instructorId, subject , title, price , summary , subtitles,
         var e =new Exercise({
             title:myArrayEx[j].toString()
         })
-        console.log(e);
      exArray.push(e);
 
     }
@@ -265,7 +251,6 @@ async createcourse ({instructorId, subject , title, price , summary , subtitles,
     Newcourse.save();
     //return Newcourse
     } catch(err) {
-        console.log(err)
         if (err._message && err._message == 'Course validation failed'  ){   throw new DomainError('validation Error',400);}
         throw new DomainError('error internally',500);  
    
