@@ -198,16 +198,36 @@ userRouter.post('/forgotPassword', async (req, res) => {
     try {
         //get the username from the request
         const username = req.body.username;
-        if (username == null || username.trim().length === 0 )
-        {
+        if (username == null || username.trim().length === 0) {
             //this means that the username is either not entered
             //or it was just a string of white spaces -- the trim method figures this out.
-            res.status(404).json({ message: "Please enter your username." });
+            res.status(400).json({ message: "Please enter your username." });
         }
         await userController.forgotMyPassword({ username });
 
         //if the email is sent successfully, we will tell the frontend to display the message.
         res.status(200).json({ message: "A reset password email has been sent. Please check your email. " });
+    } catch (error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
+
+userRouter.post('/rateCourse', async (req, res) => {
+    try {
+        const { userId, courseId } = req.query;
+        const {
+            rating,
+            text
+        } = req.body;
+
+        if (userId == null || courseId == null || rating == null) {
+            //maybe we should default the nullified rating to a zero? I don't know..
+            res.status(400).json({ message: "please provide all of the following: the userID and the courseID and the rating" });
+        }
+
+        await userController.rateCourse({ userId, courseId, rating, text });
+
+        res.status(200).json({ message: "your rating was submitted successfully." })
     } catch (error) {
         res.status(error.code).json({ message: error.message });
     }

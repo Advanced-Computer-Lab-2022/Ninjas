@@ -3,6 +3,23 @@ const { Account } = require("../models/account");
 const { Course, countryPriceDetails } = require("../models/courses");
 const { Exercise } = require("../models/exercise");
 const nodemailer = require("nodemailer");
+const { Rating } = require("../models/rating");
+
+
+const helperMethods = {
+    updateRatingValue({ reviewsArray, newRating }) {
+        var count = reviewsArray.length;
+        count++;
+
+        var ratingSum = newRating;
+        reviewsArray.forEach(review => {
+            ratingSum += review.rating;
+        });
+
+        return (ratingSum / count);
+    }
+}
+
 
 const userController = {
     async getSearchResult({
@@ -102,7 +119,7 @@ const userController = {
 
             //if there is no such username
             if (user == null)
-                throw new DomainError("This username does not exist.", 404);
+                throw new DomainError("This username does not exist.", 400);
 
             //if the user is not an instructor or a trainee, they are unauthorized.
             if (!['INSTRUCTOR', 'INDIVIDUAL_TRAINEE', 'CORPORATE_TRAINEE'].includes(user.type))
@@ -131,7 +148,7 @@ const userController = {
                 throw new DomainError("Unauthorized user", 401);
             }
             if (error.code == 404) { //unauthorized user
-                throw new DomainError("This username does not exist.", 404);
+                throw new DomainError("This username does not exist.", 400);
             }
             else {
                 console.log(error);
@@ -139,7 +156,57 @@ const userController = {
             }
         }
 
+    },
+    async rateCourse({ userId, courseId, rating, text }) {
+        try {
+            //get the user's name and type from the database
+            const user = await Account.findOne({ _id: userId }, { firstName: 1, lastName: 1, type: 1 }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+            //if the user is not a trainee then they're unauthorized
+            if (!['INDIVIDUAL_TRAINEE', 'CORPORATE_TRAINEE'].includes(user.type))
+                throw new DomainError("Unauthorized user.", 401);
+
+            //fetch the course
+            const course = await Course.findOne({ _id: courseId }).catch(() => {
+                throw new DomainError("Wrong courseId", 400)
+            });
+
+            //if there is no such course in the DB
+            if (course == null)
+                throw new DomainError("Course doesn't exist", 400)
+
+            //create the rating object
+            const newReview = await Rating.create({
+                firstName: user.firstName,
+                lastName: user.lastName,
+                rating,
+                text
+            });
+
+            //update the course rating number
+            const updatedCourseRating = helperMethods.updateRatingValue({ reviewsArray: course.reviews, newRating: rating });
+            console.log(updatedCourseRating);
+
+            //push the rating into the course reviews array and update the rating field
+            await Course.updateOne(
+                { _id: courseId },
+                {
+                    $set: { rating: updatedCourseRating },
+                    $push: { reviews: newReview }
+                }
+            );
+
+        } catch (error) {
+            if (error instanceof DomainError)
+                throw error;
+
+            else
+                throw new DomainError("internal error", 500);
+        }
     }
+
 }
 
 module.exports = userController;
