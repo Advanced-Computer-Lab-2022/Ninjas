@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const { accountSchema } = require('./account');
 const { exerciseSchema } = require('./exercise');
+const { ratingSchema } = require('./rating');
 const { subtitleSchema } = require('./subtitle');
 
 const coursesSchema = new Schema({
@@ -11,7 +12,9 @@ const coursesSchema = new Schema({
     },
     rating: {
         type: Number,
-        default: 0
+        default: 0,
+        min: 0,
+        max: 5
     },
     price: {
         type: Number,
@@ -45,6 +48,10 @@ const coursesSchema = new Schema({
         default: 0,
         min: 0,
         max: 100,
+    },
+    reviews: {
+        type: [ratingSchema],
+        default: []
     }
 })
 
