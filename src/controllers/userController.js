@@ -2,10 +2,9 @@ const DomainError = require("../error/domainError");
 const { Account } = require("../models/account");
 const { Course, countryPriceDetails } = require("../models/courses");
 const { Exercise } = require("../models/exercise");
+const nodemailer = require("nodemailer");
 
 const userController = {
-
-
     async getSearchResult({
         userId = null, subject = null,
         minPrice = null, maxPrice = null,
@@ -67,14 +66,6 @@ const userController = {
             throw new DomainError('error internally', 500);
         }
     },
-
-
-
-
-
-
-
-
     async changeUserCountry({ userId, selectedCountry }) {
         //update the user's record in the database
         try {
@@ -103,6 +94,51 @@ const userController = {
                 throw new DomainError("internal error", 500);
             }
         }
+    },
+    async forgotMyPassword({ username }) {
+        try {
+            //fetch the user type and their email from the database
+            const user = await Account.findOne({ username }, { type: 1, email: 1 });
+
+            //if there is no such username
+            if (user == null)
+                throw new DomainError("This username does not exist.", 404);
+
+            //if the user is not an instructor or a trainee, they are unauthorized.
+            if (!['INSTRUCTOR', 'INDIVIDUAL_TRAINEE', 'CORPORATE_TRAINEE'].includes(user.type))
+                throw new DomainError("Unauthorized user.", 401);
+
+            // we will use the nodemailer package to send the email from our gmail (ninjasacl) to the user's email.
+            const sender = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'aclninjas@gmail.com',
+                    pass: 'iftgjpiijzvveprh' //ma3rafsh leh el de7k da bas this is the password that google forces me to use in node JS
+                }
+            });
+
+            const mailOptions = {
+                from: 'aclninjas@gmail.com',
+                to: user.email,
+                subject: 'Online Learning System: Reset Password',
+                text: 'Please follow the link to change your password.' //we should append the link to the change password endpoint
+            };
+
+            //the function that sends the email
+            await sender.sendMail(mailOptions);
+        } catch (error) {
+            if (error.code == 401) { //unauthorized user
+                throw new DomainError("Unauthorized user", 401);
+            }
+            if (error.code == 404) { //unauthorized user
+                throw new DomainError("This username does not exist.", 404);
+            }
+            else {
+                console.log(error);
+                throw new DomainError("internal error", 500);
+            }
+        }
+
     }
 }
 
