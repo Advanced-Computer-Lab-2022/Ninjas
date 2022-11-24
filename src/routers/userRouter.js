@@ -198,6 +198,12 @@ userRouter.post('/forgotPassword', async (req, res) => {
     try {
         //get the username from the request
         const username = req.body.username;
+        if (username == null || username.trim().length === 0 )
+        {
+            //this means that the username is either not entered
+            //or it was just a string of white spaces -- the trim method figures this out.
+            res.status(404).json({ message: "Please enter your username." });
+        }
         await userController.forgotMyPassword({ username });
 
         //if the email is sent successfully, we will tell the frontend to display the message.
