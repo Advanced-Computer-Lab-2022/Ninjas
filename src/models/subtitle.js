@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { exerciseSchema } = require('./exercise');
 const Schema = mongoose.Schema;
 const { videoSchema } = require('./video');
 
@@ -13,6 +14,10 @@ const subtitleSchema = new Schema({
     },
     videoTitles: {
         type: videoSchema
+    },
+    exercises: { //according to piazza, each subtitle will have its own exercise(s)
+        type: [exerciseSchema],
+        default: []
     }
 })
 

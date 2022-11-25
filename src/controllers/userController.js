@@ -4,6 +4,7 @@ const { Course, countryPriceDetails } = require("../models/courses");
 const { Exercise } = require("../models/exercise");
 const nodemailer = require("nodemailer");
 const { Rating } = require("../models/rating");
+const UserExercise = require("../models/userExercise");
 
 
 const helperMethods = {
@@ -202,6 +203,70 @@ const userController = {
             if (error instanceof DomainError)
                 throw error;
 
+            else
+                throw new DomainError("internal error", 500);
+        }
+    },
+    async solveExercise({ userId, exerciseId }) {
+        try {
+            const user = await Account.findOne({ _id: userId }, { type: 1 }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+            //if the user is not a trainee then they're unauthorized
+            if (!['INDIVIDUAL_TRAINEE', 'CORPORATE_TRAINEE'].includes(user.type))
+                throw new DomainError("Unauthorized user.", 401);
+
+            //get the exercise from the database and return it
+            const exercise = await Exercise.findOne({ _id: exerciseId });
+
+            if (exercise == null)
+                throw new DomainError("There is no exercise with this ID", 400);
+
+            return exercise;
+        } catch (error) {
+            if (error instanceof DomainError)
+                throw error;
+            else
+                throw new DomainError("internal error", 500);
+        }
+    },
+    async submitExercise({ userId, solvedExercise }) {
+        try {
+            //make sure that this user is in the DB
+            const user = await Account.findOne({ _id: userId }, { type: 1 }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+            //if the user is not a trainee then they're unauthorized
+            if (!['INDIVIDUAL_TRAINEE', 'CORPORATE_TRAINEE'].includes(user.type))
+                throw new DomainError("Unauthorized user.", 401);
+
+            //now the solvedExercise should be an exercise object with the user answer present in each question
+            const solvedQuestions = solvedExercise.questions;
+            let userGrade = 0;
+            solvedQuestions.forEach(question => {
+                //if the user solved the question correctly, they should get the credit
+                if (question.userAnswer != null && (question.userAnswer == question.correctAnswer))
+                    userGrade += question.totalCredit;
+            })
+
+            const gradePercentage = (userGrade / solvedExercise.totalGrade) * 100;
+
+            await UserExercise.create({
+                accountId: userId,
+                exercises: [solvedExercise],
+                userGrade,
+                gradePercentage
+            });
+
+            //return the userGrade and the percent to display them in the frontend
+            return { userGrade, gradePercentage };
+
+        } catch (error) {
+            console.log(error)
+            if (error instanceof DomainError)
+                throw error;
             else
                 throw new DomainError("internal error", 500);
         }
