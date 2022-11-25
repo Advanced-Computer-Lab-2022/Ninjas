@@ -11,7 +11,7 @@ const exerciseSchema = new Schema({
         type: Schema.Types.ObjectId,
     },
     questions: {
-        type: [],
+        type: [questionSchema],
     },
     totalGrade: {
         type: Number,
