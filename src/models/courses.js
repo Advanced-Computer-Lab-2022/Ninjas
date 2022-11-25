@@ -4,6 +4,7 @@ const { accountSchema } = require('./account');
 const { exerciseSchema } = require('./exercise');
 const { ratingSchema } = require('./rating');
 const { subtitleSchema } = require('./subtitle');
+const { videoSchema } = require('./video');
 
 const coursesSchema = new Schema({
     subject: {
@@ -52,7 +53,14 @@ const coursesSchema = new Schema({
     reviews: {
         type: [ratingSchema],
         default: []
+    },
+    preview:{
+        type :{
+            description:{type: String},
+            video: {type: videoSchema}
+        }
     }
+
 })
 
 const countryPriceDetails = new Map();
