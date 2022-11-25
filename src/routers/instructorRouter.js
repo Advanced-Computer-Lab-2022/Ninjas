@@ -16,7 +16,49 @@ instructorRouter.get('/createCo', async (req, res) => {
   res.sendFile(path.resolve('views/createCourseInst.html'));
 
 })
+instructorRouter.get('/viewInstReview', async (req, res) => {
+  try {
 
+
+    const username = req.query.username;
+    const { type } =await Account.findOne({ "username": req.query.username }, { type: 1 }).catch((err)=>{throw new DomainError("username doesn't exist",401)});
+    if (type != 'INSTRUCTOR') {
+      throw new DomainError("unauthorized user: not an instructor", 401);
+    }
+
+    const viewResults = await
+      instructorController.viewInstReview({ userId });
+    var sumRating=0;
+    res.write('<h1>Search results</h1> <hr>')
+    let currentString = "";
+    for(var i=0;i<viewResults.length;i++){
+        currentString='<p> First Name: ' + viewResults[i].firstName +'<br>'+
+        'Last Name: ' + viewResults[i].lastName + '<br>'+
+        'Comment: ' + viewResults[i].text + '<br>' +
+        'Rating: ' + viewResults[i].rating + '<br>'
+        '</p> <hr>';
+        sumRating+= viewResults[i].rating ;
+
+      }
+      sumRating= sumRating/ viewResults[i].reviews.length;
+      currentString='<p> Course Rating: ' + sumRating;'</p> <hr>';
+      res.write(currentString);
+    
+
+    res.status(200).send();
+
+  }
+  catch (err) {
+
+    if (err instanceof DomainError) {
+
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({code:401,message:"username incorrect"});
+    }
+  }
+
+})
 
 
 

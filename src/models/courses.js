@@ -65,7 +65,13 @@ const coursesSchema = new Schema({
         default: false
       //  required: true
 
-    }
+    },
+    discountDuration:{
+        type: Date,
+        default:0,
+        min: Date.now()
+    },
+
 
 })
 
