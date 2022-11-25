@@ -19,6 +19,7 @@ instructorRouter.get('/createCo', async (req, res) => {
 
 
 
+
 instructorRouter.get('/view', async (req, res) => {
   try {
 
@@ -34,14 +35,27 @@ instructorRouter.get('/view', async (req, res) => {
 
     const viewResults = await
       instructorController.getViewResult({ username });
-
+    var sumRating=0;
     res.write('<h1>Search results</h1> <hr>')
     let currentString = "";
     let viewButtonString;
     for (var i = 0; i < viewResults.length; i++) {
       viewButtonString = "";
       currentString = '<p> Course title: ' + viewResults[i].title + '<br>'
+      + "Ratings" + viewResults[i].rating + '<br>' 
       '</p> <hr>';
+      for(var l=0;l<viewResults[i].reviews.length;l++){
+        currentString='<p> First Name: ' + viewResults[i].reviews[l].firstName +'<br>'+
+        'Last Name: ' + viewResults[i].reviews[l].lastName + '<br>'+
+        'Comment: ' + viewResults[i].reviews[l].text + '<br>' +
+        'Rating: ' + viewResults[i].reviews[l].rating + '<br>'
+        '</p> <hr>';
+        sumRating+= viewResults[i].reviews[l].rating ;
+
+      }
+      sumRating= sumRating/ viewResults[i].reviews.length;
+      currentString='<p> Course Rating: ' + sumRating;'</p> <hr>';
+       
       viewButtonString += "<button onclick=\"alert(\'Course Details: \\nSubtitles: \\n"
 
       for (var j = 0; j < viewResults[i].subtitles.length; j++) {

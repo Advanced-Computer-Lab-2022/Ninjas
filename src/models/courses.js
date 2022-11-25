@@ -59,6 +59,12 @@ const coursesSchema = new Schema({
             description:{type: String},
             video: {type: videoSchema}
         }
+    },
+    contractStatus:{
+        type: Boolean,
+        default: false
+      //  required: true
+
     }
 
 })

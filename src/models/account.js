@@ -52,6 +52,10 @@ const accountSchema = new Schema({
         type: String,
         enum: ['INSTRUCTOR', 'ADMIN', 'GUEST', 'CORPORATE_TRAINEE', 'INDIVIDUAL_TRAINEE',],
         required: true
+    },
+    biography:{
+        type: String,
+        
     }
 })
 

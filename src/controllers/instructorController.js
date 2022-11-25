@@ -39,6 +39,91 @@ const instructorController = {
         }
 
     },
+
+    async changePassword ({
+
+        userId, oldPassword, newPassword
+    }) {
+        try {
+            
+            const user = await Account.findOne({ _id: userId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+            if(user.password == oldPassword){
+                user.password = newPassword;
+            }
+            else{
+                throw new DomainError("Wrong Password", 400);
+            }
+
+        
+
+        }
+        catch (err) {
+            throw new DomainError('error internally', 500);
+        }
+
+    },
+
+    async editEmail ({
+
+        userId, oldEmail, newEmail
+    }) {
+        try {
+            
+            const user = await Account.findOne({ _id: userId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+           if(user.email == oldEmail){
+
+            let o = await Model.findOne({where : {email: newEmail}});
+            if (o) {
+                throw new DomainError("email already exits", 400);
+
+            } else {
+                await Account.updateOne({_id: userid}, {email: newEmail});
+
+            }
+            
+            }
+            else{
+                throw new DomainError("You can not change your old email to new email", 400);
+            }
+
+        
+
+        }
+        catch (err) {
+            throw new DomainError('error internally', 500);
+        }
+
+    },
+
+    async editBiography ({
+
+        userId, newText
+    }) {
+        try {
+            
+            const user = await Account.findOne({ _id: userId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+            await Account.updateOne({_id: userId}, {biography: newText});
+
+
+        
+
+        }
+        catch (err) {
+            throw new DomainError('error internally', 500);
+        }
+
+    },
+
+
     async getSearchResult({
 
         username, search, userId
@@ -267,8 +352,26 @@ const instructorController = {
         }
 
 
-    }
-}
+    },
 
+    async acceptContract({ courseId }){
+        const thisCourse = await Course.findOne({ _id: courseId }).catch(() => {
+            throw new DomainError("Wrong Id", 400)
+
+});
+
+try{
+    thisCourse.contractStatus = true;
+}
+catch (err) {
+            if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+
+}
+}
 
 module.exports = instructorController;
