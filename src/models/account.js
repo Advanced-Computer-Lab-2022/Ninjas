@@ -56,7 +56,18 @@ const accountSchema = new Schema({
     biography:{
         type: String,
         
-    }
+    },
+    review:{
+        type:[ratingSchema],
+        deafult:[]
+},
+    rating:{
+    type:Number,
+    min:0,
+    max:5,
+    deafult:0
+},
+
 })
 
 const Account = mongoose.model('Account', accountSchema);

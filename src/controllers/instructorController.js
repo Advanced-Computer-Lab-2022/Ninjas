@@ -7,13 +7,13 @@ const { subtitleSchema, Subtitle } = require('../models/subtitle');
 const DomainError = require("../error/domainError");
 const { Video } = require('../models/video');
 const { Exercise } = require('../models/exercise');
+const { question } = require('../models/question');
 var subtitlesArray = [subtitleSchema];
 var Totalhrs = 0;
 
 
 const instructorController = {
     async getViewResult({
-
         username
     }) {
         try {
@@ -122,6 +122,51 @@ const instructorController = {
         }
 
     },
+
+    async addDiscount ({
+
+        userId, discount, discountDuration
+    }) {
+        try {
+            
+            const user = await Account.findOne({ _id: userId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+            await Account.updateOne({_id: userId}, {discount: discount},{discountDuration: discountDuration});
+
+
+        
+
+        }
+        catch (err) {
+            throw new DomainError('error internally', 500);
+        }
+
+    },
+
+    async viewInstReview ({
+
+        userId
+    }) {
+        try {
+            
+            const user = await Account.findOne({ _id: userId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+      return user.review;
+
+
+        
+
+        }
+        catch (err) {
+            throw new DomainError('error internally', 500);
+        }
+
+    },
+
 
 
     async getSearchResult({
@@ -344,6 +389,57 @@ const instructorController = {
             })
 
             Newcourse.save();
+        } catch (err) {
+            if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+
+    },
+
+    async createQuestion({ exerciseId, mcq1,mcq2,mcq3,mcq4, correctAnswer,title, totalCredit}) {
+        const thisExercise = await Exercise.findOne({ _id: exerciseId }).catch(() => {
+            throw new DomainError("Wrong Id", 400)
+        });
+        try {
+            const newQuestion = new question({
+                questionText: title,
+                mcqs:[mcq1,mcq2,mcq3,mcq4],
+                correctAnswer:correctAnswer,
+                totalCredit:totalCredit
+            })
+            await newQuestion.save()
+            thisExercise.questions.push(newQuestion);
+        
+        } catch (err) {
+            if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+
+    },
+    async createExercise({ instructorId, courseId, title}) {
+        const thisInstructor = await Account.findOne({ _id: instructorId }).catch(() => {
+            throw new DomainError("Wrong Id", 400)
+        });
+        const thisCourse = await Course.findOne({ _id: courseId }).catch(() => {
+            throw new DomainError("Wrong Id", 400)
+        });
+        try {
+            if(thisInstructor==thisCourse.instructors[0]){
+            const newExercise = new Exercise({
+                title: title,
+            })
+            await newExercise.save()
+            thisCourse.exercises.push(newExercise);}
+            else {
+                throw new DomainError("Unauthorized", 400)
+            }
+        
         } catch (err) {
             if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
             throw new DomainError('error internally', 500);
