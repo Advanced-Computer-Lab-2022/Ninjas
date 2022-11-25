@@ -1,13 +1,21 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+
+
 const questionSchema = new Schema({
     questionText: {
         type: String,
         required: true
     },
     mcqs: {
-        type: Array,
-        required: true
+        type: [String],
+        required: true,
+        validate: {
+            validator(value) {
+              return value.length == 4;
+            },
+            message: 'there has to be exactly 4 choices',
+          },
     },
     userAnswer: {
         type: String,
@@ -25,6 +33,6 @@ const questionSchema = new Schema({
 })
 
 const question = mongoose.model('question', questionSchema);
-module.exports = question;
+module.exports = {question, questionSchema};
 
 

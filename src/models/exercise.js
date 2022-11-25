@@ -7,16 +7,18 @@ const exerciseSchema = new Schema({
         type: String,
         required: true
     },
-    courseId: {
+    subtitleId: {
         type: Schema.Types.ObjectId,
+        required: true
     },
     questions: {
-        type: [],
+        type: [questionSchema],
+        required: true,
     },
     totalGrade: {
         type: Number,
+        required: true 
     }
-
 })
 
 const Exercise = mongoose.model('Exercise', exerciseSchema);
