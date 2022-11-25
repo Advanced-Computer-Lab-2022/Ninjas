@@ -5,7 +5,7 @@ const path = require('path');
 const DomainError = require("../error/domainError");
 const { Course } = require("../models/courses");
 const { Exercise } = require("../models/exercise");
-const question = require("../models/question");
+const {question} = require("../models/question");
 const { Account } = require("../models/account");
 
 userRouter.get('/', (req, res) => {
@@ -228,6 +228,45 @@ userRouter.post('/rateCourse', async (req, res) => {
         await userController.rateCourse({ userId, courseId, rating, text });
 
         res.status(200).json({ message: "your rating was submitted successfully." })
+    } catch (error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
+
+userRouter.get('/solveExercise', async (req, res) => {
+    try {
+        const { userId, exerciseId } = req.query;
+
+        if (userId == null || exerciseId == null) {
+            res.status(400).json({ message: "please provide all of the following: the userID and the exerciseID" });
+        }
+
+        //this should return the exercise object to the frontend to display it
+        const exercise = await userController.solveExercise({ userId, exerciseId });
+        res.status(200).json(exercise);
+
+    } catch (error) {
+        res.status(error.code).json({ message: error.message });
+    }
+
+})
+
+userRouter.post('/submitExercise', async (req, res) => {
+    try {
+        const userId = req.query.userId;
+
+        //get the solved exercise object from the FE, may be modified later.
+        const solvedExercise = req.body;
+        if (userId == null || solvedExercise == null) {
+            res.status(400).json({ message: "please provide all of the following: the userID and the solved exercise" });
+        }
+
+        const { userGrade, gradePercentage } = await userController.submitExercise({ userId, solvedExercise });
+        res.status(200).json({
+            message: "your exercise has been submitted",
+            userGrade,
+            gradePercentage
+        });
     } catch (error) {
         res.status(error.code).json({ message: error.message });
     }
