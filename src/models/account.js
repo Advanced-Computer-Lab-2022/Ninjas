@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const countryEnums = require('../Enums/countryEnums')
+const { ratingSchema } = require('./rating')
 const Schema = mongoose.Schema;
 
 var validateEmail = function (email) {

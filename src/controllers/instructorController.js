@@ -49,9 +49,9 @@ const instructorController = {
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
-
             if(user.password == oldPassword){
-                user.password = newPassword;
+                
+                await Account.updateOne({_id:userId}, {password: newPassword})
             }
             else{
                 throw new DomainError("Wrong Password", 400);
@@ -75,15 +75,18 @@ const instructorController = {
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
-
+            console.log(oldEmail);
            if(user.email == oldEmail){
 
-            let o = await Model.findOne({where : {email: newEmail}});
+
+            let o = await Account.findOne({email: newEmail});
+            console.log(o);
             if (o) {
                 throw new DomainError("email already exits", 400);
 
             } else {
-                await Account.updateOne({_id: userid}, {email: newEmail});
+
+                await Account.updateOne({_id: userId}, {email: newEmail});
 
             }
             
@@ -125,15 +128,21 @@ const instructorController = {
 
     async addDiscount ({
 
-        userId, discount, discountDuration
+        courseId, discount, discountDuration
     }) {
         try {
             
-            const user = await Account.findOne({ _id: userId }).catch(() => {
+            const user = await Course.findOne({ _id: courseId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
 
-            await Account.updateOne({_id: userId}, {discount: discount},{discountDuration: discountDuration});
+            console.log(user);
+            console.log(discount);
+            console.log(discountDuration);
+
+
+            await Course.updateOne({_id: courseId}, {discount: discount});
+            await Course.updateOne({_id: courseId}, {discountDuration: discountDuration});
 
 
         
@@ -150,11 +159,11 @@ const instructorController = {
         userId
     }) {
         try {
-            
+            console.log(userId);
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
-
+            
       return user.review;
 
 
@@ -343,7 +352,7 @@ const instructorController = {
     },
 
 
-    async createcourse({ instructorId, subject, title, price, summary, subtitles, exercises }) {
+    async createcourse({ instructorId, subject, title, price, summary, subtitles, exercises, link }) {
         const thisInstructor = await Account.findOne({ _id: instructorId }).catch(() => {
             throw new DomainError("Wrong Id", 400)
         });
@@ -355,7 +364,11 @@ const instructorController = {
             const myArrayEx = exercises.split(",");
             for (var i = 0; i < myArray.length; i++) {
                 var v = new Video({
-                    title: myArray[i].split(":")[2].toString()
+                    title: myArray[i].split(":")[2].split(";")[0].toString(),
+                    link: myArray[i].split(":")[2].split(";")[1].toString(),
+                    description: myArray[i].split(":")[2].split(";")[2].toString(),
+
+    
                 })
                 var s = new Subtitle({
                     text: myArray[i].split(":")[0].toString(),
@@ -385,7 +398,8 @@ const instructorController = {
                 totalHours: 10,
                 totalHours: await this.calculateHours(subtitlesArray),  ///--1 if so how total hours will be calculated....
                 exercises: exArray,
-                instructors: [thisInstructor]
+                instructors: [thisInstructor],
+                link: link
             })
 
             Newcourse.save();
@@ -448,7 +462,14 @@ const instructorController = {
         }
 
 
+
+
+
+
+
     },
+
+
 
     async acceptContract({ courseId }){
         const thisCourse = await Course.findOne({ _id: courseId }).catch(() => {

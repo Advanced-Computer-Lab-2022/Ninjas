@@ -67,11 +67,15 @@ const coursesSchema = new Schema({
 
     },
     discountDuration:{
-        type: Date,
+        type: Number,
         default:0,
-        min: Date.now()
+        min: 1
     },
-
+    videoLink:{
+        type:String,
+        required:true
+    }
+   
 
 })
 
