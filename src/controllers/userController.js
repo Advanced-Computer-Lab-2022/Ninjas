@@ -270,8 +270,39 @@ const userController = {
             else
                 throw new DomainError("internal error", 500);
         }
-    }
+    },
 
+    async viewExersiseGrade (exersiseId,userId){ //for individul , corp
+     try{  
+       const grade = await UserExercise.findOne ({
+            '$and':[ 
+                { accountId: userId},
+                { exercises : { $elemMatch: { _id : exersiseId }} }
+            ]
+        },{ userGrade:1 , gradePercentage: 1, "exercises.totalGrade":1 })
+
+        if (grade){
+            
+            grade.sovled = true;
+            return grade;
+        }
+        else {
+            const totalGrade = await Exercise.findOne({
+                _id : exersiseId
+            },{totakGrade:1})
+        }
+        if (!totalGrade){
+            throw new DomainError(400,"wrong exersiseId")
+        }
+        
+        return {userGrade:0 , gradePercentage: 0, totalGrade : totalGrade, solved: false}
+    }
+    catch(err){
+      
+        if (err instanceof DomainError) { throw err; }
+        throw new DomainError('error internally', 500);
+    }
+    },
 }
 
 module.exports = userController;

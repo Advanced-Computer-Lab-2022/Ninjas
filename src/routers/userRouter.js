@@ -272,4 +272,20 @@ userRouter.post('/submitExercise', async (req, res) => {
     }
 })
 
+
+userRouter.get('/viewExersiseGrade', async (req, res) => {
+ try{  const {exersiseId,userId}= req.query
+    const grade = await userController.viewExersiseGrade(exersiseId,userId);
+    res.status(200).send(grade)
+ }
+ catch(err){
+    console.log(err);
+    if (err instanceof DomainError) {
+        res.status(err.code).send(err.message)
+      } else {
+        res.status(500).send({ err });
+      }
+ }
+})
+
 module.exports = userRouter;
