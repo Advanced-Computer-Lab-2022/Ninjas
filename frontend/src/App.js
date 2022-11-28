@@ -1,16 +1,26 @@
 import {BrowserRouter, Routes, Route} from 'react-router-dom'
+import AddDiscount from './pages/AddDiscount';
 import ChangeCountry from './components/ChangeCountry';
 import ForgotPasswordPage from './components/ForgotPassword';
 import InstructorPage from './components/InstructorHome';
 import TraineePage from './components/TraineeHome';
 import ChangePassword from './pages/ChangePassword';
+import EditBiography from './pages/EditBiography';
+import EditEmail from './pages/EditEmail';
+
 
 function App() {
   return (
     <div className="App">
       <BrowserRouter>
       <Routes>
-      <Route path='/' element= {<ChangePassword/>} >
+        <Route path='/changePassword' element= {<ChangePassword/>} >
+        </Route>
+        <Route path='/editEmail' element= {<EditEmail/>} >
+        </Route>
+        <Route path='/editBiography' element= {<EditBiography/>} >
+        </Route>
+        <Route path='/addDiscount' element= {<AddDiscount/>} >
         </Route>
         <Route path="/instructor"
         element={<InstructorPage/>}/>
