@@ -11,22 +11,6 @@ const InstructorPage = () => {
   //when this page is first loaded, we get the instructor object from the backend.
   const userId = '6352fbe57a237a799c9ed29f';
 
-  // const getInstructor = async () => {
-  //   await axios.get(`http://localhost:8000/instructor/${userId}`).then(
-  //     (res) => {
-  //       const instructor = res.data
-  //       console.log(instructor)
-  //       setInstructor(instructor)
-  //     }
-  //   );
-  // }
-
-  // useEffect(() => {
-  //       getInstructor();
-  // },[])
-
-
-
 
   return (
     <div>
@@ -57,8 +41,10 @@ const InstructorPage = () => {
                 cursor: "pointer",
               }
             }}
+            onClick={() => window.location.href=`/viewInstructorCourses?${userId}`}
+            key={userId}
 
-          > hello</Typography>
+          > view my courses </Typography>
 
 
 
