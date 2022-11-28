@@ -13,8 +13,15 @@ const instructorToCoursesSchema = new Schema({
   },
   rating: {
     type : [ratingSchema]
+  },
+  generalRating : {
+    type: Number,
+    min: 0,
+    max: 5,
+    default: 0,
   }
 })
+
 
 const InstructorToCourses = mongoose.model('InstructorToCourses', instructorToCoursesSchema);
 module.exports = InstructorToCourses;

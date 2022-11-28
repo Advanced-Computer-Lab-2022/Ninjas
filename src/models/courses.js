@@ -54,12 +54,6 @@ const coursesSchema = new Schema({
         type: [ratingSchema],
         default: []
     },
-    preview:{
-        type :{
-            description:{type: String},
-            video: {type: videoSchema}
-        }
-    },
     contractStatus:{
         type: Boolean,
         default: false
