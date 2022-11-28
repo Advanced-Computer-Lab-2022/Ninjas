@@ -349,11 +349,23 @@ instructorRouter.put('/addDiscount',async(req,res) => {
         res.status(500).json({ err });
       }
     }
-
-    
-
 })
 
+
+instructorRouter.put('/rateInstructor',async(req,res) => {
+  try{
+const {instructorId,userId, ratingNumber, ratingText}= req.query
+  await instructorController.rateInstructor(instructorId,userId, ratingNumber, ratingText)
+  res.status(200).send({Done: true});
+  }
+  catch(err){
+    if (err instanceof DomainError) {
+      res.status(err.code).send(err.message)
+    } else {
+      res.status(500).send({ err });
+    }
+  }
+})
 
 
 module.exports = instructorRouter;

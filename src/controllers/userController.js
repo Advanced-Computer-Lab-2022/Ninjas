@@ -5,6 +5,7 @@ const { Exercise } = require("../models/exercise");
 const nodemailer = require("nodemailer");
 const { Rating } = require("../models/rating");
 const UserExercise = require("../models/userExercise");
+const { Subtitle } = require("../models/subtitle");
 
 
 const helperMethods = {
@@ -303,6 +304,67 @@ const userController = {
         throw new DomainError('error internally', 500);
     }
     },
+
+
+    async viewCorrectAnswers (exersiseId,subtitleId){
+     try{
+         const exersise = await Subtitle.findOne ({
+            '$and':[ 
+                { _id: subtitleId},
+                { exercises : { $elemMatch: { _id : exersiseId }} }
+            ]
+        },{ exercises:1 })
+        
+
+     if (exersise){
+      for (var i =0 ; i < exersise.exercises.length ; i++){
+       if (exersise.exercises[i]._id == exersiseId){
+        return {subtitleId: exersise._id , exersises : exersise.exercises[i] }
+       }
+      }
+
+    }
+        throw new DomainError('not found exersise',400)
+
+    }catch(err){
+        if (err instanceof DomainError) { throw err; }
+        throw new DomainError('error internally', 500);
+    }
+
+
+
+
+    },
+
+
+    async viewVideo (subtitleId){
+        try{
+            const video = await Subtitle.findOne ({ 
+                   _id: subtitleId
+               
+           },{ videoTitles:1 })
+           
+      
+        if (video.videoTitles){
+          
+           return video;
+   
+       }
+           throw new DomainError('no video',400)
+   
+       }catch(err){
+         console.log(err)
+           if (err instanceof DomainError) { throw err; }
+           throw new DomainError('error internally', 500);
+       }
+   
+   
+   
+   
+       },
+
+
+    
 }
 
 module.exports = userController;

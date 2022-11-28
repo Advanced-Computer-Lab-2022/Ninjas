@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Account } = require("../models/account");
 const { Course, countryPriceDetails } = require("../models/courses");
-const { InstructorToCourses } = require("../models/InstructorToCourses");
+const  InstructorToCourses  = require("../models/InstructorToCourses");
 const { exerciseSchema } = require('../models/exercise');
 const { subtitleSchema, Subtitle } = require('../models/subtitle');
 const DomainError = require("../error/domainError");
@@ -488,7 +488,51 @@ catch (err) {
         }
 
 
-}
+},
+
+
+
+async rateInstructor (instructorId , userId , ratingNumber, ratingText){
+try {
+
+    const name = await Account.findOne({_id : userId},{firstName : 1 , lastName: 1, _id : 1, type: 1})  
+   if (name.type == 'CORPORATE_TRAINEE'|| name.type == 'INDIVIDUAL_TRAINEE'){
+
+    let query =  {id: name._id ,rating : ratingNumber , text: ratingText ,firstName : name.firstName , lastName: name.lastName}
+   
+    
+    await InstructorToCourses.findOneAndUpdate({"account._id" : instructorId}, {"$pull": {"rating" : {id: query.id}}})
+
+    const result = await InstructorToCourses.findOneAndUpdate({"account._id" : instructorId},
+        {   "$push": { "rating": query }  },
+        { "new": true, "upsert": true })
+  
+
+        let rate = 0;
+        let count =0;
+        for(count; count< result.rating.length;count++ ){
+          rate+= result.rating[count].rating;
+     
+        }
+        
+        if ((count)==0){count = 1};
+       let generalRating= (rate/count)>=0?(rate/count):0
+     
+
+        await InstructorToCourses.findOneAndUpdate({"account._id" : instructorId}, {generalRating:generalRating})
+
+  
+    }
+    return;
+    }
+    catch(err){
+        console.log(err)
+        if (err instanceof DomainError) { throw err; }
+        throw new DomainError('error internally', 500);
+    }  
+
+},
+
 }
 
 module.exports = instructorController;

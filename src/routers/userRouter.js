@@ -279,7 +279,7 @@ userRouter.get('/viewExersiseGrade', async (req, res) => {
     res.status(200).send(grade)
  }
  catch(err){
-    console.log(err);
+   
     if (err instanceof DomainError) {
         res.status(err.code).send(err.message)
       } else {
@@ -287,5 +287,48 @@ userRouter.get('/viewExersiseGrade', async (req, res) => {
       }
  }
 })
+
+
+userRouter.get('/viewCorrectAnswers', async (req, res) => {
+  try{
+
+          const{exersiseId,subtitleId}=req.query
+        const exersise= await userController.viewCorrectAnswers (exersiseId,subtitleId)
+        res.status(200).send(exersise)
+
+
+
+
+    }catch(err){
+        if (err instanceof DomainError) {
+            res.status(err.code).send(err.message)
+          } else {
+            res.status(500).send({ err });
+          }
+    }
+})
+
+
+
+
+userRouter.get('/viewVideo', async (req, res) => {
+    try{
+  
+            const{subtitleId}=req.query
+          const exersise= await userController.viewVideo(subtitleId)
+          res.status(200).send(exersise)
+  
+  
+  
+  
+      }catch(err){
+        console.log(err)
+          if (err instanceof DomainError) {
+              res.status(err.code).send(err.message)
+            } else {
+              res.status(500).send({ err });
+            }
+      }
+  })
 
 module.exports = userRouter;
