@@ -285,12 +285,19 @@ instructorRouter.post('/createcourse', async (req, res) => {
   }
 })
 
-instructorRouter.put('/changePassword', async (req, res) => {
-  const userId = req.query.userId;
-  const oldPassword = req.query.oldPassword;
-  const newPassword = req.query.newPassword;
-  await instructorController.changePassword({ userId, oldPassword, newPassword });
-  res.status(200).json("Update Succesfully");
+instructorRouter.put('/changePassword',async(req,res) => {
+  try{
+  const userId = req.body.userId;
+  const oldPassword = req.body.oldPassword;
+  const newPassword = req.body.newPassword;
+    await instructorController.changePassword({ userId, oldPassword, newPassword });
+    res.status(200).json("Update Succesfully");}
+    catch (err) {
+      if (err instanceof DomainError) {
+        res.status(err.code).json({ code: err.code, message: err.message })
+      } else {
+        res.status(500).json({ err });
+      }}
 
 })
 
@@ -356,11 +363,27 @@ instructorRouter.get('/instructor/:id', async (req, res) => {
     const userId = req.params.id;
     const instructor = await instructorController.getInstructorData({ userId });
     res.status(200).json(instructor);
-
   } catch (error) {
     res.status(error.code).json({ message: error.message });
 
   }
 })
+
+instructorRouter.put('/rateInstructor',async(req,res) => {
+  try{
+const {instructorId,userId, ratingNumber, ratingText}= req.query
+  await instructorController.rateInstructor(instructorId,userId, ratingNumber, ratingText)
+  res.status(200).send({Done: true});
+  }
+  catch(err){
+    if (err instanceof DomainError) {
+      res.status(err.code).send(err.message)
+    } else {
+      res.status(500).send({ err });
+    }
+  }
+})
+
+ 
 
 module.exports = instructorRouter;

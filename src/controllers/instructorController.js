@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { Account } = require("../models/account");
 const { Course, countryPriceDetails } = require("../models/courses");
-const { InstructorToCourses } = require("../models/InstructorToCourses");
+const  InstructorToCourses  = require("../models/InstructorToCourses");
 const { exerciseSchema } = require('../models/exercise');
 const { subtitleSchema, Subtitle } = require('../models/subtitle');
 const DomainError = require("../error/domainError");
@@ -11,6 +11,10 @@ const { question } = require('../models/question');
 var subtitlesArray = [subtitleSchema];
 var Totalhrs = 0;
 
+var validateEmail = function (email) {
+    var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return re.test(email)
+};
 
 const instructorController = {
     async getViewResult({
@@ -49,20 +53,29 @@ const instructorController = {
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
-            if (user.password == oldPassword) {
-
-                await Account.updateOne({ _id: userId }, { password: newPassword })
+            if(newPassword.length<6){
+                throw new DomainError("Password Length must be atleast 6", 400);
             }
-            else {
-                throw new DomainError("Wrong Password", 400);
+            if(newPassword==user.password){
+                throw new DomainError("Cant't change new password to old password", 400);
+            }
+            if(user.password == oldPassword){
+                
+                await Account.updateOne({_id:userId}, {password: newPassword})
+            }
+            else{
+                throw new DomainError("Old Password is incorrect, try again", 400);
             }
 
 
 
         }
         catch (err) {
+            if (err instanceof DomainError) throw err;
+            else
             throw new DomainError('error internally', 500);
         }
+
 
     },
 
@@ -71,7 +84,15 @@ const instructorController = {
         userId, oldEmail, newEmail
     }) {
         try {
+            if(userId=="" || oldEmail=="" || newEmail==""){
+                throw new DomainError("All fields must be filled", 400)
+            }
+            const x = validateEmail(newEmail);
+            if(!x) {
+                throw new DomainError("Wrong email format", 400)
 
+            }
+            
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
@@ -79,26 +100,30 @@ const instructorController = {
             if (user.email == oldEmail) {
 
 
-                let o = await Account.findOne({ email: newEmail });
-                console.log(o);
-                if (o) {
-                    throw new DomainError("email already exits", 400);
+            let o = await Account.findOne({email: newEmail});
+            console.log(o);
+            if (o != null && o._id != userId) {
+                console.log("daa5al")
+                throw new DomainError("email already exits", 400);
 
-                } else {
+            } 
+            else if(user.email==newEmail){
+                throw new DomainError("You can not change your old email to new email", 400);
+            }
+                else {
 
                     await Account.updateOne({ _id: userId }, { email: newEmail });
 
                 }
 
             }
-            else {
-                throw new DomainError("You can not change your old email to new email", 400);
-            }
 
 
 
         }
         catch (err) {
+            if (err instanceof DomainError) throw err;
+            else
             throw new DomainError('error internally', 500);
         }
 
@@ -109,20 +134,29 @@ const instructorController = {
         userId, newText
     }) {
         try {
-
+            if(userId=="" || newText==""){
+                throw new DomainError("All fields must be filled", 400)
+            }
+            
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
-
-            await Account.updateOne({ _id: userId }, { biography: newText });
+            if(newText.length<20){
+                throw new DomainError("Biography must be at least 20 characters", 400)
+            }
+            else{
+            await Account.updateOne({_id: userId}, {biography: newText});}
 
 
 
 
         }
         catch (err) {
+            if (err instanceof DomainError) throw err;
+            else
             throw new DomainError('error internally', 500);
         }
+
 
     },
 
@@ -131,14 +165,17 @@ const instructorController = {
         courseId, discount, discountDuration
     }) {
         try {
-
+            if(courseId=="" || discount=="" || discountDuration==""){
+                throw new DomainError("All fields must be filled", 400)
+            }
             const user = await Course.findOne({ _id: courseId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
 
-            console.log(user);
-            console.log(discount);
-            console.log(discountDuration);
+            if(!(discountDuration>0 && discountDuration<=12)){
+                throw new DomainError("Discount Duration must be within 0 to 12 months", 400)
+            }
+
 
 
             await Course.updateOne({ _id: courseId }, { discount: discount });
@@ -149,6 +186,8 @@ const instructorController = {
 
         }
         catch (err) {
+            if (err instanceof DomainError) throw err;
+            else
             throw new DomainError('error internally', 500);
         }
 
@@ -489,7 +528,52 @@ const instructorController = {
         }
 
 
-    },
+},
+
+
+
+async rateInstructor (instructorId , userId , ratingNumber, ratingText){
+try {
+
+    const name = await Account.findOne({_id : userId},{firstName : 1 , lastName: 1, _id : 1, type: 1})  
+   if (name.type == 'CORPORATE_TRAINEE'|| name.type == 'INDIVIDUAL_TRAINEE'){
+
+    let query =  {id: name._id ,rating : ratingNumber , text: ratingText ,firstName : name.firstName , lastName: name.lastName}
+   
+    
+    await Account.findOneAndUpdate({_id : instructorId}, {"$pull": {"review" : {id: query.id}}})
+
+    const result = await Account.findOneAndUpdate({ _id : instructorId},
+        {   "$push": { "review": query }  },
+        { "new": true, "upsert": true })
+  
+
+        let rate = 0;
+        let count =0;
+        for(count; count< result.review.length;count++ ){
+          rate+= result.review[count].rating;
+     
+        }
+        
+        if ((count)==0){count = 1};
+       let generalRating= (rate/count)>=0?(rate/count):0
+     
+
+        await Account.findOneAndUpdate({ _id : instructorId}, {rating:generalRating})
+
+  
+    }
+    return;
+    }
+    catch(err){
+        console.log(err)
+        if (err instanceof DomainError) { throw err; }
+        throw new DomainError('error internally', 500);
+    }  
+
+},
+
+   
 
     async getInstructorData({ userId }) {
         try {
@@ -509,7 +593,7 @@ const instructorController = {
             else
                 throw new DomainError("internal error", 500);
         }
-    }
+    },
 }
 
 module.exports = instructorController;

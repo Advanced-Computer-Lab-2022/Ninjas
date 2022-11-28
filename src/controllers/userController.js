@@ -5,6 +5,7 @@ const { Exercise } = require("../models/exercise");
 const nodemailer = require("nodemailer");
 const { Rating } = require("../models/rating");
 const UserExercise = require("../models/userExercise");
+const { Subtitle } = require("../models/subtitle");
 
 
 const helperMethods = {
@@ -291,8 +292,99 @@ const userController = {
             else
                 throw new DomainError("internal error", 500);
         }
+    },
+
+    async viewExersiseGrade (exersiseId,userId){ // in course//for individul , corp
+     try{  
+       const grade = await UserExercise.findOne ({
+            '$and':[ 
+                { accountId: userId},
+                { exercises : { $elemMatch: { _id : exersiseId }} }
+            ]
+        },{ userGrade:1 , gradePercentage: 1, "exercises.totalGrade":1 })
+
+        if (grade){
+            
+            grade.sovled = true;
+            return grade;
+        }
+        
+        
+        return {userGrade:0 , gradePercentage: 0, totalGrade : 0, solved: false}
+    }
+    catch(err){
+      
+        if (err instanceof DomainError) { throw err; }
+        throw new DomainError('error internally', 500);
+    }
+    },
+
+
+    async viewCorrectAnswers (exersiseId,subtitleId,courseId){ //3yza ala2y try2a a7san
+     try{
+         const exersise = await Course.findOne ({
+            '$and':[ 
+                { _id: courseId},
+                { subtitles : { $elemMatch: { "exercises._id" : exersiseId }} },
+                { subtitles : { $elemMatch: { _id : subtitleId }}}
+            ]
+        },{ "subtitles":1 })
+        
+     if (exersise){
+      for (var i =0 ; i < exersise.subtitles.length ; i++){
+        if(exersise.subtitles[i].exercises){
+        for (var j =0 ; j < exersise.subtitles[i].exercises.length ; j++){
+       if (exersise.subtitles[i].exercises[j]._id == exersiseId){
+        return {subtitleId: exersise.subtitles[i]._id , exercises : exersise.subtitles[i].exercises[j] }
+       }
+      }
+    }
+}
+    }
+        throw new DomainError('not found exersise',400)
+
+    }catch(err){
+        console.log(err);
+        if (err instanceof DomainError) { throw err; }
+        throw new DomainError('error internally', 500);
     }
 
+
+
+
+    },
+
+
+    async viewVideo (courseId, subtitleId){ 
+        try{
+            const video = await Course.findOne ({ 
+                   _id: courseId
+               
+           },{ subtitles:1 })
+           
+      for(var i =0 ; i<video.subtitles.length ; i++ ){
+        if (video.subtitles[i]._id == subtitleId ){
+          if (video.subtitles[i].videoTitles.link){
+           return video.subtitles[i].videoTitles;
+          }
+          else break;
+       }
+    }
+           throw new DomainError('no video',400)
+   
+       }catch(err){
+         console.log(err)
+           if (err instanceof DomainError) { throw err; }
+           throw new DomainError('error internally', 500);
+       }
+   
+   
+   
+   
+       },
+
+
+    
 }
 
 module.exports = userController;

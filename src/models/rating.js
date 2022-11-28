@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ratingSchema = new Schema({
+    id : {type : String},
     firstName: {
         type: String,
         min: 2,
