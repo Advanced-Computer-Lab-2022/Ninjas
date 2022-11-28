@@ -541,17 +541,17 @@ try {
     let query =  {id: name._id ,rating : ratingNumber , text: ratingText ,firstName : name.firstName , lastName: name.lastName}
    
     
-    await InstructorToCourses.findOneAndUpdate({"account._id" : instructorId}, {"$pull": {"rating" : {id: query.id}}})
+    await Account.findOneAndUpdate({_id : instructorId}, {"$pull": {"review" : {id: query.id}}})
 
-    const result = await InstructorToCourses.findOneAndUpdate({"account._id" : instructorId},
-        {   "$push": { "rating": query }  },
+    const result = await Account.findOneAndUpdate({ _id : instructorId},
+        {   "$push": { "review": query }  },
         { "new": true, "upsert": true })
   
 
         let rate = 0;
         let count =0;
-        for(count; count< result.rating.length;count++ ){
-          rate+= result.rating[count].rating;
+        for(count; count< result.review.length;count++ ){
+          rate+= result.review[count].rating;
      
         }
         
@@ -559,7 +559,7 @@ try {
        let generalRating= (rate/count)>=0?(rate/count):0
      
 
-        await InstructorToCourses.findOneAndUpdate({"account._id" : instructorId}, {generalRating:generalRating})
+        await Account.findOneAndUpdate({ _id : instructorId}, {rating:generalRating})
 
   
     }
