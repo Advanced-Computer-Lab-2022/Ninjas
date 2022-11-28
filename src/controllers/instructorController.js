@@ -44,12 +44,12 @@ const instructorController = {
 
     },
 
-    async changePassword ({
+    async changePassword({
 
         userId, oldPassword, newPassword
     }) {
         try {
-            
+
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
@@ -67,7 +67,7 @@ const instructorController = {
                 throw new DomainError("Old Password is incorrect, try again", 400);
             }
 
-        
+
 
         }
         catch (err) {
@@ -79,7 +79,7 @@ const instructorController = {
 
     },
 
-    async editEmail ({
+    async editEmail({
 
         userId, oldEmail, newEmail
     }) {
@@ -97,7 +97,7 @@ const instructorController = {
                 throw new DomainError("Wrong Id", 400)
             });
             console.log(oldEmail);
-           if(user.email == oldEmail){
+            if (user.email == oldEmail) {
 
 
             let o = await Account.findOne({email: newEmail});
@@ -112,13 +112,13 @@ const instructorController = {
             }
                 else {
 
-                await Account.updateOne({_id: userId}, {email: newEmail});
+                    await Account.updateOne({ _id: userId }, { email: newEmail });
+
+                }
 
             }
-            
-            }
 
-        
+
 
         }
         catch (err) {
@@ -129,7 +129,7 @@ const instructorController = {
 
     },
 
-    async editBiography ({
+    async editBiography({
 
         userId, newText
     }) {
@@ -148,7 +148,7 @@ const instructorController = {
             await Account.updateOne({_id: userId}, {biography: newText});}
 
 
-        
+
 
         }
         catch (err) {
@@ -160,7 +160,7 @@ const instructorController = {
 
     },
 
-    async addDiscount ({
+    async addDiscount({
 
         courseId, discount, discountDuration
     }) {
@@ -178,11 +178,11 @@ const instructorController = {
 
 
 
-            await Course.updateOne({_id: courseId}, {discount: discount});
-            await Course.updateOne({_id: courseId}, {discountDuration: discountDuration});
+            await Course.updateOne({ _id: courseId }, { discount: discount });
+            await Course.updateOne({ _id: courseId }, { discountDuration: discountDuration });
 
 
-        
+
 
         }
         catch (err) {
@@ -193,7 +193,7 @@ const instructorController = {
 
     },
 
-    async viewInstReview ({
+    async viewInstReview({
 
         userId
     }) {
@@ -202,11 +202,11 @@ const instructorController = {
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
-            
-      return user.review;
+
+            return user.review;
 
 
-        
+
 
         }
         catch (err) {
@@ -407,7 +407,7 @@ const instructorController = {
                     link: myArray[i].split(":")[2].split(";")[1].toString(),
                     description: myArray[i].split(":")[2].split(";")[2].toString(),
 
-    
+
                 })
                 var s = new Subtitle({
                     text: myArray[i].split(":")[0].toString(),
@@ -452,20 +452,20 @@ const instructorController = {
 
     },
 
-    async createQuestion({ exerciseId, mcq1,mcq2,mcq3,mcq4, correctAnswer,title, totalCredit}) {
+    async createQuestion({ exerciseId, mcq1, mcq2, mcq3, mcq4, correctAnswer, title, totalCredit }) {
         const thisExercise = await Exercise.findOne({ _id: exerciseId }).catch(() => {
             throw new DomainError("Wrong Id", 400)
         });
         try {
             const newQuestion = new question({
                 questionText: title,
-                mcqs:[mcq1,mcq2,mcq3,mcq4],
-                correctAnswer:correctAnswer,
-                totalCredit:totalCredit
+                mcqs: [mcq1, mcq2, mcq3, mcq4],
+                correctAnswer: correctAnswer,
+                totalCredit: totalCredit
             })
             await newQuestion.save()
             thisExercise.questions.push(newQuestion);
-        
+
         } catch (err) {
             if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
             throw new DomainError('error internally', 500);
@@ -475,7 +475,7 @@ const instructorController = {
 
 
     },
-    async createExercise({ instructorId, courseId, title}) {
+    async createExercise({ instructorId, courseId, title }) {
         const thisInstructor = await Account.findOne({ _id: instructorId }).catch(() => {
             throw new DomainError("Wrong Id", 400)
         });
@@ -483,16 +483,17 @@ const instructorController = {
             throw new DomainError("Wrong Id", 400)
         });
         try {
-            if(thisInstructor==thisCourse.instructors[0]){
-            const newExercise = new Exercise({
-                title: title,
-            })
-            await newExercise.save()
-            thisCourse.exercises.push(newExercise);}
+            if (thisInstructor == thisCourse.instructors[0]) {
+                const newExercise = new Exercise({
+                    title: title,
+                })
+                await newExercise.save()
+                thisCourse.exercises.push(newExercise);
+            }
             else {
                 throw new DomainError("Unauthorized", 400)
             }
-        
+
         } catch (err) {
             if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
             throw new DomainError('error internally', 500);
@@ -510,16 +511,16 @@ const instructorController = {
 
 
 
-    async acceptContract({ courseId }){
+    async acceptContract({ courseId }) {
         const thisCourse = await Course.findOne({ _id: courseId }).catch(() => {
             throw new DomainError("Wrong Id", 400)
 
-});
+        });
 
-try{
-    thisCourse.contractStatus = true;
-}
-catch (err) {
+        try {
+            thisCourse.contractStatus = true;
+        }
+        catch (err) {
             if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
             throw new DomainError('error internally', 500);
 
@@ -527,7 +528,27 @@ catch (err) {
         }
 
 
-}
+    },
+
+    async getInstructorData({ userId }) {
+        try {
+            const instructor = await Account.findOne({ _id: userId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+            if (instructor.type != 'INSTRUCTOR')
+                throw new DomainError("This is not an instructor.");
+
+            return instructor;
+
+        } catch (error) {
+            console.log(error)
+            if (error instanceof DomainError)
+                throw error;
+            else
+                throw new DomainError("internal error", 500);
+        }
+    }
 }
 
 module.exports = instructorController;
