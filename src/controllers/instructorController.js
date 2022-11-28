@@ -199,15 +199,17 @@ const instructorController = {
     }) {
         try {
             console.log(userId);
-            const user = await Account.findOne({ _id: userId }).catch(() => {
-                throw new DomainError("Wrong Id", 400)
+           /* for(let i = 0; i<InstructorToCourses.length ; i++){
+                if(userId != InstructorToCourses.Account._id){
+                    throw new DomainError("Wrong Id", 400)
+                }
+                return InstructorToCourses.rating;
+            }*/
+            const user = await InstructorToCourses.findOne({ _id: userId }).catch(() => {
+               throw new DomainError("Wrong Id", 400)
             });
 
             return user.review;
-
-
-
-
         }
         catch (err) {
             throw new DomainError('error internally', 500);
@@ -594,6 +596,41 @@ try {
                 throw new DomainError("internal error", 500);
         }
     },
+
+    async getCourseRatings({ courseId }) {
+        try {
+            const course = await Course.findOne({ _id: courseId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+            return course.reviews;
+
+        } catch (error) {
+            console.log(error)
+            if (error instanceof DomainError)
+                throw error;
+            else
+                throw new DomainError("internal error", 500);
+        }
+    },
+    async getCourseSubtitles({ courseId }) {
+        try {
+            const course = await Course.findOne({ _id: courseId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+            return course.subtitles;
+
+        } catch (error) {
+            console.log(error)
+            if (error instanceof DomainError)
+                throw error;
+            else
+                throw new DomainError("internal error", 500);
+        }
+    },
+
+ 
 }
 
 module.exports = instructorController;
