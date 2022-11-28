@@ -14,7 +14,12 @@ const ForgotPasswordPage = () => {
 
   const sendEmail = async () => {
     const response = await axios.post(`http://localhost:8000/forgotPassword`, { username })
-    console.log(response.data)
+    .catch((error) => {
+      console.log(error)
+      alert(error.response.data.message)
+    })
+    //console.log(response.data.message)
+
     alert(response.data.message)
   }
 
