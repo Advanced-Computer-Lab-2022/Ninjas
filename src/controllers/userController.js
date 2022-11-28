@@ -273,7 +273,7 @@ const userController = {
         }
     },
 
-    async viewExersiseGrade (exersiseId,userId){ // exersize in course check en tarteel bt7t f user exersise//for individul , corp
+    async viewExersiseGrade (exersiseId,userId){ // in course//for individul , corp
      try{  
        const grade = await UserExercise.findOne ({
             '$and':[ 
@@ -287,16 +287,9 @@ const userController = {
             grade.sovled = true;
             return grade;
         }
-        else {
-            const totalGrade = await Exercise.findOne({
-                _id : exersiseId
-            },{totakGrade:1})
-        }
-        if (!totalGrade){
-            throw new DomainError(400,"wrong exersiseId")
-        }
         
-        return {userGrade:0 , gradePercentage: 0, totalGrade : totalGrade, solved: false}
+        
+        return {userGrade:0 , gradePercentage: 0, totalGrade : 0, solved: false}
     }
     catch(err){
       
