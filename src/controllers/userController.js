@@ -33,21 +33,27 @@ const userController = {
 
         try {
             // lw 7d msh mwgod hytl3 null ?? for next sprints
-            const user = await Account.findOne({ _id: userId }, { country: 1 }).catch(() => {
+            console.log(userId)
+            const user = await Account.findOne({ _id: userId }, { type: 1, country: 1 }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
+            console.log(user)
+            //snipped can be moved to controller
+            if (user.type == 'ADMIN' || !user.type) {
+                throw new DomainError("Unauthorized user", 401);
+            }
 
 
             let courses;
-            if (subject == "null" &&
-                rating == "null" && title == '' &&
+            if (subject == "" &&
+                rating == "" && title == '' &&
                 instructor == '') {
                 courses = await Course.find()
             } else {
 
                 let queryArray = [];
-                if (subject != "null") { queryArray.push({ subject: { '$regex': "" + subject, '$options': 'i' } }) }
-                if (rating != "null") { queryArray.push({ rating: rating }) }
+                if (subject != "") { queryArray.push({ subject: { '$regex': "" + subject, '$options': 'i' } }) }
+                if (rating != "") { queryArray.push({ rating: rating }) }
                 if (title != '') { queryArray.push({ title: { '$regex': "" + title, '$options': 'i' } }) }
                 if (instructor != '') {
                     queryArray.push({
@@ -81,7 +87,10 @@ const userController = {
         }
         catch (err) {
             if (err instanceof DomainError) { throw err; }
-            throw new DomainError('error internally', 500);
+            else {
+                console.log(err)
+                throw new DomainError('error internally', 500);
+            }
         }
     },
     async changeUserCountry({ userId, selectedCountry }) {
@@ -145,12 +154,8 @@ const userController = {
             //the function that sends the email
             await sender.sendMail(mailOptions);
         } catch (error) {
-            if (error.code == 401) { //unauthorized user
-                throw new DomainError("Unauthorized user", 401);
-            }
-            if (error.code == 404) { //unauthorized user
-                throw new DomainError("This username does not exist.", 400);
-            }
+            if (error instanceof DomainError)
+                throw error;
             else {
                 console.log(error);
                 throw new DomainError("internal error", 500);
@@ -237,6 +242,8 @@ const userController = {
             const user = await Account.findOne({ _id: userId }, { type: 1 }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
+            if (user == null)
+            throw new DomainError("There is no such user in the database", 400)
 
             //if the user is not a trainee then they're unauthorized
             if (!['INDIVIDUAL_TRAINEE', 'CORPORATE_TRAINEE'].includes(user.type))
@@ -265,6 +272,20 @@ const userController = {
 
         } catch (error) {
             console.log(error)
+            if (error instanceof DomainError)
+                throw error;
+            else
+                throw new DomainError("internal error", 500);
+        }
+    },
+    async getUserData({ userId }) {
+        try {
+            const user = await Account.findOne({ _id: userId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+            return user;
+        }
+        catch (error) {
             if (error instanceof DomainError)
                 throw error;
             else

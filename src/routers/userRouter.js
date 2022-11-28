@@ -5,7 +5,7 @@ const path = require('path');
 const DomainError = require("../error/domainError");
 const { Course } = require("../models/courses");
 const { Exercise } = require("../models/exercise");
-const {question} = require("../models/question");
+const { question } = require("../models/question");
 const { Account } = require("../models/account");
 
 userRouter.get('/', (req, res) => {
@@ -29,21 +29,20 @@ userRouter.get('/viewCoursesWithPricePage', (req, res) => {
 });
 
 userRouter.get('/search', async (req, res) => {
-    const {
-        userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
-    } = req.body;
+    try {
+        // const {
+        //     userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
+        // } = req.query;
+        console.log(req.query.userId)
+        console.log(JSON.parse(req.query))
 
-    //snipped can be moved to controller
-
-
-
-    if (userType == 'ADMIN' || !userType) {
-        res.status(401).json({ message: "unauthorized user." });
+        const searchResults = await
+            userController.getSearchResult({ userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours });
+        res.status(200).json({ result: searchResults });
+    } catch (error) {
+        console.log(error)
+        res.status(error.code).json(error.message);
     }
-
-    const searchResults = await
-        userController.getSearchResult({ userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours });
-    res.status(200).json({ result: searchResults });
 })
 
 userRouter.get('/viewAllCourses', async (req, res) => {
@@ -103,13 +102,25 @@ userRouter.post('/selectCountry/:id', async (req, res) => {
         const userId = req.params.id
         const selectedCountry = req.body.country;
         if (!selectedCountry || !userId) {
-            res.status(400).json({ message: "please provide the userID and the selected country."});
+            return res.status(400).json({ message: "please provide the userID and the selected country." });
         }
 
         await userController.changeUserCountry({ userId, selectedCountry });
         // status 201 "no_content" is usually rendered when the response does not have any data in it,
         // and is commonly used in cases where a record is updated.
-        res.status(201).json({ message: "your country has been changed successfully."});
+        res.status(201).json({ message: "your country has been changed successfully." });
+    } catch (error) {
+        res.status(error.code).json(error.message);
+    }
+})
+userRouter.get('/user/:id', async (req, res) => {
+    try {
+        const userId = req.params.id
+        if (!userId) {
+            return res.status(400).json({ message: "please provide the userID." });
+        }
+        const user = await userController.getUserData({ userId });
+        res.status(200).json(user);
     } catch (error) {
         res.status(error.code).json(error.message);
     }
@@ -197,14 +208,14 @@ userRouter.post('/forgotPassword', async (req, res) => {
         if (username == null || username.trim().length === 0) {
             //this means that the username is either not entered
             //or it was just a string of white spaces -- the trim method figures this out.
-            res.status(400).json({ message: "Please enter your username." });
+            return res.status(400).json({ message: "Please enter your username." });
         }
         await userController.forgotMyPassword({ username });
 
         //if the email is sent successfully, we will tell the frontend to display the message.
         res.status(200).json({ message: "A reset password email has been sent. Please check your email. " });
     } catch (error) {
-        res.status(error.code).json({ message: error.message });
+        res.status(error.code).json(error);
     }
 })
 
@@ -215,10 +226,9 @@ userRouter.post('/rateCourse', async (req, res) => {
             rating,
             text
         } = req.body;
-
-        if (userId == null || courseId == null || rating == null) {
+        if (userId == "" || courseId == "" || rating == "") {
             //maybe we should default the nullified rating to a zero? I don't know..
-            res.status(400).json({ message: "please provide all of the following: the userID and the courseID and the rating" });
+            return res.status(400).json({ message: "please provide all of the following: the userID and the courseID and the rating" });
         }
 
         await userController.rateCourse({ userId, courseId, rating, text });
@@ -233,8 +243,8 @@ userRouter.get('/solveExercise', async (req, res) => {
     try {
         const { userId, exerciseId } = req.query;
 
-        if (userId == null || exerciseId == null) {
-            res.status(400).json({ message: "please provide all of the following: the userID and the exerciseID" });
+        if (userId == "" || exerciseId == "") {
+            return res.status(400).json({ message: "please provide all of the following: the userID and the exerciseID" });
         }
 
         //this should return the exercise object to the frontend to display it
@@ -252,9 +262,9 @@ userRouter.post('/submitExercise', async (req, res) => {
         const userId = req.query.userId;
 
         //get the solved exercise object from the FE, may be modified later.
-        const solvedExercise = req.body;
-        if (userId == null || solvedExercise == null) {
-            res.status(400).json({ message: "please provide all of the following: the userID and the solved exercise" });
+        const { solvedExercise } = req.body;
+        if (userId == "" || solvedExercise == "") {
+            return res.status(400).json({ message: "please provide all of the following: the userID and the solved exercise" });
         }
 
         const { userGrade, gradePercentage } = await userController.submitExercise({ userId, solvedExercise });
