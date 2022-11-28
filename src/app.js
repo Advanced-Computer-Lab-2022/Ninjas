@@ -14,6 +14,9 @@ app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(bodyParser.json());
+var cors = require('cors')
+
+app.use(cors()) 
 
 module.exports = app;
 const port = process.env.PORT || "8000";
