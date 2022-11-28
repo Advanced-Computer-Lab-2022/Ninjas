@@ -273,7 +273,7 @@ const userController = {
         }
     },
 
-    async viewExersiseGrade (exersiseId,userId){ //for individul , corp
+    async viewExersiseGrade (exersiseId,userId){ // exersize in course check en tarteel bt7t f user exersise//for individul , corp
      try{  
        const grade = await UserExercise.findOne ({
             '$and':[ 
@@ -306,27 +306,31 @@ const userController = {
     },
 
 
-    async viewCorrectAnswers (exersiseId,subtitleId){
+    async viewCorrectAnswers (exersiseId,subtitleId,courseId){ //3yza ala2y try2a a7san
      try{
-         const exersise = await Subtitle.findOne ({
+         const exersise = await Course.findOne ({
             '$and':[ 
-                { _id: subtitleId},
-                { exercises : { $elemMatch: { _id : exersiseId }} }
+                { _id: courseId},
+                { subtitles : { $elemMatch: { "exercises._id" : exersiseId }} },
+                { subtitles : { $elemMatch: { _id : subtitleId }}}
             ]
-        },{ exercises:1 })
+        },{ "subtitles":1 })
         
-
      if (exersise){
-      for (var i =0 ; i < exersise.exercises.length ; i++){
-       if (exersise.exercises[i]._id == exersiseId){
-        return {subtitleId: exersise._id , exersises : exersise.exercises[i] }
+      for (var i =0 ; i < exersise.subtitles.length ; i++){
+        if(exersise.subtitles[i].exercises){
+        for (var j =0 ; j < exersise.subtitles[i].exercises.length ; j++){
+       if (exersise.subtitles[i].exercises[j]._id == exersiseId){
+        return {subtitleId: exersise.subtitles[i]._id , exercises : exersise.subtitles[i].exercises[j] }
        }
       }
-
+    }
+}
     }
         throw new DomainError('not found exersise',400)
 
     }catch(err){
+        console.log(err);
         if (err instanceof DomainError) { throw err; }
         throw new DomainError('error internally', 500);
     }
@@ -337,19 +341,21 @@ const userController = {
     },
 
 
-    async viewVideo (subtitleId){
+    async viewVideo (courseId, subtitleId){ 
         try{
-            const video = await Subtitle.findOne ({ 
-                   _id: subtitleId
+            const video = await Course.findOne ({ 
+                   _id: courseId
                
-           },{ videoTitles:1 })
+           },{ subtitles:1 })
            
-      
-        if (video.videoTitles){
-          
-           return video;
-   
+      for(var i =0 ; i<video.subtitles.length ; i++ ){
+        if (video.subtitles[i]._id == subtitleId ){
+          if (video.subtitles[i].videoTitles.link){
+           return video.subtitles[i].videoTitles;
+          }
+          else break;
        }
+    }
            throw new DomainError('no video',400)
    
        }catch(err){

@@ -288,8 +288,8 @@ userRouter.get('/viewExersiseGrade', async (req, res) => {
 userRouter.get('/viewCorrectAnswers', async (req, res) => {
   try{
 
-          const{exersiseId,subtitleId}=req.query
-        const exersise= await userController.viewCorrectAnswers (exersiseId,subtitleId)
+          const{exersiseId,subtitleId,courseId}=req.query
+        const exersise= await userController.viewCorrectAnswers (exersiseId,subtitleId,courseId)
         res.status(200).send(exersise)
 
 
@@ -310,8 +310,8 @@ userRouter.get('/viewCorrectAnswers', async (req, res) => {
 userRouter.get('/viewVideo', async (req, res) => {
     try{
   
-            const{subtitleId}=req.query
-          const exersise= await userController.viewVideo(subtitleId)
+            const{courseId,subtitleId}=req.query
+          const exersise= await userController.viewVideo(courseId,subtitleId)
           res.status(200).send(exersise)
   
   
