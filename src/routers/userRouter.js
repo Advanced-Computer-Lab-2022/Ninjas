@@ -12,9 +12,6 @@ userRouter.get('/', (req, res) => {
     // here we are telling the response to find the html file and send it as a response
     res.sendFile(path.resolve('views/homePage.html'));
 });
-userRouter.get('/selectCountryPage', (req, res) => {
-    res.sendFile(path.resolve('views/selectCountry.html'));
-});
 userRouter.get('/viewGuestIndividualTrainee', (req, res) => {
     res.sendFile(path.resolve('views/guestIndividualHome.html'));
 });

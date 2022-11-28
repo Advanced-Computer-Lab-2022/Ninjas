@@ -1,4 +1,4 @@
-import { Alert, Button, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import { Button, FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import axios from "axios";
 import { useState } from "react";
 
@@ -258,6 +258,7 @@ const ChangeCountry = () => {
 
     const userId = '6352fbe57a237a799c9ed29f'
     const handleChange = (event) => {
+        console.log(event.target.value)
         //sets the country to the selected one
         setCountry(event.target.value);
       };
