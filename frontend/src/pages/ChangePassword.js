@@ -21,11 +21,15 @@ const ChangePassword =() => {
      const change = async ()=>{
         const response=await axios.put(`http://localhost:8000/changePassword/`,{userId:userId,
         oldPassword:oldPassword,
-        newPassword:newPassword})
+        newPassword:newPassword}).
+        catch( (error) => alert(error.response.data.message))
+
+
         console.log(response.data)
-        if(response.status===201){
-            alert(response.data.message)
+        if(response.status===200){
+            alert(response.data)
         }}
+        
 
     
      
