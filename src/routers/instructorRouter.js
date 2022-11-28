@@ -146,12 +146,6 @@ instructorRouter.get('/createCo', async (req, res) => {
 
 })
 
-instructorRouter.get('/selectCountry', async (req, res) => {
-
-  res.sendFile(path.resolve('views/selectCountry.html'));
-
-})
-
 instructorRouter.get('/SearchInst', async (req, res) => {
   try {
     const username = req.query.username;

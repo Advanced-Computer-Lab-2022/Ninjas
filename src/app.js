@@ -22,7 +22,7 @@ module.exports = app;
 const port = process.env.PORT || "8000";
 app.use('/admin', adminRouter);
 // if you see the /, go use the userRouter
-//app.use('/', userRouter);
+app.use('/', userRouter);
 
 //if you see the /, go use the instructorRouter
 app.use('/', instructorRouter);

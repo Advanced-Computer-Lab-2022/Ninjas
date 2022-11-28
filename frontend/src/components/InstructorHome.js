@@ -8,23 +8,25 @@ import { Link } from 'react-router-dom';
 const InstructorPage = () => {
   const [instructor, setInstructor] = useState(null);
 
-    //when this page is first loaded, we get the instructor object from the backend.
-    const userId = '6352fbe57a237a799c9ed29f';
+  //when this page is first loaded, we get the instructor object from the backend.
+  const userId = '6352fbe57a237a799c9ed29f';
 
-    const getInstructor = async () => {
-      await axios.get(`http://localhost:8000/instructor/${userId}`).then(
-        (res) => {
-          const instructor = res.data
-          console.log(instructor)
-          setInstructor(instructor)
-        }
-      );
-    }
+  // const getInstructor = async () => {
+  //   await axios.get(`http://localhost:8000/instructor/${userId}`).then(
+  //     (res) => {
+  //       const instructor = res.data
+  //       console.log(instructor)
+  //       setInstructor(instructor)
+  //     }
+  //   );
+  // }
 
-    useEffect(() => {
-          getInstructor();
-    },[])
-  
+  // useEffect(() => {
+  //       getInstructor();
+  // },[])
+
+
+
 
   return (
     <div>
@@ -47,18 +49,28 @@ const InstructorPage = () => {
             component="div" sx={{ flexGrow: 1 }}>
             Welcome back
           </Typography>
+
+          <Typography variant="h7" align="center"
+            hover
+            sx={{
+              "&:hover": {
+                cursor: "pointer",
+              }
+            }}
+
+          > hello</Typography>
+
+
+
           <Avatar src="/broken-image.jpg" />
-          </Toolbar>
+        </Toolbar>
       </AppBar>
-
+      <br></br>
       <Button component={Link} to='/changeCountry' variant="outlined">Change Country</Button>
-
-
+      <br></br>
+      <Button component={Link} to='/forgotPassword' variant="outlined">I forgot my password</Button>
 
     </div>
-
-
-
   )
 }
 export default InstructorPage
