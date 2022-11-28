@@ -20,38 +20,40 @@ instructorRouter.get('/viewInstReview', async (req, res) => {
   try {
 
 
-    const userId = req.body.userId;
-    const { type } = await Account.findOne({ _id: userId }, { type: 1 }).catch((err) => { throw new DomainError("username doesn't exist", 401) });
+    const userId = req.query.userId;
+    console.log(userId);
+    const { type } = await Account.findOne({ _id: userId }, { type: 1 })
+    .catch((err) => { throw new DomainError("Wrong user Id", 401) });
     if (type != 'INSTRUCTOR') {
       throw new DomainError("unauthorized user: not an instructor", 401);
     }
-    const viewResults = await
-      instructorController.viewInstReview({ userId });
-    var sumRating = 0.0;
-    res.write('<h1>Search results</h1> <hr>')
-    let currentString = "";
-    if (viewResults.length == 0) {
-      currentString += "No Results";
-      res.write(currentString);
-    }
-    else {
-      for (var i = 0; i < viewResults.length; i++) {
-        currentString += '<p> First Name: ' + viewResults[i].firstName + '<br>' +
-          'Last Name: ' + viewResults[i].lastName + '<br>' +
-          'Comment: ' + viewResults[i].text + '<br>' +
-          'Rating: ' + viewResults[i].rating + '<br>'
-        '</p> <hr>';
-        sumRating += viewResults[i].rating;
+   
+     const viewResults = await instructorController.viewInstReview({ userId });
+    // var sumRating = 0.0;
+    // res.write('<h1>Search results</h1> <hr>')
+    // let currentString = "";
+    // if (viewResults.length == 0) {
+    //   currentString += "No Results";
+    //   res.write(currentString);
+    // }
+    // else {
+    //   for (var i = 0; i < viewResults.length; i++) {
+    //     currentString += '<p> First Name: ' + viewResults[i].firstName + '<br>' +
+    //       'Last Name: ' + viewResults[i].lastName + '<br>' +
+    //       'Comment: ' + viewResults[i].text + '<br>' +
+    //       'Rating: ' + viewResults[i].rating + '<br>'
+    //     '</p> <hr>';
+    //     sumRating += viewResults[i].rating;
 
-      }
+    //   }
 
-      sumRating /= viewResults.length;
-      currentString += '<p> Course Rating: ' + sumRating; '</p> <hr>';
-      res.write(currentString);
+    //   sumRating /= viewResults.length;
+    //   currentString += '<p> Course Rating: ' + sumRating; '</p> <hr>';
+    //   res.write(currentString);
 
-
-    }
-    res.status(200).send();
+    // }
+    
+     return res.status(200).json(viewResults)
 
 
   }
@@ -61,30 +63,71 @@ instructorRouter.get('/viewInstReview', async (req, res) => {
 
       res.status(err.code).json({ code: err.code, message: err.message })
     } else {
-      res.status(500).json({ code: 401, message: "username incorrect" });
+      res.status(500).json({ code: 401, message: "error internally" });
+    }
+  }
+
+})
+
+instructorRouter.get('/getCourseRatings', async (req, res) =>{
+
+  try{
+
+    const courseId = req.query.courseId;
+    console.log(courseId);
+    const viewResults = await instructorController.getCourseRatings({ courseId });
+    return res.status(200).json(viewResults)
+
+  }
+  catch (err) {
+
+    if (err instanceof DomainError) {
+
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ code: 401, message: "error internally" });
+    }
+  }
+
+})
+instructorRouter.get('/getCourseSubtitles', async (req, res) =>{
+
+  try{
+
+    const courseId = req.query.courseId;
+    console.log(courseId);
+    const viewResults = await instructorController.getCourseSubtitles({ courseId });
+    return res.status(200).json(viewResults)
+
+  }
+  catch (err) {
+
+    if (err instanceof DomainError) {
+
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ code: 401, message: "error internally" });
     }
   }
 
 })
 
 
-
 instructorRouter.get('/view', async (req, res) => {
   try {
 
 
-    const username = req.body.username;
-    // const { type } =await Account.findOne({ "username": req.query.username }, { type: 1 }).catch((err)=>{throw new DomainError("username doesn't exist",401)});
-    // if (type != 'INSTRUCTOR') {
-    //   throw new DomainError("unauthorized user: not an instructor", 401);
-    // }
+    const username = req.query.username;
+    console.log(username)
 
-
+    /*const { type } =await Account.findOne({ "username": username }, { type: 1 }).catch((err)=>{throw new DomainError("username doesn't exist",401)});
+    if (type != 'INSTRUCTOR') {
+      throw new DomainError("unauthorized user: not an instructor", 401);
+    }*/
 
     console.log(username)
-    const viewResults = await
-      instructorController.getViewResult({ username });
-    var sumRating = 0;
+    const viewResults = await instructorController.getViewResult({ username });
+   /* var sumRating = 0;
     res.write('<h1>Search results</h1> <hr>')
     let currentString = "";
     let viewButtonString;
@@ -99,7 +142,7 @@ instructorRouter.get('/view', async (req, res) => {
           'Comment: ' + viewResults[i].reviews[l].text + '<br>' +
           'Rating: ' + viewResults[i].reviews[l].rating + '<br>'
         '</p> <hr>';
-        sumRating += viewResults[i].reviews[l].rating;
+        sumRating += viewResults[i].reviews[l].rating; 
 
       }
       sumRating = sumRating / viewResults[i].reviews.length;
@@ -120,9 +163,9 @@ instructorRouter.get('/view', async (req, res) => {
       viewButtonString += "\')\">View details</button>";
       currentString += viewButtonString + '<hr>';
       res.write(currentString);
-    }
+    }*/
 
-    res.status(200).send();
+    return res.status(200).json(viewResults)
 
   }
   catch (err) {
