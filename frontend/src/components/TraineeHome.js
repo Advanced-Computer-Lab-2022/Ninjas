@@ -6,7 +6,8 @@ import { AppBar, Avatar, IconButton, Toolbar, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 const TraineePage = () => {
-
+// this id is for a corporate trainee
+  const userId = '635bcbc0b433a250dfd838a8'
     return (
         <div>
         <AppBar position="static">
@@ -29,15 +30,17 @@ const TraineePage = () => {
             Welcome back
           </Typography>
 
-          <Typography variant = "h7" align= "center"
+          <Typography variant="h7" align="center"
             hover
             sx={{
-                "&:hover":{
+              "&:hover": {
                 cursor: "pointer",
-                }
+              }
             }}
+            onClick={() => window.location.href=`/traineeSearch?${userId}`}
+            key={userId}
 
-            > hello</Typography>
+          > Search and Filter Courses </Typography>
 
 
 
