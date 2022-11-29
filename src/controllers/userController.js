@@ -213,7 +213,7 @@ const userController = {
                 throw new DomainError("internal error", 500);
         }
     },
-    async solveExercise({ userId, exerciseId }) {
+    async solveExercise({ userId, exerciseId, courseId, subtitleId }) {
         try {
             const user = await Account.findOne({ _id: userId }, { type: 1 }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
@@ -223,13 +223,16 @@ const userController = {
             if (!['INDIVIDUAL_TRAINEE', 'CORPORATE_TRAINEE'].includes(user.type))
                 throw new DomainError("Unauthorized user.", 401);
 
-            //get the exercise from the database and return it
-            const exercise = await Exercise.findOne({ _id: exerciseId });
+            //get the course
+            const course = await Course.findOne({ _id: courseId });
 
-            if (exercise == null)
-                throw new DomainError("There is no exercise with this ID", 400);
+            //get the subtitle
+            let courseSubtitles = course.subtitles.filter(sub => sub._id.equals(subtitleId));
+            //get the exercise
+            let exercise = courseSubtitles[0].exercises.filter(ex => ex._id.equals(exerciseId))
 
-            return exercise;
+            //it will be an array of one element
+            return exercise[0];
         } catch (error) {
             if (error instanceof DomainError)
                 throw error;
@@ -243,6 +246,7 @@ const userController = {
             const user = await Account.findOne({ _id: userId }, { type: 1 }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
+            console.log(solvedExercise);
             if (user == null)
             throw new DomainError("There is no such user in the database", 400)
 

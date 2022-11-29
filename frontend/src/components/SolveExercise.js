@@ -6,23 +6,27 @@ import { useEffect, useState } from "react";
 const SolveExercise = () => {
     const [userId, setUserId] = useState('');
     const [exerciseId, setExerciseId] = useState('');
-    const [exerciseQuestions, setExerciseQuestions] = useState([]);
-    const [exercise, setExercise] = useState(null)
-
-    const [userAnswers, setUserAnswers] = useState([])
+    const [courseId, setCourseId] = useState('');
+    const [subtitleId, setSubtitleId] = useState('');
+    const [exercise, setExercise] = useState(null);
 
     const handleUserId = (event) => {
         setUserId(event.target.value);
+    };
+    const handleCourseId = (event) => {
+        setCourseId(event.target.value);
+    };
+    const handleSubtitleId = (event) => {
+        setSubtitleId(event.target.value);
     };
     const handleExerciseId = (event) => {
         setExerciseId(event.target.value);
     };
     const getExercise = async () => {
-        const response = await axios.get(`http://localhost:8000/solveExercise?userId=${userId}&exerciseId=${exerciseId}`)
+        const response = await axios.get(`http://localhost:8000/solveExercise?userId=${userId}&courseId=${courseId}&exerciseId=${exerciseId}&subtitleId=${subtitleId}`)
             .catch((error) => alert(error.response.data.message))
 
         setExercise(response.data)
-        console.log(response.data.questions);
     }
 
     const submit = async () => {
@@ -45,12 +49,15 @@ const SolveExercise = () => {
             <AppBar position="static">
                 <Toolbar>
                     <TextField variant="filled" label="user ID" onChange={handleUserId} />
+                    <TextField variant="filled" label="course ID" onChange={handleCourseId} />
+                    <TextField variant="filled" label="subtitle ID" onChange={handleSubtitleId} />
                     <TextField variant="filled" label="exercise ID" onChange={handleExerciseId} />
                 </Toolbar>
                 <Button variant="filled" onClick={getExercise}>Start Solving</Button>
             </AppBar>
 
-            {exercise.questions.map((question) => (
+            {
+                exercise && exercise.questions.map((question) => (
                 <FormControl>
                     <FormLabel id="demo-radio-buttons-group-label">{question.questionText}</FormLabel>
                     <RadioGroup
@@ -70,7 +77,7 @@ const SolveExercise = () => {
 
             <br></br>
 
-            {exercise.questions.length > 0 &&
+            { exercise && exercise.questions.length > 0 &&
                 <Button variant="contained" onClick={submit} >Submit</Button>
 
             }
