@@ -537,6 +537,12 @@ const instructorController = {
 async rateInstructor (instructorId , userId , ratingNumber, ratingText){
 try {
 
+
+      if (!ratingNumber || !( 0<= ratingNumber && ratingNumber <=5 )){
+        throw new DomainError('rating should be between 0-5',400)
+      }
+
+
     const name = await Account.findOne({_id : userId},{firstName : 1 , lastName: 1, _id : 1, type: 1})  
    if (name.type == 'CORPORATE_TRAINEE'|| name.type == 'INDIVIDUAL_TRAINEE'){
 
@@ -562,10 +568,13 @@ try {
      
 
         await Account.findOneAndUpdate({ _id : instructorId}, {rating:generalRating})
-
+       
+        return
   
     }
-    return;
+
+
+    throw new DomainError('you should be a student to rate',400);
     }
     catch(err){
         console.log(err)
