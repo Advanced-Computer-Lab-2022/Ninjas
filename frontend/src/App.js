@@ -14,6 +14,10 @@ import EditEmail from './pages/EditEmail';
 import ViewInstRating from './pages/ViewInstRating';
 import ViewAllCourses from './pages/ViewAllCourses';
 import ViewCourseRatings from './pages/ViewCourseRatings';
+import SubtitlePage from './pages/SubtitlePage';
+import AddVideoCourse from './pages/AddVideoCourse';
+import AddVideoSubtitle from './pages/AddVideoSubtitle';
+import Terms from './pages/Terms';
 
 
 
@@ -35,6 +39,14 @@ function App() {
         <Route path='/view' element= {<ViewAllCourses/>} >
         </Route>
         <Route path='/getCourseRatings' element= {<ViewCourseRatings/>} >
+        </Route>
+        <Route path='/subtitlePage' element= {<SubtitlePage/>} >
+        </Route>
+        <Route path='/addVideoCourse' element= {<AddVideoCourse/>} >
+        </Route>
+        <Route path='/addVideoSubtitle' element= {<AddVideoSubtitle/>} >
+        </Route>
+        <Route path='/terms' element= {<Terms/>} >
         </Route>
         <Route path="/instructor"
         element={<InstructorPage/>}/>

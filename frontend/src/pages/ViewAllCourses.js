@@ -68,25 +68,25 @@ const ViewAllCourses =() => {
     <TableHead>
       <TableRow>
         <StyledTableCell align="center">Course Title</StyledTableCell>
+        <StyledTableCell align="center"></StyledTableCell>
+        <StyledTableCell align="center"></StyledTableCell>
      
       </TableRow>
     </TableHead>
     <TableBody>
       {courses.map((course) => (
         
-        <TableRow
-        hover
-        sx={{
-            "&:hover":{
-            cursor: "pointer",
-            backgroundColor: "#f5f5f5",
-            width: "100%"
-            }
-        }}
-        onClick={() => window.location.href=`/getCourseRatings?courseId=${course._id}`}
-          key={course._id}>
+        <TableRow>
        
           <TableCell align="center">{course.title}</TableCell>
+          <TableCell align="center"><Button color="primary" variant="contained" onClick={() => 
+            window.location.href=`/getCourseRatings?courseId=${course._id}`}>
+          View Course Details
+        </Button> </TableCell>
+          <TableCell align="center"><Button color="primary" variant="contained" onClick={() => 
+            window.location.href=`/addVideoCourse?courseId=${course._id}`}>
+          Add Course Video
+        </Button> </TableCell>
     
         </TableRow>
 

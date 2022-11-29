@@ -69,6 +69,13 @@ const accountSchema = new Schema({
     deafult:0
 },
 
+contractStatus:{
+    type: Boolean,
+    default: false
+  //  required: true
+
+},
+
 })
 
 const Account = mongoose.model('Account', accountSchema);

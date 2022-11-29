@@ -10,6 +10,9 @@ const { Exercise } = require('../models/exercise');
 const { question } = require('../models/question');
 var subtitlesArray = [subtitleSchema];
 var Totalhrs = 0;
+let questionArray = [];
+var exerciseArray = [];
+var subtitleArray2 = [];
 
 var validateEmail = function (email) {
     var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -205,7 +208,7 @@ const instructorController = {
                 }
                 return InstructorToCourses.rating;
             }*/
-            const user = await InstructorToCourses.findOne({ _id: userId }).catch(() => {
+            const user = await Account.findOne({ _id: userId }).catch(() => {
                throw new DomainError("Wrong Id", 400)
             });
 
@@ -477,50 +480,50 @@ const instructorController = {
 
 
     },
-    async createExercise({ instructorId, courseId, title }) {
-        const thisInstructor = await Account.findOne({ _id: instructorId }).catch(() => {
-            throw new DomainError("Wrong Id", 400)
-        });
-        const thisCourse = await Course.findOne({ _id: courseId }).catch(() => {
-            throw new DomainError("Wrong Id", 400)
-        });
-        try {
-            if (thisInstructor == thisCourse.instructors[0]) {
+    async createExercise({ courseId,subtitleId, title}) {
+
+    
+        try { 
                 const newExercise = new Exercise({
                     title: title,
+                    subtitleId:subtitleId,
+                    questions: questionArray
                 })
+                questionArray=[]
                 await newExercise.save()
-                thisCourse.exercises.push(newExercise);
-            }
-            else {
-                throw new DomainError("Unauthorized", 400)
+                const s=await Subtitle.findOne({_id:subtitleId})
+                s.exercises.push(newExercise)
+                console.log(s)
+                const c=await Course.findOne({_id:courseId}).catch(() => {
+                    throw new DomainError("Wrong Id", 400)
+        
+                });
+                for(var i=0;i<c.subtitles.length;i++){
+                    if(c.subtitles[i].subtitleId==subtitleId)
+                    c.subtitles[i]=s
+                }
+                console.log("After loop")
+
+                
             }
 
-        } catch (err) {
+
+        catch (err) {
             if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
             throw new DomainError('error internally', 500);
 
 
-        }
+        }},
 
 
 
-
-
-
-
-    },
-
-
-
-    async acceptContract({ courseId }) {
-        const thisCourse = await Course.findOne({ _id: courseId }).catch(() => {
-            throw new DomainError("Wrong Id", 400)
-
-        });
+    async acceptContract({ userId }) {
+    
 
         try {
-            thisCourse.contractStatus = true;
+            
+            
+           await Account.updateOne({_id:userId}, {contractStatus: true})
         }
         catch (err) {
             if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
@@ -628,6 +631,78 @@ try {
             else
                 throw new DomainError("internal error", 500);
         }
+    },
+
+    async addQuestion2({ questionText, mcq1,mcq2,mcq3,mcq4, correctAnswer, totalCredit}) {
+
+         try {
+            const newQuestion = new question({
+             questionText: questionText,
+             mcqs:[mcq1,mcq2,mcq3,mcq4],
+             correctAnswer: correctAnswer,
+             totalCredit: totalCredit
+ 
+            })
+            newQuestion.save()
+            questionArray.push(newQuestion)
+ 
+         
+         } catch (err) {
+             if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+             throw new DomainError('error internally', 500);
+ 
+ 
+         }
+ 
+ 
+     },
+
+     async addVideo({ subtitleId, title, link, description}) {
+
+
+         try {
+            var res = link.split("=");
+            var embeddedUrl = "https://www.youtube.com/embed/"+res[1];
+            console.log("henaaa1")
+            const newVideo = new Video({
+             title: title,
+             link: embeddedUrl,
+             description: description
+            })
+            console.log("henaaa")
+            newVideo.save();
+            console.log("henaaa3")
+            await Subtitle.updateOne({_id:subtitleId}, {videoTitles: newVideo})
+            console.log("henaaa4")
+ 
+         
+         } catch (err) {
+             if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+             throw new DomainError('error internally', 500);
+ 
+ 
+         }
+ 
+ 
+     },
+     async addVideoCourse({ courseId, videoLink}) {
+
+
+        try {
+           var res = videoLink.split("=");
+           var embeddedUrl = "https://www.youtube.com/embed/"+res[1];
+        await Course.updateOne({_id:courseId},{videoLink:embeddedUrl})
+
+
+        
+        } catch (err) {
+            if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+
     },
 
  
