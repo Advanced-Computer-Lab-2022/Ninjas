@@ -6,6 +6,7 @@ const nodemailer = require("nodemailer");
 const { Rating } = require("../models/rating");
 const UserExercise = require("../models/userExercise");
 const { Subtitle } = require("../models/subtitle");
+const { assign } = require("nodemailer/lib/shared");
 
 
 const helperMethods = {
@@ -308,9 +309,8 @@ const userController = {
         },{ userGrade:1 , gradePercentage: 1, "exercises.totalGrade":1 })
 
         if (grade){
-            
-            grade.sovled = true;
-            return grade;
+          
+            return {userGrade:grade.userGrade , gradePercentage: grade.gradePercentage, totalGrade : grade.exercises[0].totalGrade, solved: true};
         }
         
         

@@ -417,13 +417,13 @@ instructorRouter.put('/rateInstructor',async(req,res) => {
   try{
 const {instructorId,userId, ratingNumber, ratingText}= req.query
   await instructorController.rateInstructor(instructorId,userId, ratingNumber, ratingText)
-  res.status(200).send({Done: true});
+  res.status(200).json({Done: true});
   }
   catch(err){
     if (err instanceof DomainError) {
-      res.status(err.code).send(err.message)
+      res.status(err.code).json({message: err.message})
     } else {
-      res.status(500).send({ err });
+      res.status(500).json({ err });
     }
   }
 })

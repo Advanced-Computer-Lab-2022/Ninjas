@@ -14,6 +14,10 @@ import EditEmail from './pages/EditEmail';
 import ViewInstRating from './pages/ViewInstRating';
 import ViewAllCourses from './pages/ViewAllCourses';
 import ViewCourseRatings from './pages/ViewCourseRatings';
+import CorrectAnswer from './components/CorrectAnswer';
+import ViewExerciseGrade from './components/ViewExerciseGrade';
+import ViewVideo from './components/ViewVideo';
+import RateInstructor from './components/RateInstructor';
 import SubtitlePage from './pages/SubtitlePage';
 import AddVideoCourse from './pages/AddVideoCourse';
 import AddVideoSubtitle from './pages/AddVideoSubtitle';
@@ -27,6 +31,14 @@ function App() {
       <BrowserRouter>
       <Routes>
         <Route path='/changePassword' element= {<ChangePassword/>} >
+        </Route>
+        <Route path='/viewVideo' element= {<ViewVideo/>} >
+        </Route>
+        <Route path='/rateInstructor' element= {<RateInstructor/>} >
+        </Route>
+        <Route path='/viewCorrectAnswers' element= {<CorrectAnswer/>} >
+        </Route>
+        <Route path='/viewExerciseGrade' element= {<ViewExerciseGrade/>} >
         </Route>
         <Route path='/editEmail' element= {<EditEmail/>} >
         </Route>

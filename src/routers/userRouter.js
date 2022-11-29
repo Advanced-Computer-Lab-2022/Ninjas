@@ -279,17 +279,17 @@ userRouter.post('/submitExercise', async (req, res) => {
 })
 
 
-userRouter.get('/viewExersiseGrade', async (req, res) => {
+userRouter.get('/viewExerciseGrade', async (req, res) => {
  try{  const {exersiseId,userId}= req.query
     const grade = await userController.viewExersiseGrade(exersiseId,userId);
-    res.status(200).send(grade)
+    res.status(200).json(grade)
  }
  catch(err){
-   
+
     if (err instanceof DomainError) {
-        res.status(err.code).send(err.message)
+        res.status(err.code).json({ message: err.message })
       } else {
-        res.status(500).send({ err });
+        res.status(500).json({ err });
       }
  }
 })
@@ -300,16 +300,16 @@ userRouter.get('/viewCorrectAnswers', async (req, res) => {
 
           const{exersiseId,subtitleId,courseId}=req.query
         const exersise= await userController.viewCorrectAnswers (exersiseId,subtitleId,courseId)
-        res.status(200).send(exersise)
+        res.status(200).json(exersise)
 
 
 
 
     }catch(err){
         if (err instanceof DomainError) {
-            res.status(err.code).send(err.message)
+            res.status(err.code).json({message: err.message})
           } else {
-            res.status(500).send({ err });
+            res.status(500).json({ err });
           }
     }
 })
@@ -322,7 +322,7 @@ userRouter.get('/viewVideo', async (req, res) => {
   
             const{courseId,subtitleId}=req.query
           const exersise= await userController.viewVideo(courseId,subtitleId)
-          res.status(200).send(exersise)
+          res.status(200).json(exersise)
   
   
   
@@ -330,9 +330,9 @@ userRouter.get('/viewVideo', async (req, res) => {
       }catch(err){
         console.log(err)
           if (err instanceof DomainError) {
-              res.status(err.code).send(err.message)
+              res.status(err.code).json({message: err.message})
             } else {
-              res.status(500).send({ err });
+              res.status(500).json({ err });
             }
       }
   })
