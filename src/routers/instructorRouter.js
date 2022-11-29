@@ -29,6 +29,7 @@ instructorRouter.get('/viewInstReview', async (req, res) => {
     }
    
      const viewResults = await instructorController.viewInstReview({ userId });
+     console.log(viewResults);
     // var sumRating = 0.0;
     // res.write('<h1>Search results</h1> <hr>')
     // let currentString = "";
@@ -423,6 +424,115 @@ const {instructorId,userId, ratingNumber, ratingText}= req.query
       res.status(err.code).json({message: err.message})
     } else {
       res.status(500).json({ err });
+    }
+  }
+})
+
+instructorRouter.post('/addQuestion2',async(req,res) => {
+  try{
+const questionText=req.body.questionText
+const mcq1=req.body.mcq1
+const mcq2=req.body.mcq2
+const mcq3=req.body.mcq3
+const mcq4=req.body.mcq4
+const correctAnswer=req.body.correctAnswer
+const totalCredit=req.body.totalCredit
+  const result= await instructorController.addQuestion2({questionText, mcq1,mcq2,mcq3,mcq4, correctAnswer, totalCredit})
+  res.status(200).json("Question Created Successfully");
+  }
+  catch(err){
+    if (err instanceof DomainError) {
+      res.status(err.code).send(err.message)
+    } else {
+      res.status(500).send({ err });
+    }
+  }
+})
+
+instructorRouter.post('/createExercise',async(req,res) => {
+  try{
+const courseId=req.body.courseId
+const subtitleId=req.body.subtitleId
+const title=req.body.title
+console.log("courseid",courseId)
+console.log("subtitleid",subtitleId)
+console.log("title",title)
+
+
+  await instructorController.createExercise({courseId,subtitleId, title})
+  res.status(200).json("Exercise Created Successfully");
+  }
+  catch(err){
+    if (err instanceof DomainError) {
+      res.status(err.code).send(err.message)
+    } else {
+      res.status(500).send({ err });
+    }
+  }
+})
+
+instructorRouter.post('/addVideo',async(req,res) => {
+  try{
+   
+
+const subtitleId=req.body.subtitleId
+const title=req.body.title
+const link=req.body.link
+const description=req.body.description
+
+
+
+  await instructorController.addVideo({ subtitleId, title, link, description})
+  
+  res.status(200).json("Video Added Successfully");
+  }
+  catch(err){
+    if (err instanceof DomainError) {
+      res.status(err.code).send(err.message)
+    } else {
+      res.status(500).send({ err });
+    }
+  }
+})
+
+instructorRouter.post('/addVideoCourse',async(req,res) => {
+  try{
+   console.log("111");
+
+const courseId=req.body.courseId
+const videoLink=req.body.videoLink
+console.log("1")
+
+console.log(courseId)
+
+  await instructorController.addVideoCourse({ courseId,videoLink})
+  console.log("henaaa")
+  res.status(200).json("Video Added Successfully");
+  }
+  catch(err){
+    if (err instanceof DomainError) {
+      res.status(err.code).send(err.message)
+    } else {
+      res.status(500).send({ err });
+    }
+  }
+})
+
+instructorRouter.post('/acceptContract',async(req,res) => {
+  try{
+const userId=req.body.userId
+console.log(userId)
+
+
+  await instructorController.acceptContract({ userId})
+  
+  res.status(200).json("Thank you for accepting");
+  }
+  catch(err){
+    if (err instanceof DomainError) {
+      res.status(err.code).send(err.message)
+    } else {
+      res.status(500).send({ err });
     }
   }
 })

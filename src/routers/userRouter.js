@@ -5,7 +5,7 @@ const path = require('path');
 const DomainError = require("../error/domainError");
 const { Course } = require("../models/courses");
 const { Exercise } = require("../models/exercise");
-const { question } = require("../models/question");
+const { question, questionSchema } = require("../models/question");
 const { Account } = require("../models/account");
 
 userRouter.get('/', (req, res) => {
@@ -241,14 +241,14 @@ userRouter.post('/rateCourse', async (req, res) => {
 
 userRouter.get('/solveExercise', async (req, res) => {
     try {
-        const { userId, exerciseId } = req.query;
+        const { userId, exerciseId, courseId, subtitleId } = req.query;
 
         if (userId == "" || exerciseId == "") {
             return res.status(400).json({ message: "please provide all of the following: the userID and the exerciseID" });
         }
 
         //this should return the exercise object to the frontend to display it
-        const exercise = await userController.solveExercise({ userId, exerciseId });
+        const exercise = await userController.solveExercise({ userId, exerciseId, courseId, subtitleId });
         res.status(200).json(exercise);
 
     } catch (error) {
@@ -259,7 +259,7 @@ userRouter.get('/solveExercise', async (req, res) => {
 
 userRouter.post('/submitExercise', async (req, res) => {
     try {
-        const userId = req.query.userId;
+        const { userId, subtitleId } = req.query;
 
         //get the solved exercise object from the FE, may be modified later.
         const { solvedExercise } = req.body;
@@ -267,7 +267,7 @@ userRouter.post('/submitExercise', async (req, res) => {
             return res.status(400).json({ message: "please provide all of the following: the userID and the solved exercise" });
         }
 
-        const { userGrade, gradePercentage } = await userController.submitExercise({ userId, solvedExercise });
+        const { userGrade, gradePercentage } = await userController.submitExercise({ userId, subtitleId, solvedExercise });
         res.status(200).json({
             message: "your exercise has been submitted",
             userGrade,
@@ -336,5 +336,4 @@ userRouter.get('/viewVideo', async (req, res) => {
             }
       }
   })
-
 module.exports = userRouter;

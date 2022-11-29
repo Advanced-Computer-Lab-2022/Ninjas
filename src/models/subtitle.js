@@ -15,10 +15,12 @@ const subtitleSchema = new Schema({
     videoTitles: {
         type: videoSchema
     },
+
     exercises: { //according to piazza, each subtitle will have its own exercise(s)
         type: [exerciseSchema],
         default: []
-    }
+    },
+    
 })
 
 const Subtitle = mongoose.model('Subtitle', subtitleSchema);

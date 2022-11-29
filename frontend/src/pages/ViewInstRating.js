@@ -12,7 +12,6 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
-var overallRating = 0;
 
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -26,7 +25,7 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   }));
 
 const ViewInstRating =() => {
-   
+    const[ratingTotal,setRatingTotal]=useState(0);
     const[userId,setUserId]=useState('');
     const[reviews,setReviews]=useState([]);
     const handleChangUserId = (event) => {
@@ -78,35 +77,42 @@ const ViewInstRating =() => {
       </TableRow>
     </TableHead>
     <TableBody>
-      {reviews.map((review) => (
-        
-        <TableRow
-        
-      
+ 
+    
+  {reviews.map((review) => {
+    //setRatingTotal(ratingTotal+review.rating)
+return(
 
-          >
-            
+       <TableRow>
+          
 
-          <TableCell align="center">{review.firstName}</TableCell>
-          <TableCell align="center">{review.lastName}</TableCell>
-          <TableCell align="center">{review.text}</TableCell>
-          <TableCell align="center">{review.rating}</TableCell>
+      <TableCell align="center">{review.firstName}</TableCell>
+      <TableCell align="center">{review.lastName}</TableCell>
+      <TableCell align="center">{review.text}</TableCell>
+      <TableCell align="center">{review.rating}</TableCell>
 
-        </TableRow>
-
-
-      )
+       </TableRow>)
+  }
 
 
 
-      )}
+  
+
+
+
+   )
+   
+   }
+  
     </TableBody>
   </Table>
 </TableContainer>
 
 
 
-
+<Typography>
+  {ratingTotal}
+</Typography>
    
 
 

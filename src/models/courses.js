@@ -54,12 +54,7 @@ const coursesSchema = new Schema({
         type: [ratingSchema],
         default: []
     },
-    contractStatus:{
-        type: Boolean,
-        default: false
-      //  required: true
-
-    },
+    
     discountDuration:{
         type: Number,
         default:0,

@@ -12,12 +12,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 
-var m=0;
-var x=""
-var y=""
-var z=""
-var t=""
 
+// const goSubtitlePage =()=>{
+//   window.location.href=`/subtitlePage?subtitleId=${subtitles._id}`
+// }
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
       backgroundColor: theme.palette.common.black,
@@ -29,12 +27,14 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
   }));
 
 const ViewCourseRatings =() => {
-   
+  const[table,setTable]=useState(0);
     const[reviews,setReviews]=useState([]);
     const[subtitles,setSubtitles]=useState([]);
    const params = new URLSearchParams(window.location.search);
    const courseId = params.get('courseId')
    console.log(courseId)
+   const[course,setCourse]=useState(courseId);
+
  
 
    
@@ -44,7 +44,7 @@ const ViewCourseRatings =() => {
        ).then((res) => { 
         const reviews = res.data
         setReviews(reviews)
-        m=1;
+        setTable(1)
         
     })
         .catch( (error) => alert(error.response.data.message))
@@ -58,7 +58,7 @@ const ViewCourseRatings =() => {
            ).then((res) => { 
             const subtitles = res.data
             setSubtitles(subtitles)
-            m=2
+            setTable(2)
             
         })
             .catch( (error) => alert(error.response.data.message))
@@ -67,20 +67,7 @@ const ViewCourseRatings =() => {
             alert(response.data)
         }}
 
-        if(m==1){
-        x="first name"
-        y="last name"
-        z="rating"
-        t="text"
-            
-        }
-        if(m==2){
-            x="Name"
-        y="Hours"
-        z="Video Title"
-        t="Exercise"
-        }
-
+        
 
         
         
@@ -102,16 +89,19 @@ const ViewCourseRatings =() => {
   <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
     <TableHead>
       <TableRow>
-        <StyledTableCell align="center">{x}</StyledTableCell>
-        <StyledTableCell align="center">{y}</StyledTableCell>
-        <StyledTableCell align="center">{z}</StyledTableCell>
-        <StyledTableCell align="center">{t}</StyledTableCell>
+        <StyledTableCell align="center">{table===1?"first name":"Name"}</StyledTableCell>
+        <StyledTableCell align="center">{table===1?"last name":"Hours"}</StyledTableCell>
+        <StyledTableCell align="center">{table===1?"rating":"Video title"}</StyledTableCell>
+        <StyledTableCell align="center">{table===1?"text":"Exercise"}</StyledTableCell>
+        <StyledTableCell align="center">{table===1?"":""}</StyledTableCell>
+        <StyledTableCell align="center">{table===1?"":""}</StyledTableCell>
+        
 
      
       </TableRow>
     </TableHead>
     <TableBody>
-      {reviews.map((review) => (
+      {table===1? reviews.map((review) => (
         
         <TableRow>
        
@@ -129,9 +119,9 @@ const ViewCourseRatings =() => {
 
 
 
-      )}
-      {subtitles.map((subtitle) => (
-        
+      )
+      :subtitles.map((subtitle) => (
+
         <TableRow>
        
        
@@ -139,6 +129,15 @@ const ViewCourseRatings =() => {
           <TableCell align="center">{subtitle.hours}</TableCell>
           <TableCell align="center">{subtitle.videoTtiles}</TableCell>
           <TableCell align="center">{subtitle.exercises}</TableCell>
+          <TableCell align="center"><Button color="primary" variant="contained" onClick={() => 
+            window.location.href=`/subtitlePage?courseId=${course} &subtitleId=${subtitle._id}`}>
+          Open Subtitle
+      </Button> </TableCell>
+          <TableCell align="center"><Button color="primary" variant="contained" onClick={() => 
+            window.location.href=`/addVideoSubtitle?subtitleId=${subtitle._id}`}>
+          Add Video
+        </Button> </TableCell>
+         
 
     
         </TableRow>
@@ -149,6 +148,8 @@ const ViewCourseRatings =() => {
 
 
       )}
+      
+      
     </TableBody>
   </Table>
 </TableContainer>
