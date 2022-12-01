@@ -454,9 +454,7 @@ instructorRouter.post('/createExercise',async(req,res) => {
 const courseId=req.body.courseId
 const subtitleId=req.body.subtitleId
 const title=req.body.title
-console.log("courseid",courseId)
-console.log("subtitleid",subtitleId)
-console.log("title",title)
+
 
 
   await instructorController.createExercise({courseId,subtitleId, title})
