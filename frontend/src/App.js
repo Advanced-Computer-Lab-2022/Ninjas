@@ -22,6 +22,7 @@ import SubtitlePage from './pages/SubtitlePage';
 import AddVideoCourse from './pages/AddVideoCourse';
 import AddVideoSubtitle from './pages/AddVideoSubtitle';
 import Terms from './pages/Terms';
+import InstructorProfile from './pages/InstructorProfile';
 
 
 
@@ -59,6 +60,8 @@ function App() {
         <Route path='/addVideoSubtitle' element= {<AddVideoSubtitle/>} >
         </Route>
         <Route path='/terms' element= {<Terms/>} >
+        </Route>
+        <Route path='/viewMyProfile' element= {<InstructorProfile/>} >
         </Route>
         <Route path="/instructor"
         element={<InstructorPage/>}/>

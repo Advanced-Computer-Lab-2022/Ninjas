@@ -127,11 +127,10 @@ const ViewCourseRatings =() => {
        
           <TableCell align="center">{subtitle.text}</TableCell>
           <TableCell align="center">{subtitle.hours}</TableCell>
-          <TableCell align="center">{subtitle.videoTtiles}</TableCell>
-          <TableCell align="center">{subtitle.exercises}</TableCell>
+         
           <TableCell align="center"><Button color="primary" variant="contained" onClick={() => 
             window.location.href=`/subtitlePage?courseId=${course} &subtitleId=${subtitle._id}`}>
-          Open Subtitle
+          Add Exercise to Subtitle
       </Button> </TableCell>
           <TableCell align="center"><Button color="primary" variant="contained" onClick={() => 
             window.location.href=`/addVideoSubtitle?subtitleId=${subtitle._id}`}>
