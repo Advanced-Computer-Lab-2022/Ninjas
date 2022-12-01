@@ -713,7 +713,61 @@ try {
 
 
     },
+    //////////////////////////////////////Dool zyada
+    async viewSubtitleEx({ subtitleId}) {
 
+
+        try {
+           const thisSubtitle = await Subtitle.findOne({ _id: subtitleId })
+           return thisSubtitle.exercises
+        
+        } catch (err) {
+            if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+
+    },
+    async viewSubtitleVid({ subtitleId}) {
+
+
+        try {
+            const thisSubtitle = await Subtitle.findOne({ _id: subtitleId })
+            return thisSubtitle.videoTitles
+        
+        } catch (err) {
+            if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+
+    },
+
+    async viewMyDetails({userId}){
+
+       
+        try {
+
+        const thisInstructor = await Account.findOne({_id: userId}).catch(() => {
+            throw new DomainError("Wrong Id", 400)
+        });
+
+        return thisInstructor
+
+    }
+    catch (err) {
+
+        console.log("in catchhhh")
+
+        if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+        throw new DomainError('error internally', 500);
+
+    }
+    },
  
 }
 

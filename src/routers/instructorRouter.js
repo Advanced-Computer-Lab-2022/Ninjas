@@ -537,6 +537,71 @@ console.log(userId)
   }
 })
 
- 
+//////////////////////////////////////////////////////Dool zyadaaaa
+
+instructorRouter.get('/viewSubtitleEx', async (req, res) =>{
+
+  try{
+
+    const courseId = req.query.courseId;
+    console.log(courseId);
+    const viewResults = await instructorController.viewSubtitleEx({ subtitleId });
+    return res.status(200).json(viewResults)
+
+  }
+  catch (err) {
+
+    if (err instanceof DomainError) {
+
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ code: 401, message: "error internally" });
+    }
+  }
+
+})
+
+instructorRouter.get('/viewSubtitleVid', async (req, res) =>{
+
+  try{
+
+    const courseId = req.query.courseId;
+    console.log(courseId);
+    const viewResults = await instructorController.viewSubtitleVid({ courseId });
+    return res.status(200).json(viewResults)
+
+  }
+  catch (err) {
+
+    if (err instanceof DomainError) {
+
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ code: 401, message: "error internally" });
+    }
+  }
+
+})
+
+instructorRouter.get('/viewMyDetails', async (req, res) =>{
+
+  try{
+
+    const userId = req.query.userId;
+    const viewResults = await instructorController.viewMyDetails({ userId });
+    return res.status(200).json(viewResults)
+
+  }
+  catch (err) {
+
+    if (err instanceof DomainError) {
+
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ code: 401, message: "error internally" });
+    }
+  }
+
+})
 
 module.exports = instructorRouter;

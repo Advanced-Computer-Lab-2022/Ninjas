@@ -27,7 +27,9 @@ const Terms =() => {
   <Button color="primary" variant="contained" onClick={()=> {change()}}>
   Accept Contract & Terms
  </Button>
- 
+ <Typography>
+  This is a contract to confirm agreement on all copyrights of all posted videos as well as percentage taken by the company on each video per registered trainee
+ </Typography>
 
 
        </div>
