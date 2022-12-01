@@ -480,29 +480,49 @@ const instructorController = {
 
 
     },
-    async createExercise({ courseId,subtitleId, title}) {
+    async createExercise({ courseId ,subtitleId,title}) {
 
     
         try { 
+            courseId2=courseId.split(" ")
+            subtitle=courseId2[1].split("=")
+            subtitleId2=subtitle[1].toString()
+            const c=await Course.findOne({_id:courseId2[0].toString()})
+           
                 const newExercise = new Exercise({
                     title: title,
-                    subtitleId:subtitleId,
+                    subtitleId:subtitleId2,
                     questions: questionArray
                 })
+
                 questionArray=[]
                 await newExercise.save()
-                const s=await Subtitle.findOne({_id:subtitleId})
-                s.exercises.push(newExercise)
-                console.log(s)
-                const c=await Course.findOne({_id:courseId}).catch(() => {
-                    throw new DomainError("Wrong Id", 400)
-        
-                });
-                for(var i=0;i<c.subtitles.length;i++){
-                    if(c.subtitles[i].subtitleId==subtitleId)
-                    c.subtitles[i]=s
-                }
-                console.log("After loop")
+                const s=await Subtitle.findOne({_id:subtitleId2})
+                 await Subtitle.updateOne({_id:subtitleId2}, {$push: { exercises: newExercise }})
+    //            await Course.findOneandUpdate({_id:courseId2 , "subtitles._id":subtitleId2},{$set:{
+    //             "subtitles.$.text":"sub1"
+    // }})
+
+    // await Course.updateOne(
+    //     { _id: courseId2, 'subtitles._id': subtitleId2 },
+    //     {
+    //       $set: {
+    //         'subtitles.$.text': 'updated name', 
+
+    //       }
+    //     },
+    //    );
+                
+
+
+
+                // for(var i=0;i<c.subtitles.length;i++){
+                //     console.log("i",c.subtitles[i]._id)
+                //     if(c.subtitles[i]._id==subtitleId2)
+                //     console.log("int")
+                //     c.subtitles[i]=s
+                // }
+                // console.log("After loop")
 
                 
             }
