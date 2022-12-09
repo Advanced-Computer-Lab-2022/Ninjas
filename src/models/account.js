@@ -60,13 +60,13 @@ const accountSchema = new Schema({
     },
     review:{
         type:[ratingSchema],
-        deafult:[]
+        default:[]
 },
     rating:{
     type:Number,
     min:0,
     max:5,
-    deafult:0
+    default:0
 },
 
 contractStatus:{

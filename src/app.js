@@ -7,25 +7,42 @@ const adminRouter = require("./routers/adminRouter");
 const instructorRouter = require("./routers/instructorRouter");
 const path = require('path');
 const mongoURI = process.env.mongoURI;
-
-
 const app = express();
 app.use(bodyParser.urlencoded({
   extended: true
 }));
 app.use(bodyParser.json());
-var cors = require('cors')
+var cors = require('cors');
+const { requireAuth } = require("./middleware/authMiddleware");
+const router = require("./routers/logsign");
+const cookieParser = require("cookie-parser");
+const session = require('express-session');
 
 app.use(cors()) 
+app.use(express.json());
+app.use(cookieParser());
+app.use(session({
+  secret: process.env.TOKEN,
+  resave: false,
+  saveUninitialized: false,
+}))
+
 
 module.exports = app;
 const port = process.env.PORT || "8000";
-app.use('/admin', adminRouter);
+//login and signup do not require an authenticated user
+app.use('/login', router);
+app.use('/signUp', router);
+
+
+
+app.use('/admin', requireAuth, adminRouter);
 // if you see the /, go use the userRouter
-app.use('/', userRouter);
+app.use('/', requireAuth, userRouter);
+
 
 //if you see the /, go use the instructorRouter
-app.use('/', instructorRouter);
+app.use('/', requireAuth, instructorRouter);
 
 //telling server if u want to find the views go to src/views (as __dirname is file directory)
 app.set('views', path.join(__dirname, 'views'));

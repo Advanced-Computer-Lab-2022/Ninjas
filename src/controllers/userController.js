@@ -7,8 +7,21 @@ const { Rating } = require("../models/rating");
 const UserExercise = require("../models/userExercise");
 const { Subtitle } = require("../models/subtitle");
 const { assign } = require("nodemailer/lib/shared");
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken');
+require('dotenv').config()
 
+const maxAge = 3 * 24 * 60 * 60;
+//change this too
+const createToken = (user) => {
+    return jwt.sign({ id: user._id, username: user.username, type: user.type }, process.env.TOKEN, {
+        expiresIn: maxAge, 
+    });
 
+    // jwt.sign creates the webtoken, bya5od el payload f object, wel secret string, wel expires in
+    // we should generate a random token and store it in the env file
+    // jwt.verify
+};
 const helperMethods = {
     updateRatingValue({ reviewsArray, newRating }) {
         var count = reviewsArray.length;
@@ -25,6 +38,62 @@ const helperMethods = {
 
 
 const userController = {
+    async signUp({ username, firstName, lastName, email, password, gender }) {
+        try {
+            const salt = await bcrypt.genSalt();
+            //hashes pw
+            const hashedPassword = await bcrypt.hash(password, salt);
+            //generates new user, with the hashed pw
+            const usernameExists = await Account.findOne({ '$or': [{username}, {email}] });
+            console.log(usernameExists)
+            //the username and email should be unique
+            if (usernameExists)
+                throw new DomainError("username and/or email already exists.", 400);
+
+            const user = await Account.create({
+                username,
+                firstName,
+                lastName,
+                email,
+                password: hashedPassword,
+                gender,
+                type: 'INDIVIDUAL_TRAINEE'
+            });
+            return user;
+
+        } catch (error) {
+            if (error instanceof DomainError) throw error;
+            else {
+                console.log(error);
+                throw new DomainError("internal error", 500);
+            }
+        }
+    },
+
+    async login({ username, password }) {
+        try {        
+            //get the user from the DB
+            const user = await Account.findOne({ username });
+            //compare hashed password with non hashed one from the input
+            const correct = await bcrypt.compare(password, user.password);
+            console.log(correct);
+            //if the password is not correct or there is now user with the provided email
+            if (!correct)
+                throw new DomainError("password is incorrect", 400);
+            else if (!user)
+            throw new DomainError("username is incorrect", 400);
+
+            const token = createToken(user);
+            return { user, token };
+
+        } catch (error) {
+            if (error instanceof DomainError) throw error;
+            else {
+                console.log(error);
+                throw new DomainError("internal error", 500);
+            }
+        }
+    },
     async getSearchResult({
         userId = null, subject = null,
         minPrice = null, maxPrice = null,
@@ -249,7 +318,7 @@ const userController = {
             });
             console.log(solvedExercise);
             if (user == null)
-            throw new DomainError("There is no such user in the database", 400)
+                throw new DomainError("There is no such user in the database", 400)
 
             //if the user is not a trainee then they're unauthorized
             if (!['INDIVIDUAL_TRAINEE', 'CORPORATE_TRAINEE'].includes(user.type))
@@ -299,59 +368,59 @@ const userController = {
         }
     },
 
-    async viewExersiseGrade (exersiseId,userId){ // in course//for individul , corp
-     try{  
-       const grade = await UserExercise.findOne ({
-            '$and':[ 
-                { accountId: userId},
-                { exercises : { $elemMatch: { _id : exersiseId }} }
-            ]
-        },{ userGrade:1 , gradePercentage: 1, "exercises.totalGrade":1 })
+    async viewExersiseGrade(exersiseId, userId) { // in course//for individul , corp
+        try {
+            const grade = await UserExercise.findOne({
+                '$and': [
+                    { accountId: userId },
+                    { exercises: { $elemMatch: { _id: exersiseId } } }
+                ]
+            }, { userGrade: 1, gradePercentage: 1, "exercises.totalGrade": 1 })
 
-        if (grade){
-          
-            return {userGrade:grade.userGrade , gradePercentage: grade.gradePercentage, totalGrade : grade.exercises[0].totalGrade, solved: true};
+            if (grade) {
+
+                return { userGrade: grade.userGrade, gradePercentage: grade.gradePercentage, totalGrade: grade.exercises[0].totalGrade, solved: true };
+            }
+
+
+            return { userGrade: 0, gradePercentage: 0, totalGrade: 0, solved: false }
         }
-        
-        
-        return {userGrade:0 , gradePercentage: 0, totalGrade : 0, solved: false}
-    }
-    catch(err){
-      
-        if (err instanceof DomainError) { throw err; }
-        throw new DomainError('error internally', 500);
-    }
+        catch (err) {
+
+            if (err instanceof DomainError) { throw err; }
+            throw new DomainError('error internally', 500);
+        }
     },
 
 
-    async viewCorrectAnswers (exersiseId,subtitleId,courseId){ //3yza ala2y try2a a7san
-     try{
-         const exersise = await Course.findOne ({
-            '$and':[ 
-                { _id: courseId},
-                { subtitles : { $elemMatch: { "exercises._id" : exersiseId }} },
-                { subtitles : { $elemMatch: { _id : subtitleId }}}
-            ]
-        },{ "subtitles":1 })
-        
-     if (exersise){
-      for (var i =0 ; i < exersise.subtitles.length ; i++){
-        if(exersise.subtitles[i].exercises){
-        for (var j =0 ; j < exersise.subtitles[i].exercises.length ; j++){
-       if (exersise.subtitles[i].exercises[j]._id == exersiseId){
-        return {subtitleId: exersise.subtitles[i]._id , exercises : exersise.subtitles[i].exercises[j] }
-       }
-      }
-    }
-}
-    }
-        throw new DomainError('not found exersise',400)
+    async viewCorrectAnswers(exersiseId, subtitleId, courseId) { //3yza ala2y try2a a7san
+        try {
+            const exersise = await Course.findOne({
+                '$and': [
+                    { _id: courseId },
+                    { subtitles: { $elemMatch: { "exercises._id": exersiseId } } },
+                    { subtitles: { $elemMatch: { _id: subtitleId } } }
+                ]
+            }, { "subtitles": 1 })
 
-    }catch(err){
-        console.log(err);
-        if (err instanceof DomainError) { throw err; }
-        throw new DomainError('error internally', 500);
-    }
+            if (exersise) {
+                for (var i = 0; i < exersise.subtitles.length; i++) {
+                    if (exersise.subtitles[i].exercises) {
+                        for (var j = 0; j < exersise.subtitles[i].exercises.length; j++) {
+                            if (exersise.subtitles[i].exercises[j]._id == exersiseId) {
+                                return { subtitleId: exersise.subtitles[i]._id, exercises: exersise.subtitles[i].exercises[j] }
+                            }
+                        }
+                    }
+                }
+            }
+            throw new DomainError('not found exersise', 400)
+
+        } catch (err) {
+            console.log(err);
+            if (err instanceof DomainError) { throw err; }
+            throw new DomainError('error internally', 500);
+        }
 
 
 
@@ -359,36 +428,36 @@ const userController = {
     },
 
 
-    async viewVideo (courseId, subtitleId){ 
-        try{
-            const video = await Course.findOne ({ 
-                   _id: courseId
-               
-           },{ subtitles:1 })
-           
-      for(var i =0 ; i<video.subtitles.length ; i++ ){
-        if (video.subtitles[i]._id == subtitleId ){
-          if (video.subtitles[i].videoTitles.link){
-           return video.subtitles[i].videoTitles;
-          }
-          else break;
-       }
-    }
-           throw new DomainError('no video',400)
-   
-       }catch(err){
-         console.log(err)
-           if (err instanceof DomainError) { throw err; }
-           throw new DomainError('error internally', 500);
-       }
-   
-   
-   
-   
-       },
+    async viewVideo(courseId, subtitleId) {
+        try {
+            const video = await Course.findOne({
+                _id: courseId
+
+            }, { subtitles: 1 })
+
+            for (var i = 0; i < video.subtitles.length; i++) {
+                if (video.subtitles[i]._id == subtitleId) {
+                    if (video.subtitles[i].videoTitles.link) {
+                        return video.subtitles[i].videoTitles;
+                    }
+                    else break;
+                }
+            }
+            throw new DomainError('no video', 400)
+
+        } catch (err) {
+            console.log(err)
+            if (err instanceof DomainError) { throw err; }
+            throw new DomainError('error internally', 500);
+        }
 
 
-    
+
+
+    },
+
+
+
 }
 
 module.exports = userController;

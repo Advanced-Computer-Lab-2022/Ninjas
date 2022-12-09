@@ -7,11 +7,21 @@ const { Course } = require("../models/courses");
 const { Exercise } = require("../models/exercise");
 const { question, questionSchema } = require("../models/question");
 const { Account } = require("../models/account");
-
+const { payload } = require("../middleware/authMiddleware");
 userRouter.get('/', (req, res) => {
+
     // here we are telling the response to find the html file and send it as a response
     res.sendFile(path.resolve('views/homePage.html'));
 });
+
+
+userRouter.post('logout', (req,res) => {
+    //{ username } = req.session.username;
+    console.log(payload);
+    res.clearCookie('jwt');
+    res.status(200).json({ message: "logged out successfully"})
+
+})
 userRouter.get('/viewGuestIndividualTrainee', (req, res) => {
     res.sendFile(path.resolve('views/guestIndividualHome.html'));
 });
@@ -280,37 +290,38 @@ userRouter.post('/submitExercise', async (req, res) => {
 
 
 userRouter.get('/viewExerciseGrade', async (req, res) => {
- try{  const {exersiseId,userId}= req.query
-    const grade = await userController.viewExersiseGrade(exersiseId,userId);
-    res.status(200).json(grade)
- }
- catch(err){
+    try {
+        const { exersiseId, userId } = req.query
+        const grade = await userController.viewExersiseGrade(exersiseId, userId);
+        res.status(200).json(grade)
+    }
+    catch (err) {
 
-    if (err instanceof DomainError) {
-        res.status(err.code).json({ message: err.message })
-      } else {
-        res.status(500).json({ err });
-      }
- }
+        if (err instanceof DomainError) {
+            res.status(err.code).json({ message: err.message })
+        } else {
+            res.status(500).json({ err });
+        }
+    }
 })
 
 
 userRouter.get('/viewCorrectAnswers', async (req, res) => {
-  try{
+    try {
 
-          const{exersiseId,subtitleId,courseId}=req.query
-        const exersise= await userController.viewCorrectAnswers (exersiseId,subtitleId,courseId)
+        const { exersiseId, subtitleId, courseId } = req.query
+        const exersise = await userController.viewCorrectAnswers(exersiseId, subtitleId, courseId)
         res.status(200).json(exersise)
 
 
 
 
-    }catch(err){
+    } catch (err) {
         if (err instanceof DomainError) {
-            res.status(err.code).json({message: err.message})
-          } else {
+            res.status(err.code).json({ message: err.message })
+        } else {
             res.status(500).json({ err });
-          }
+        }
     }
 })
 
@@ -318,22 +329,22 @@ userRouter.get('/viewCorrectAnswers', async (req, res) => {
 
 
 userRouter.get('/viewVideo', async (req, res) => {
-    try{
-  
-            const{courseId,subtitleId}=req.query
-          const exersise= await userController.viewVideo(courseId,subtitleId)
-          res.status(200).json(exersise)
-  
-  
-  
-  
-      }catch(err){
+    try {
+
+        const { courseId, subtitleId } = req.query
+        const exersise = await userController.viewVideo(courseId, subtitleId)
+        res.status(200).json(exersise)
+
+
+
+
+    } catch (err) {
         console.log(err)
-          if (err instanceof DomainError) {
-              res.status(err.code).json({message: err.message})
-            } else {
-              res.status(500).json({ err });
-            }
-      }
-  })
+        if (err instanceof DomainError) {
+            res.status(err.code).json({ message: err.message })
+        } else {
+            res.status(500).json({ err });
+        }
+    }
+})
 module.exports = userRouter;
