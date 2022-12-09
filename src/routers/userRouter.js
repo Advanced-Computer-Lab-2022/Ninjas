@@ -7,7 +7,7 @@ const { Course } = require("../models/courses");
 const { Exercise } = require("../models/exercise");
 const { question, questionSchema } = require("../models/question");
 const { Account } = require("../models/account");
-const { payload } = require("../middleware/authMiddleware");
+
 userRouter.get('/', (req, res) => {
 
     // here we are telling the response to find the html file and send it as a response
@@ -15,10 +15,12 @@ userRouter.get('/', (req, res) => {
 });
 
 
-userRouter.post('logout', (req,res) => {
-    //{ username } = req.session.username;
-    console.log(payload);
-    res.clearCookie('jwt');
+userRouter.post('/logout', (req,res) => {
+    const username  = req.session.username;
+   const key = username + 'jwt';
+    req.session.username = null;
+    req.session.id = null;
+    res.clearCookie(key);
     res.status(200).json({ message: "logged out successfully"})
 
 })

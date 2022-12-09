@@ -8,6 +8,7 @@ const instructorRouter = require("./routers/instructorRouter");
 const path = require('path');
 const mongoURI = process.env.mongoURI;
 const app = express();
+var sess = null ;
 app.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -17,6 +18,7 @@ const { requireAuth } = require("./middleware/authMiddleware");
 const router = require("./routers/logsign");
 const cookieParser = require("cookie-parser");
 const session = require('express-session');
+const userController = require("./controllers/userController");
 
 app.use(cors()) 
 app.use(express.json());
@@ -28,9 +30,42 @@ app.use(session({
 }))
 
 
-module.exports = app;
 const port = process.env.PORT || "8000";
 //login and signup do not require an authenticated user
+
+app.get('/login', async (req, res) => {
+  try {
+      //should be changed in the evaluation
+      const maxAge = 3 * 24 * 60 * 60;
+
+      console.log( 'entered');
+      const { username, password } = req.query;
+      const { user, token } = await userController.login({ username, password });
+
+      //unique identifier for key-value table of cookies
+      sess = req.session;
+
+      const key = username+'jwt';
+      //req.session.username = username;
+      req.session.username = username
+      
+      res.cookie(key, token, { httpOnly: true, maxAge: maxAge * 1000 });
+      //req.session.userid = user._id;
+      req.session.userid =  user._id ;
+      req.session.save();
+      sess = req.session;
+      sess.save()
+      console.log(sess.username)
+     // req.session.save()
+    
+
+      res.status(200).json(user);
+  }
+  catch (error) {
+      res.status(500).json(error.message);
+  }
+})
+
 app.use('/login', router);
 app.use('/signUp', router);
 
@@ -59,6 +94,7 @@ mongoose.connect(mongoURI)
   })
   .catch(err => console.log(err));
 
+  module.exports = {app , sess };
 
 
 
