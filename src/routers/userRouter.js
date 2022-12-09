@@ -7,26 +7,19 @@ const { Course } = require("../models/courses");
 const { Exercise } = require("../models/exercise");
 const { question, questionSchema } = require("../models/question");
 const { Account } = require("../models/account");
+const { sessionDetails } = require("../middleware/authMiddleware");
+const session = sessionDetails.getSession();
 
-userRouter.get('/', (req, res) => {
-    // here we are telling the response to find the html file and send it as a response
-    res.sendFile(path.resolve('views/homePage.html'));
-});
-userRouter.get('/viewGuestIndividualTrainee', (req, res) => {
-    res.sendFile(path.resolve('views/guestIndividualHome.html'));
-});
-userRouter.get('/viewInstructorHomePage', (req, res) => {
-    res.sendFile(path.resolve('views/instructorGeneral.html'));
-});
-userRouter.get('/viewCourseWithoutPrice', (req, res) => {
-    res.sendFile(path.resolve('views/viewCourseNoPrice.html'));
-});
-userRouter.get('/viewCorporateTrainee', (req, res) => {
-    res.sendFile(path.resolve('views/corporateTrainee.html'));
-});
-userRouter.get('/viewCoursesWithPricePage', (req, res) => {
-    res.sendFile(path.resolve('views/viewCoursesWithPrice.html'));
-});
+userRouter.post('/logout', (req, res) => {
+    console.log(req.session.id);
+    const session = sessionDetails.getSession(req.session.id);
+
+    const key = session.username + 'jwt';
+    res.clearCookie(key);
+    sessionDetails.removeSession(req.session.id);
+    res.status(200).json({ message: "logged out successfully" })
+
+})
 
 userRouter.get('/search', async (req, res) => {
     try {
@@ -97,15 +90,16 @@ userRouter.get('/viewAllCourses', async (req, res) => {
 
 })
 
-userRouter.post('/selectCountry/:id', async (req, res) => {
+userRouter.post('/selectCountry', async (req, res) => {
     try {
-        const userId = req.params.id
+        console.log(session)
+        const { userId, type } = session;
         const selectedCountry = req.body.country;
         if (!selectedCountry || !userId) {
             return res.status(400).json({ message: "please provide the userID and the selected country." });
         }
 
-        await userController.changeUserCountry({ userId, selectedCountry });
+        await userController.changeUserCountry({ userId, type, selectedCountry });
         // status 201 "no_content" is usually rendered when the response does not have any data in it,
         // and is commonly used in cases where a record is updated.
         res.status(201).json({ message: "your country has been changed successfully." });
@@ -187,14 +181,6 @@ userRouter.get('/viewAndFilterCourses', async (req, res) => {
         }
     }
 
-})
-
-userRouter.get('/viewFilterCourses', (req, res) => {
-    res.sendFile(path.resolve('views/viewCoursesWithPrice.html'))
-})
-
-userRouter.get('/viewAllCoursesPage', (req, res) => {
-    res.sendFile(path.resolve('views/viewCourseNoPrice.html'));
 })
 
 userRouter.post('/forgotPassword', async (req, res) => {
@@ -280,37 +266,38 @@ userRouter.post('/submitExercise', async (req, res) => {
 
 
 userRouter.get('/viewExerciseGrade', async (req, res) => {
- try{  const {exersiseId,userId}= req.query
-    const grade = await userController.viewExersiseGrade(exersiseId,userId);
-    res.status(200).json(grade)
- }
- catch(err){
+    try {
+        const { exersiseId, userId } = req.query
+        const grade = await userController.viewExersiseGrade(exersiseId, userId);
+        res.status(200).json(grade)
+    }
+    catch (err) {
 
-    if (err instanceof DomainError) {
-        res.status(err.code).json({ message: err.message })
-      } else {
-        res.status(500).json({ err });
-      }
- }
+        if (err instanceof DomainError) {
+            res.status(err.code).json({ message: err.message })
+        } else {
+            res.status(500).json({ err });
+        }
+    }
 })
 
 
 userRouter.get('/viewCorrectAnswers', async (req, res) => {
-  try{
+    try {
 
-          const{exersiseId,subtitleId,courseId}=req.query
-        const exersise= await userController.viewCorrectAnswers (exersiseId,subtitleId,courseId)
+        const { exersiseId, subtitleId, courseId } = req.query
+        const exersise = await userController.viewCorrectAnswers(exersiseId, subtitleId, courseId)
         res.status(200).json(exersise)
 
 
 
 
-    }catch(err){
+    } catch (err) {
         if (err instanceof DomainError) {
-            res.status(err.code).json({message: err.message})
-          } else {
+            res.status(err.code).json({ message: err.message })
+        } else {
             res.status(500).json({ err });
-          }
+        }
     }
 })
 
@@ -318,22 +305,22 @@ userRouter.get('/viewCorrectAnswers', async (req, res) => {
 
 
 userRouter.get('/viewVideo', async (req, res) => {
-    try{
-  
-            const{courseId,subtitleId}=req.query
-          const exersise= await userController.viewVideo(courseId,subtitleId)
-          res.status(200).json(exersise)
-  
-  
-  
-  
-      }catch(err){
+    try {
+
+        const { courseId, subtitleId } = req.query
+        const exersise = await userController.viewVideo(courseId, subtitleId)
+        res.status(200).json(exersise)
+
+
+
+
+    } catch (err) {
         console.log(err)
-          if (err instanceof DomainError) {
-              res.status(err.code).json({message: err.message})
-            } else {
-              res.status(500).json({ err });
-            }
-      }
-  })
+        if (err instanceof DomainError) {
+            res.status(err.code).json({ message: err.message })
+        } else {
+            res.status(500).json({ err });
+        }
+    }
+})
 module.exports = userRouter;
