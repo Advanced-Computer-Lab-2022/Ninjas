@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 var cors = require('cors');
-const { requireAuth } = require("./middleware/authMiddleware");
+const { requireAuth, sessionDetails } = require("./middleware/authMiddleware");
 const router = require("./routers/logsign");
 const cookieParser = require("cookie-parser");
 const session = require('express-session');
@@ -30,6 +30,7 @@ app.use(session({
 }))
 
 
+
 const port = process.env.PORT || "8000";
 //login and signup do not require an authenticated user
 
@@ -42,22 +43,22 @@ app.get('/login', async (req, res) => {
       const { username, password } = req.query;
       const { user, token } = await userController.login({ username, password });
 
-      //unique identifier for key-value table of cookies
-      sess = req.session;
+      //we will update our session in the middleware
+      sessionDetails.setSession(req.session);
+      sessionDetails.sessionUserID(user._id);
+      sessionDetails.sessionUserType(user.type);
+      sessionDetails.sessionUsername(username);
 
+      sessionDetails.pushSession();
+
+
+      console.log(sessionDetails.getSession(req.session.id));
+
+
+      //unique identifier for key-value table of cookies
       const key = username+'jwt';
-      //req.session.username = username;
-      req.session.username = username
-      
       res.cookie(key, token, { httpOnly: true, maxAge: maxAge * 1000 });
-      //req.session.userid = user._id;
-      req.session.userid =  user._id ;
-      req.session.save();
-      sess = req.session;
-      sess.save()
-      console.log(sess.username)
-     // req.session.save()
-    
+  
 
       res.status(200).json(user);
   }

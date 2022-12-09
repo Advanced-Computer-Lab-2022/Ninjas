@@ -164,15 +164,10 @@ const userController = {
             }
         }
     },
-    async changeUserCountry({ userId, selectedCountry }) {
+    async changeUserCountry({ userId, type, selectedCountry }) {
         //update the user's record in the database
         try {
-
-            const thisUserType = await Account.findOne({ _id: userId }, { type: 1 }).catch(() => {
-                throw new DomainError("Wrong Id", 400)
-            });
-            //admins should not change their country
-            if (thisUserType.type == 'ADMIN')
+            if (type == 'ADMIN')
                 throw new DomainError("Unauthorized user: Admin", 401)
 
             await Account.updateOne(
