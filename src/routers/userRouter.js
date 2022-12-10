@@ -34,7 +34,7 @@ userRouter.get('/search', async (req, res) => {
         res.status(200).json({ result: searchResults });
     } catch (error) {
         console.log(error)
-        res.status(error.code).json(error.message);
+        res.status(error.code).json({message: error.message});
     }
 })
 
@@ -104,7 +104,7 @@ userRouter.post('/selectCountry', async (req, res) => {
         // and is commonly used in cases where a record is updated.
         res.status(201).json({ message: "your country has been changed successfully." });
     } catch (error) {
-        res.status(error.code).json(error.message);
+        res.status(error.code).json({message: error.message});
     }
 })
 userRouter.get('/user/:id', async (req, res) => {
@@ -116,7 +116,7 @@ userRouter.get('/user/:id', async (req, res) => {
         const user = await userController.getUserData({ userId });
         res.status(200).json(user);
     } catch (error) {
-        res.status(error.code).json(error.message);
+        res.status(error.code).json({message: error.message});
     }
 })
 
@@ -201,7 +201,7 @@ userRouter.post('/forgotPassword', async (req, res) => {
         //if the email is sent successfully, we will tell the frontend to display the message.
         res.status(200).json({ message: "A reset password email has been sent. Please check your email. " });
     } catch (error) {
-        res.status(error.code).json(error);
+        res.status(error.code).json({message: error.message});
     }
 })
 

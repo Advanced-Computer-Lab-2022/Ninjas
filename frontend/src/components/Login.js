@@ -32,17 +32,24 @@ const Login = () => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const username = data.get('username');
+    if (!username || username.trim().length == 0) {
+      alert("Please enter a username.");
+      return;
+    } 
     const password = data.get('password');
-
+    if (!password || password.trim().length == 0) {
+      alert("Please enter a password.");
+      return;
+    }
     //call the backend to login the user
     const response = await axios.get(`http://localhost:8000/login?username=${username}&password=${password}`)
-    .catch((error) => {
-      console.log(error)
-      alert(error.response.data.message)
-    })
+      .catch((error) => {
+        console.log(error)
+        alert(error.response.data.message)
+      })
 
     if (response.status == 200)
-    alert("logged in successfully.")
+      alert("logged in successfully.")
 
   };
 
@@ -89,7 +96,7 @@ const Login = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ mt: 3, mb: 2, bgcolor:'#00B4D8' }}
+              sx={{ mt: 3, mb: 2, bgcolor: '#00B4D8' }}
             >
               Sign In
             </Button>
@@ -109,7 +116,7 @@ const Login = () => {
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
-      </div>
+    </div>
   );
 }
 
