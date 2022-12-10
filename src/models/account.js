@@ -73,9 +73,18 @@ contractStatus:{
     type: Boolean,
     default: false
   //  required: true
-
 },
 
+certificates: {
+    type: [String],
+    default: []
+},
+progress: [
+    {
+        courseId: Schema.Types.ObjectId,
+        currentProgress: Number,
+    }
+]
 })
 
 const Account = mongoose.model('Account', accountSchema);
