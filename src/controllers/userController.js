@@ -9,13 +9,14 @@ const { Subtitle } = require("../models/subtitle");
 const { assign } = require("nodemailer/lib/shared");
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
+const path = require("path");
 require('dotenv').config()
 
 const maxAge = 3 * 24 * 60 * 60;
 //change this too
 const createToken = (user) => {
     return jwt.sign({ id: user._id, username: user.username, type: user.type }, process.env.TOKEN, {
-        expiresIn: maxAge, 
+        expiresIn: maxAge,
     });
 
     // jwt.sign creates the webtoken, bya5od el payload f object, wel secret string, wel expires in
@@ -44,7 +45,7 @@ const userController = {
             //hashes pw
             const hashedPassword = await bcrypt.hash(password, salt);
             //generates new user, with the hashed pw
-            const usernameExists = await Account.findOne({ '$or': [{username}, {email}] });
+            const usernameExists = await Account.findOne({ '$or': [{ username }, { email }] });
             console.log(usernameExists)
             //the username and email should be unique
             if (usernameExists)
@@ -71,7 +72,7 @@ const userController = {
     },
 
     async login({ username, password }) {
-        try {        
+        try {
             //get the user from the DB
             const user = await Account.findOne({ username });
             //compare hashed password with non hashed one from the input
@@ -81,7 +82,7 @@ const userController = {
             if (!correct)
                 throw new DomainError("password is incorrect", 400);
             else if (!user)
-            throw new DomainError("username is incorrect", 400);
+                throw new DomainError("username is incorrect", 400);
 
             const token = createToken(user);
             return { user, token };
@@ -451,8 +452,49 @@ const userController = {
 
     },
 
+    async emailCertificate({ userId, courseId }) {
+        try {        //this function should be called if the user progress is equal to 100% after its last update.
+            //not an endpoint to be called.
 
+            //get the course certificate name from the object itself
+            const course = await Course.findOne({ _id: courseId });
 
+            const user = await Account.findOne({ _id: userId });
+            const pathToCertificate = path.resolve('certificate/', course.certificate);
+
+            // we will use the nodemailer package to send the email from our gmail (ninjasacl) to the user's email.
+            const sender = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'aclninjas@gmail.com',
+                    pass: 'iftgjpiijzvveprh'
+                }
+            });
+
+            const mailOptions = {
+                from: 'aclninjas@gmail.com',
+                to: user.email,
+                subject: 'Congratulations on completing the course: ' + course.title,
+                text: 'Please find the certificate attached as a pdf.',
+                attachments: [
+                    {
+                        filename: course.certificate,
+                        path: pathToCertificate,
+                        contentType: 'application/pdf'
+                    }
+                ]
+            };
+
+            //the function that sends the email
+            await sender.sendMail(mailOptions);
+        } catch (error) {
+            console.log(error)
+            if (error instanceof DomainError) throw error;
+            else
+                throw new DomainError("internal error", 500)
+        }
+
+    }
 }
 
 module.exports = userController;

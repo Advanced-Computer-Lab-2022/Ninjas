@@ -63,9 +63,10 @@ const coursesSchema = new Schema({
     videoLink:{
         type:String,
         required:true
+    },
+    certificate: {
+        type: String,
     }
-   
-
 })
 
 const countryPriceDetails = new Map();
