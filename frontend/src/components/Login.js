@@ -13,6 +13,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
+import { Alert } from '@mui/material';
+import { useState } from 'react';
 
 function Copyright(props) {
   return (
@@ -26,6 +28,7 @@ function Copyright(props) {
 
 
 const Login = () => {
+  const [errMsg, setMsg] = useState('');
 
   const handleSubmit = async (event) => {
     //when the sign in button is clicked this function is called
@@ -33,19 +36,19 @@ const Login = () => {
     const data = new FormData(event.currentTarget);
     const username = data.get('username');
     if (!username || username.trim().length == 0) {
-      alert("Please enter a username.");
+      setMsg("Please enter a username.");
       return;
-    } 
+    }
     const password = data.get('password');
     if (!password || password.trim().length == 0) {
-      alert("Please enter a password.");
+      setMsg("Please enter a password.");
       return;
     }
     //call the backend to login the user
     const response = await axios.get(`http://localhost:8000/login?username=${username}&password=${password}`)
       .catch((error) => {
         console.log(error)
-        alert(error.response.data.message)
+        setMsg(error.response.data.message)
       })
 
     if (response.status == 200)
@@ -65,6 +68,12 @@ const Login = () => {
             alignItems: 'center',
           }}
         >
+          { errMsg != '' &&
+            <Alert variant="filled" severity="error">
+            {errMsg}
+          </Alert>
+          }
+
           <Avatar sx={{ m: 1, bgcolor: '#00B4D8' }}>
             <LockOutlinedIcon />
           </Avatar>
