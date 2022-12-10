@@ -75,14 +75,14 @@ const userController = {
         try {
             //get the user from the DB
             const user = await Account.findOne({ username });
+            if (!user)
+                throw new DomainError("username is incorrect", 400);
             //compare hashed password with non hashed one from the input
             const correct = await bcrypt.compare(password, user.password);
             console.log(correct);
             //if the password is not correct or there is now user with the provided email
             if (!correct)
                 throw new DomainError("password is incorrect", 400);
-            else if (!user)
-                throw new DomainError("username is incorrect", 400);
 
             const token = createToken(user);
             return { user, token };
@@ -202,6 +202,7 @@ const userController = {
             if (!['INSTRUCTOR', 'INDIVIDUAL_TRAINEE', 'CORPORATE_TRAINEE'].includes(user.type))
                 throw new DomainError("Unauthorized user.", 401);
 
+            const resetLink = 'http://localhost:3000/resetPassword/' + user._id;
             // we will use the nodemailer package to send the email from our gmail (ninjasacl) to the user's email.
             const sender = nodemailer.createTransport({
                 service: 'gmail',
@@ -215,7 +216,7 @@ const userController = {
                 from: 'aclninjas@gmail.com',
                 to: user.email,
                 subject: 'Online Learning System: Reset Password',
-                text: 'Please follow the link to change your password.' //we should append the link to the change password endpoint
+                text: 'Please follow the link to change your password. \n' + resetLink
             };
 
             //the function that sends the email
@@ -229,6 +230,26 @@ const userController = {
             }
         }
 
+    },
+    async resetPassword({ userId, password }) {
+        try {
+            const salt = await bcrypt.genSalt();
+            //hashes pw
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            const updatedPass = await Account.updateOne({ _id: userId }, { password: hashedPassword })
+            if (updatedPass.modifiedCount == 1)
+                return true
+            else throw new DomainError("did not change the password", 500);
+        }
+        catch (error) {
+            if (error instanceof DomainError)
+                throw error;
+            else {
+                console.log(error);
+                throw new DomainError("internal error", 500);
+            }
+        }
     },
     async rateCourse({ userId, courseId, rating, text }) {
         try {

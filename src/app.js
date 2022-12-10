@@ -67,8 +67,7 @@ app.get('/login', async (req, res) => {
   }
 })
 
-app.use('/login', router);
-app.use('/signUp', router);
+app.use('/', router);
 
 
 
