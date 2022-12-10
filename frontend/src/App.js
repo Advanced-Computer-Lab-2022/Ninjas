@@ -23,6 +23,7 @@ import AddVideoCourse from './pages/AddVideoCourse';
 import AddVideoSubtitle from './pages/AddVideoSubtitle';
 import Terms from './pages/Terms';
 import InstructorProfile from './pages/InstructorProfile';
+import Login from './components/Login';
 
 
 
@@ -31,6 +32,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
       <Routes>
+      <Route path='/' element={<Login/>}></Route>
         <Route path='/changePassword' element= {<ChangePassword/>} >
         </Route>
         <Route path='/viewVideo' element= {<ViewVideo/>} >
