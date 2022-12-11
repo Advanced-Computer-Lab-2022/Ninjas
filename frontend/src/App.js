@@ -23,6 +23,8 @@ import AddVideoCourse from './pages/AddVideoCourse';
 import AddVideoSubtitle from './pages/AddVideoSubtitle';
 import Terms from './pages/Terms';
 import InstructorProfile from './pages/InstructorProfile';
+import Login from './components/Login';
+import ResetPasswordPage from './components/ResetPassword';
 
 
 
@@ -31,6 +33,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
       <Routes>
+      <Route path='/' element={<Login/>}></Route>
         <Route path='/changePassword' element= {<ChangePassword/>} >
         </Route>
         <Route path='/viewVideo' element= {<ViewVideo/>} >
@@ -77,7 +80,7 @@ function App() {
         element={<TraineeSearch/>}/>
         <Route path="/rateCourse" element={<RateCourse/>}/>
         <Route path="/solveExercise" element={<SolveExercise/>}/>
-
+      <Route path="/resetPassword/:id" element={<ResetPasswordPage/>}/>
       </Routes>
       </BrowserRouter>
     </div>
