@@ -17,6 +17,7 @@ const reportSchema = new Schema({
 
     problem:{
         type:String,
+        enum: ['technical', 'financial', 'other'],
         required: true
         
     },
