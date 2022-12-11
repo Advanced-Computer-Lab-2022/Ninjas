@@ -681,7 +681,17 @@ async viewProgress({ userId,courseId }) {
 
 },
 
-  
+async mostPopularCourses() {
+    try {
+    //according to the TA on piazza we need the courses with most amount of registered students
+    //we will assume for now that we need to display the three most popular courses
+    const popularCourses = await Course.find().limit(3).sort({ numberOfRegistered: -1});
+    return popularCourses;
+    } catch(error) {
+        console.log(error);
+        throw new DomainError("internal error", 500);
+    }
+}
 
 
 }
