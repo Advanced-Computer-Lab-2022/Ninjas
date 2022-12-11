@@ -71,6 +71,10 @@ const coursesSchema = new Schema({
     },
     certificate: {
         type: String,
+    },
+    numberOfRegistered: {
+        type: Number,
+        default: 0
     }
 })
 
