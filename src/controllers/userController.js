@@ -10,6 +10,7 @@ const { assign } = require("nodemailer/lib/shared");
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const path = require("path");
+const RefundRequest = require("../models/refundRequest");
 require('dotenv').config()
 
 const maxAge = 3 * 24 * 60 * 60;
@@ -95,6 +96,8 @@ const userController = {
             }
         }
     },
+
+    
     async getSearchResult({
         userId = null, subject = null,
         minPrice = null, maxPrice = null,
@@ -619,9 +622,14 @@ async requestRefund({ userId,courseId }) {
     try {
     const account= Account.findOne({_id:userId})
     for(var i=0;i<account.progress.length;i++){
-        if(account.progress[i].courseId==courseId){
+        if(account.progress[i].courseId.toString()==courseId){
             if(account.progress[i].currentProgress<50){
-                const course= Course.findOne({_id:courseId})
+                const newRefundRequest = new RefundRequest({
+                    accountId:userId,
+                    courseId:courseId
+                })
+    
+                newRefundRequest.save();
                 //ad5al fel refund array el course
                // Account.updateOne({_id:userId},{wallet:wallet+course.price})
                 bol=true;
