@@ -24,6 +24,7 @@ import AddVideoSubtitle from './pages/AddVideoSubtitle';
 import Terms from './pages/Terms';
 import InstructorProfile from './pages/InstructorProfile';
 import Login from './components/Login';
+import Signup from './components/Signup';
 import ResetPasswordPage from './components/ResetPassword';
 import MostPopular from './components/MostPopular';
 
@@ -35,6 +36,7 @@ function App() {
       <BrowserRouter>
       <Routes>
       <Route path='/' element={<Login/>}></Route>
+      <Route path='/signup' element={<Signup/>}></Route>
         <Route path='/changePassword' element= {<ChangePassword/>} >
         </Route>
         <Route path='/viewVideo' element= {<ViewVideo/>} >
