@@ -451,6 +451,137 @@ const userController = {
 
     },
 
+    async viewEnrolledCourses(userId){
+        let myCourses = [];
+        try{
+            const theUser = await Account.findOne({_id: userId}).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });;
+            const courses = await Course.find();
+            if(theUser.type == 'INDIVIDUAL TRAINEE' || theUser.type == 'CORPORATE TRIANEE'){
+                for(var i = 0 ; i<courses.length ; i++){
+                    for(var j =0; j<courses[i].students.length; j++){
+                        if(userId == courses[i].students[j].id){
+                            myCourses.push(courses[i]);
+                            break;
+                        }
+
+                    }
+                }
+
+            }
+            return myCourses;
+        }
+        catch(err){
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+    },
+    async payForCourse(userId, courseId){ //from wallet
+        try{
+            const theUser = await Account.findOne({_id: userId}).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });;
+            const thisCourse =  await Account.findOne({_id: courseId}).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });;
+            if(theUser.type == 'INDIVIDUAL TRAINEE'){
+                if(theUser.wallet > 0 && theUser.wallet>=thisCourse.price){
+                    let newBalance = theUser.wallet - thisCourse.price;
+                   await Account.updateOne({_id:userId}, {wallet: newBalance })
+
+                }
+         
+            }
+          //  return myCourses;
+        }
+        catch(err){
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+    },
+
+    async payForCourse2(userId, courseId, cardNo, country){ //name & postal code
+         //from credit card
+         var cardForm = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
+         
+        try{
+            const theUser = await Account.findOne({_id: userId}).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });;
+            const thisCourse =  await Account.findOne({_id: courseId}).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });;
+            if(theUser.type == 'INDIVIDUAL TRAINEE' && cardNo.value.match(cardForm) && theUser.country == country){
+                return
+                //what to return
+            }
+          //  return myCourses;
+        }
+        catch(err){
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+    },
+
+    async updateWallet(userId){ //refunded courses
+
+        let newWallet = 0;
+       try{
+           const theUser = await Account.findOne({_id: userId}).catch(() => {
+               throw new DomainError("Wrong Id", 400)
+           });;
+        
+           if(theUser.type == 'INDIVIDUAL TRAINEE'){
+            for(var i=0; i<theUser.refundedCourses.length; i++){
+                newWallet = theUser.wallet + (0.5* theUser.refundedCourses[i].price); 
+            }
+            await Account.updateOne({_id:userId}, {wallet: newWallet })
+
+            
+           }
+       }
+       catch(err){
+           throw new DomainError('error internally', 500);
+
+
+       }
+
+   },
+
+   async walletDetails(userId){
+
+    let walletDetailss = [];
+   try{
+       const theUser = await Account.findOne({_id: userId}).catch(() => {
+           throw new DomainError("Wrong Id", 400)
+       });;
+    
+       if(theUser.type == 'INDIVIDUAL TRAINEE'){
+        for(var i=0; i<theUser.refundedCourses.length; i++){
+            walletDetailss.push(0.5* theUser.refundedCourses[i].price); 
+        }
+
+        return walletDetailss;
+       }
+   }
+   catch(err){
+       throw new DomainError('error internally', 500);
+
+
+   }
+
+},
+
+
+
+
 
 
 }

@@ -602,4 +602,27 @@ instructorRouter.get('/viewMyDetails', async (req, res) =>{
 
 })
 
+instructorRouter.get('/owedMoney', async (req, res) =>{
+
+  try{
+
+    const userId = req.query.userId;
+    const viewResults = await instructorController.owedMoney({ userId });
+    return res.status(200).json(viewResults)
+
+  }
+  catch (err) {
+
+    if (err instanceof DomainError) {
+
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ code: 401, message: "error internally" });
+    }
+  }
+
+})
+
+
+
 module.exports = instructorRouter;

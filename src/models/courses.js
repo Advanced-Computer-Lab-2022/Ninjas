@@ -63,6 +63,11 @@ const coursesSchema = new Schema({
     videoLink:{
         type:String,
         required:true
+    },
+    students: {
+        type: [accountSchema],
+        required: false
+
     }
    
 

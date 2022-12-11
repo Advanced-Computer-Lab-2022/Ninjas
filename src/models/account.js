@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const countryEnums = require('../Enums/countryEnums')
 const { ratingSchema } = require('./rating')
+const { coursesSchema } = require('./courses')
+
 const Schema = mongoose.Schema;
 
 var validateEmail = function (email) {
@@ -75,6 +77,10 @@ contractStatus:{
   //  required: true
 
 },
+refundedCourses:{
+    type:[coursesSchema],
+    required: false
+}
 
 })
 
