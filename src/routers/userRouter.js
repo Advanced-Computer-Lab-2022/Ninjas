@@ -425,11 +425,11 @@ userRouter.post('/requestRefund',async(req,res) => {
   const session = sessionDetails.getSession(req.session.id);
   const userId = session.userId
   const courseId=req.query.courseId
-await userController.requestRefund({ userId,courseId})
+    await userController.requestRefund({ userId,courseId})
 
+
+    res.status(200).json("Request is waiting for review");}
     
-    res.status(200).json("Refunded amout is now in your wallet");
-    }
     catch(err){
       if (err instanceof DomainError) {
         res.status(err.code).send(err.message)
