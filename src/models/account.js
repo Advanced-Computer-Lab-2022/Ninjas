@@ -4,7 +4,6 @@ const { ratingSchema } = require('./rating')
 const { coursesSchema } = require('./courses')
 
 const { reportSchema } = require('./report')
-const {coursesSchema}=require ('./courses')
 const Schema = mongoose.Schema;
 
 var validateEmail = function (email) {
