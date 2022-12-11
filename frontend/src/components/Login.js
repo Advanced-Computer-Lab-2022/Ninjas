@@ -51,10 +51,45 @@ const Login = () => {
         setMsg(error.response.data.message)
       })
 
-    if (response.status == 200)
-      alert("logged in successfully.")
+    if (response.status == 200) {
+      //the response in case the login succeeds is the user object with all its details.
+      const user = response.data;
 
+      //we should check the user type, and redirect to the appropriate home page
+      //we usually append the userId to the params so that we can use it later on
+      // switch (user.type) {
+      //   case ('INDIVIDUAL_TRAINEE'):
+      //     window.location.href = `/individualTrainee/${user._id}`; break;
+
+      //   case ('CORPORATE_TRAINEE'):
+      //     window.location.href = `/corporateTrainee/${user._id}`; break;
+
+      //   case ('INSTRUCTOR'):
+      //     window.location.href = `/instructor/${user._id}`; break;
+
+      //   case ('ADMIN'):
+      //     window.location.href = `/admin/${user._id}`; break;
+      // }
+
+      console.log(user.type);
+    }
   };
+
+  const continueAsGuest = async () => {
+    //what if we want to continue as a guest?
+    //we have a standard guest user in the database that we can use in that case
+    const response = await axios.get(`http://localhost:8000/login?username=guest123&password=123456`)
+      .catch((error) => {
+        console.log(error)
+        setMsg(error.response.data.message)
+      })
+
+    if (response.status === 200) {
+      console.log("guest login ", response.data)
+      const user = response.data;
+      // window.location.href = `/guest/${user._id}`;
+    }
+  }
 
   return (
     <div>
@@ -68,10 +103,10 @@ const Login = () => {
             alignItems: 'center',
           }}
         >
-          { errMsg != '' &&
+          {errMsg != '' &&
             <Alert variant="filled" severity="error">
-            {errMsg}
-          </Alert>
+              {errMsg}
+            </Alert>
           }
 
           <Avatar sx={{ m: 1, bgcolor: '#00B4D8' }}>
@@ -108,6 +143,13 @@ const Login = () => {
               sx={{ mt: 3, mb: 2, bgcolor: '#00B4D8' }}
             >
               Sign In
+            </Button>
+            <Button fullWidth
+              variant="contained"
+              sx={{ mt: 2, mb: 2, bgcolor: '#00D8' }}
+              onClick={continueAsGuest}
+            >
+              CONTINUE AS GUEST
             </Button>
             <Grid container>
               <Grid item xs>
