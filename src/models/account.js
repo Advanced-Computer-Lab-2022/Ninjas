@@ -69,7 +69,7 @@ const accountSchema = new Schema({
     default:0
 },
 
-contractStatus:{
+contractStatus:{ //for instructor
     type: Boolean,
     default: false
   //  required: true
@@ -84,7 +84,17 @@ progress: [
         courseId: Schema.Types.ObjectId,
         currentProgress: Number,
     }
-]
+],
+companyPolicy: { 
+    type: Boolean,
+    default: false
+},
+wallet:{
+    type:Number,
+    deafult:0
+}
+
+
 })
 
 const Account = mongoose.model('Account', accountSchema);
