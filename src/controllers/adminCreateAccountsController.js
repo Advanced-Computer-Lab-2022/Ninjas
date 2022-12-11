@@ -166,7 +166,7 @@ const adminCreateAccountsController =
 
 
 
- },
+ }},
 
 
 
@@ -197,9 +197,6 @@ return newRec;
   }
 
   },
-
-
-},
 
 }
 module.exports = adminCreateAccountsController;
