@@ -25,6 +25,7 @@ import Terms from './pages/Terms';
 import InstructorProfile from './pages/InstructorProfile';
 import Login from './components/Login';
 import ResetPasswordPage from './components/ResetPassword';
+import MostPopular from './components/MostPopular';
 
 
 
@@ -81,6 +82,7 @@ function App() {
         <Route path="/rateCourse" element={<RateCourse/>}/>
         <Route path="/solveExercise" element={<SolveExercise/>}/>
       <Route path="/resetPassword/:id" element={<ResetPasswordPage/>}/>
+      <Route path="/mostPopularCourses" element={<MostPopular/>}/>
       </Routes>
       </BrowserRouter>
     </div>
