@@ -302,6 +302,87 @@ userRouter.get('/viewVideo', async (req, res) => {
     }
 })
 
+userRouter.get('/viewEnrolledCourses', async (req, res) => {
+    try {
+
+        const { userId } = req.query
+        const results = await userController.viewEnrolledCourses(userId)
+        res.status(200).json(results)
+
+
+
+
+    } catch (err) {
+        console.log(err)
+        if (err instanceof DomainError) {
+            res.status(err.code).json({ message: err.message })
+        } else {
+            res.status(500).json({ err });
+        }
+    }
+})
+
+userRouter.post('/payForCourse', async (req, res) => {
+    try {
+
+        const userId = req.body.userId
+        const courseId = req.body.courseId
+        await userController.payForCourse(userId, courseId)
+        res.status(200).json("You have paid successfully");
+  }
+  catch(err){
+    if (err instanceof DomainError) {
+      res.status(err.code).send(err.message)
+    } else {
+      res.status(500).send({ err });
+    }
+  }
+
+})
+
+userRouter.post('/payForCourse2', async (req, res) => {
+    try {
+
+        const userId = req.body.userId
+        const courseId = req.body.courseId
+        const cardNo = req.body.cardNo
+        const country = req.body.country
+        await userController.payForCourse2(userId, courseId, couresId, cardNo, country)
+        res.status(200).json("You have paid successfully");
+  }
+  catch(err){
+    if (err instanceof DomainError) {
+      res.status(err.code).send(err.message)
+    } else {
+      res.status(500).send({ err });
+    }
+  }
+
+})
+
+userRouter.get('/walletDetails', async (req, res) => {
+    try {
+
+        const { userId } = req.query
+        const results = await userController.walletDetails(userId)
+        res.status(200).json(results)
+
+    } catch (err) {
+        console.log(err)
+        if (err instanceof DomainError) {
+            res.status(err.code).json({ message: err.message })
+        } else {
+            res.status(500).json({ err });
+        }
+    }
+})
+
+
+
+
+
+
+
 userRouter.post('/acceptPolicy',async(req,res) => {
     try{
     const session = sessionDetails.getSession(req.session.id);

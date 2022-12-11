@@ -473,6 +473,85 @@ const userController = {
 
     },
 
+    async viewEnrolledCourses(userId){
+        let myCourses = [];
+        try{
+            const theUser = await Account.findOne({_id: userId}).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });;
+            const courses = await Course.find();
+            if(theUser.type == 'INDIVIDUAL TRAINEE' || theUser.type == 'CORPORATE TRIANEE'){
+                for(var i = 0 ; i<courses.length ; i++){
+                    for(var j =0; j<courses[i].students.length; j++){
+                        if(userId == courses[i].students[j].id){
+                            myCourses.push(courses[i]);
+                            break;
+                        }
+
+                    }
+                }
+
+            }
+            return myCourses;
+        }
+        catch(err){
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+    },
+    async payForCourse(userId, courseId){ //from wallet
+        try{
+            const theUser = await Account.findOne({_id: userId}).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });;
+            const thisCourse =  await Account.findOne({_id: courseId}).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });;
+            if(theUser.type == 'INDIVIDUAL TRAINEE'){
+                if(theUser.wallet > 0 && theUser.wallet>=thisCourse.price){
+                    let newBalance = theUser.wallet - thisCourse.price;
+                   await Account.updateOne({_id:userId}, {wallet: newBalance })
+
+                }
+         
+            }
+          //  return myCourses;
+        }
+        catch(err){
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+    },
+
+    async payForCourse2(userId, courseId, cardNo, country){ //name & postal code
+         //from credit card
+         var cardForm = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
+         
+        try{
+            const theUser = await Account.findOne({_id: userId}).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });;
+            const thisCourse =  await Account.findOne({_id: courseId}).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });;
+            if(theUser.type == 'INDIVIDUAL TRAINEE' && cardNo.value.match(cardForm) && theUser.country == country){
+                return
+                //what to return
+            }
+          //  return myCourses;
+        }
+        catch(err){
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+    },
+
     async emailCertificate({ userId, courseId }) {
         try {        //this function should be called if the user progress is equal to 100% after its last update.
             //not an endpoint to be called.
