@@ -301,4 +301,58 @@ userRouter.get('/viewVideo', async (req, res) => {
         }
     }
 })
+
+userRouter.post('/acceptPolicy',async(req,res) => {
+    try{
+    const session = sessionDetails.getSession(req.session.id);
+    const userId = session.userId
+await userController.acceptPolicy({ userId})
+    
+    res.status(200).json("Thank you for accepting");
+    }
+    catch(err){
+      if (err instanceof DomainError) {
+        res.status(err.code).send(err.message)
+      } else {
+        res.status(500).send({ err });
+      }
+    }
+  })
+
+  userRouter.get('/viewProgress',async(req,res) => {
+    try{
+  const session = sessionDetails.getSession(req.session.id);
+  const userId = session.userId
+  const courseId=req.query.courseId
+const progress= await userController.viewProgress({ userId,courseId})
+console.log(progress)
+    
+    res.status(200).json();
+    }
+    catch(err){
+      if (err instanceof DomainError) {
+        res.status(err.code).send(err.message)
+      } else {
+        res.status(500).send({ err });
+      }
+    }
+  })
+module.exports = userRouter;
+
+userRouter.get('/requestRefund',async(req,res) => {
+    try{
+  const userId=req.query.userId
+  const courseId=req.query.courseId
+await userController.requestRefund({ userId,courseId})
+    
+    res.status(200).json("Refunded amout is now in your wallet");
+    }
+    catch(err){
+      if (err instanceof DomainError) {
+        res.status(err.code).send(err.message)
+      } else {
+        res.status(500).send({ err });
+      }
+    }
+  })
 module.exports = userRouter;

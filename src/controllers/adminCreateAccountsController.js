@@ -129,7 +129,40 @@ const adminCreateAccountsController =
  
  
       }
- 
+   },
+   async addDiscountAdmin({
+
+      courseId, discount, discountDuration
+  }) {
+      try {
+          if(courseId=="" || discount=="" || discountDuration==""){
+              throw new DomainError("All fields must be filled", 400)
+          }
+          const user = await Course.findOne({ _id: courseId }).catch(() => {
+              throw new DomainError("Wrong Id", 400)
+          });
+
+          if(!(discountDuration>0 && discountDuration<=12)){
+              throw new DomainError("Discount Duration must be within 0 to 12 months", 400)
+          }
+
+          if(courseId.discount==0){
+            throw new DomainError("Discount is set by instructor", 400)
+          }
+
+         else{
+          await Course.updateOne({ _id: courseId }, { discount: discount });
+          await Course.updateOne({ _id: courseId }, { discountDuration: discountDuration });
+         }
+
+
+
+      }
+      catch (err) {
+          if (err instanceof DomainError) throw err;
+          else
+          throw new DomainError('error internally', 500);
+    
 
 
 
@@ -162,6 +195,8 @@ return newRec;
 
 
   }
+
+  },
 
 
 },

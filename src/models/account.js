@@ -70,7 +70,7 @@ const accountSchema = new Schema({
     default:0
 },
 
-contractStatus:{
+contractStatus:{ //for instructor
     type: Boolean,
     default: false
   //  required: true
@@ -90,7 +90,17 @@ progress: [
 
 reports: {
     type: [reportSchema],
-    default: []
+    default: [],
+companyPolicy: { 
+    type: Boolean,
+    default: false
+},
+wallet:{
+    type:Number,
+    deafult:0
+}
+
+
 },
 
 

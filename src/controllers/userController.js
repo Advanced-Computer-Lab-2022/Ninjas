@@ -515,7 +515,82 @@ const userController = {
                 throw new DomainError("internal error", 500)
         }
 
+    },
+    async acceptPolicy({ userId }) {
+    
+
+        try {
+            
+            
+           await Account.updateOne({_id:userId}, {companyPolicy: true})
+        }
+        catch (err) {
+            if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+
+},
+
+async requestRefund({ userId,courseId }) {
+    var bol=false;
+
+    try {
+    const account= Account.findOne({_id:userId})
+    for(var i=0;i<account.progress.length;i++){
+        if(account.progress[i].courseId==courseId){
+            if(account.progress[i].currentProgress<50){
+                const course= Course.findOne({_id:courseId})
+                //ad5al fel refund array el course
+               // Account.updateOne({_id:userId},{wallet:wallet+course.price})
+                bol=true;
+                break;
+            }
+        }
     }
+    if(bol==false){
+        throw new DomainError("Can't refund course with progress more than 50%", 401)
+    }
+
+    }
+    catch (err) {
+        if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+        throw new DomainError('error internally', 500);
+
+
+    }
+
+
+},
+
+async viewProgress({ userId,courseId }) {
+    
+  console.log(courseId)
+  console.log(userId)
+    try {
+    const account= await Account.findOne({_id:userId})
+    for(var i=0;i<account.progress.length;i++){
+        if(account.progress[i].courseId.toString()==courseId){
+            return account.progress[i].currentProgress;
+        }
+    }
+
+    }
+    catch (err) {
+        if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+        throw new DomainError('error internally', 500);
+
+
+    }
+
+
+},
+
+  
+
+
 }
 
 module.exports = userController;
