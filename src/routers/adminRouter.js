@@ -32,4 +32,26 @@ adminRouter.post('/create', async (req, res) => {
   }
 })
 
+adminRouter.put('/addDiscountAdmin', async (req, res) => {
+  try {
+    const courseId = req.body.courseId;
+    const discount = req.body.discount;
+    const discountDuration = req.body.discountDuration;
+
+    await iadminCreateAccountsController.addDiscountAdmin({ courseId, discount, discountDuration });
+    res.status(200).json("Update Succesfully");
+  }
+  catch (err) {
+    if (err instanceof DomainError) {
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ err });
+    }
+  }
+
+
+
+})
+
+
 module.exports = adminRouter;

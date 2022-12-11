@@ -9,13 +9,14 @@ const { Subtitle } = require("../models/subtitle");
 const { assign } = require("nodemailer/lib/shared");
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
+const path = require("path");
 require('dotenv').config()
 
 const maxAge = 3 * 24 * 60 * 60;
 //change this too
 const createToken = (user) => {
     return jwt.sign({ id: user._id, username: user.username, type: user.type }, process.env.TOKEN, {
-        expiresIn: maxAge, 
+        expiresIn: maxAge,
     });
 
     // jwt.sign creates the webtoken, bya5od el payload f object, wel secret string, wel expires in
@@ -44,7 +45,7 @@ const userController = {
             //hashes pw
             const hashedPassword = await bcrypt.hash(password, salt);
             //generates new user, with the hashed pw
-            const usernameExists = await Account.findOne({ '$or': [{username}, {email}] });
+            const usernameExists = await Account.findOne({ '$or': [{ username }, { email }] });
             console.log(usernameExists)
             //the username and email should be unique
             if (usernameExists)
@@ -71,17 +72,17 @@ const userController = {
     },
 
     async login({ username, password }) {
-        try {        
+        try {
             //get the user from the DB
             const user = await Account.findOne({ username });
+            if (!user)
+                throw new DomainError("username is incorrect", 400);
             //compare hashed password with non hashed one from the input
             const correct = await bcrypt.compare(password, user.password);
             console.log(correct);
             //if the password is not correct or there is now user with the provided email
             if (!correct)
                 throw new DomainError("password is incorrect", 400);
-            else if (!user)
-            throw new DomainError("username is incorrect", 400);
 
             const token = createToken(user);
             return { user, token };
@@ -201,6 +202,7 @@ const userController = {
             if (!['INSTRUCTOR', 'INDIVIDUAL_TRAINEE', 'CORPORATE_TRAINEE'].includes(user.type))
                 throw new DomainError("Unauthorized user.", 401);
 
+            const resetLink = 'http://localhost:3000/resetPassword/' + user._id;
             // we will use the nodemailer package to send the email from our gmail (ninjasacl) to the user's email.
             const sender = nodemailer.createTransport({
                 service: 'gmail',
@@ -214,7 +216,7 @@ const userController = {
                 from: 'aclninjas@gmail.com',
                 to: user.email,
                 subject: 'Online Learning System: Reset Password',
-                text: 'Please follow the link to change your password.' //we should append the link to the change password endpoint
+                text: 'Please follow the link to change your password. \n' + resetLink
             };
 
             //the function that sends the email
@@ -228,6 +230,26 @@ const userController = {
             }
         }
 
+    },
+    async resetPassword({ userId, password }) {
+        try {
+            const salt = await bcrypt.genSalt();
+            //hashes pw
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            const updatedPass = await Account.updateOne({ _id: userId }, { password: hashedPassword })
+            if (updatedPass.modifiedCount == 1)
+                return true
+            else throw new DomainError("did not change the password", 500);
+        }
+        catch (error) {
+            if (error instanceof DomainError)
+                throw error;
+            else {
+                console.log(error);
+                throw new DomainError("internal error", 500);
+            }
+        }
     },
     async rateCourse({ userId, courseId, rating, text }) {
         try {
@@ -530,58 +552,122 @@ const userController = {
 
     },
 
-    async updateWallet(userId){ //refunded courses
+    async emailCertificate({ userId, courseId }) {
+        try {        //this function should be called if the user progress is equal to 100% after its last update.
+            //not an endpoint to be called.
 
-        let newWallet = 0;
-       try{
-           const theUser = await Account.findOne({_id: userId}).catch(() => {
-               throw new DomainError("Wrong Id", 400)
-           });;
-        
-           if(theUser.type == 'INDIVIDUAL TRAINEE'){
-            for(var i=0; i<theUser.refundedCourses.length; i++){
-                newWallet = theUser.wallet + (0.5* theUser.refundedCourses[i].price); 
-            }
-            await Account.updateOne({_id:userId}, {wallet: newWallet })
+            //get the course certificate name from the object itself
+            const course = await Course.findOne({ _id: courseId });
 
-            
-           }
-       }
-       catch(err){
-           throw new DomainError('error internally', 500);
+            const user = await Account.findOne({ _id: userId });
+            const pathToCertificate = path.resolve('certificate/', course.certificate);
 
+            // we will use the nodemailer package to send the email from our gmail (ninjasacl) to the user's email.
+            const sender = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: 'aclninjas@gmail.com',
+                    pass: 'iftgjpiijzvveprh'
+                }
+            });
 
-       }
+            const mailOptions = {
+                from: 'aclninjas@gmail.com',
+                to: user.email,
+                subject: 'Congratulations on completing the course: ' + course.title,
+                text: 'Please find the certificate attached as a pdf.',
+                attachments: [
+                    {
+                        filename: course.certificate,
+                        path: pathToCertificate,
+                        contentType: 'application/pdf'
+                    }
+                ]
+            };
 
-   },
-
-   async walletDetails(userId){
-
-    let walletDetailss = [];
-   try{
-       const theUser = await Account.findOne({_id: userId}).catch(() => {
-           throw new DomainError("Wrong Id", 400)
-       });;
-    
-       if(theUser.type == 'INDIVIDUAL TRAINEE'){
-        for(var i=0; i<theUser.refundedCourses.length; i++){
-            walletDetailss.push(0.5* theUser.refundedCourses[i].price); 
+            //the function that sends the email
+            await sender.sendMail(mailOptions);
+        } catch (error) {
+            console.log(error)
+            if (error instanceof DomainError) throw error;
+            else
+                throw new DomainError("internal error", 500)
         }
 
-        return walletDetailss;
-       }
-   }
-   catch(err){
-       throw new DomainError('error internally', 500);
+    },
+    async acceptPolicy({ userId }) {
+    
+
+        try {
+            
+            
+           await Account.updateOne({_id:userId}, {companyPolicy: true})
+        }
+        catch (err) {
+            if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+            throw new DomainError('error internally', 500);
 
 
-   }
+        }
+
 
 },
 
+async requestRefund({ userId,courseId }) {
+    var bol=false;
+
+    try {
+    const account= Account.findOne({_id:userId})
+    for(var i=0;i<account.progress.length;i++){
+        if(account.progress[i].courseId==courseId){
+            if(account.progress[i].currentProgress<50){
+                const course= Course.findOne({_id:courseId})
+                //ad5al fel refund array el course
+               // Account.updateOne({_id:userId},{wallet:wallet+course.price})
+                bol=true;
+                break;
+            }
+        }
+    }
+    if(bol==false){
+        throw new DomainError("Can't refund course with progress more than 50%", 401)
+    }
+
+    }
+    catch (err) {
+        if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+        throw new DomainError('error internally', 500);
 
 
+    }
 
+
+},
+
+async viewProgress({ userId,courseId }) {
+    
+  console.log(courseId)
+  console.log(userId)
+    try {
+    const account= await Account.findOne({_id:userId})
+    for(var i=0;i<account.progress.length;i++){
+        if(account.progress[i].courseId.toString()==courseId){
+            return account.progress[i].currentProgress;
+        }
+    }
+
+    }
+    catch (err) {
+        if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+        throw new DomainError('error internally', 500);
+
+
+    }
+
+
+},
+
+  
 
 
 }

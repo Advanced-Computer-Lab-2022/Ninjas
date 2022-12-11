@@ -68,9 +68,10 @@ const coursesSchema = new Schema({
         type: [accountSchema],
         required: false
 
+    },
+    certificate: {
+        type: String,
     }
-   
-
 })
 
 const countryPriceDetails = new Map();

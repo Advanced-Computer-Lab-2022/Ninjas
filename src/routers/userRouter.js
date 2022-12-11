@@ -34,7 +34,7 @@ userRouter.get('/search', async (req, res) => {
         res.status(200).json({ result: searchResults });
     } catch (error) {
         console.log(error)
-        res.status(error.code).json(error.message);
+        res.status(error.code).json({ message: error.message });
     }
 })
 
@@ -104,7 +104,7 @@ userRouter.post('/selectCountry', async (req, res) => {
         // and is commonly used in cases where a record is updated.
         res.status(201).json({ message: "your country has been changed successfully." });
     } catch (error) {
-        res.status(error.code).json(error.message);
+        res.status(error.code).json({ message: error.message });
     }
 })
 userRouter.get('/user/:id', async (req, res) => {
@@ -116,7 +116,7 @@ userRouter.get('/user/:id', async (req, res) => {
         const user = await userController.getUserData({ userId });
         res.status(200).json(user);
     } catch (error) {
-        res.status(error.code).json(error.message);
+        res.status(error.code).json({ message: error.message });
     }
 })
 
@@ -181,28 +181,6 @@ userRouter.get('/viewAndFilterCourses', async (req, res) => {
         }
     }
 
-})
-
-userRouter.post('/forgotPassword', async (req, res) => {
-    //if we will use react frontend, we will only need the username or the userId.
-    //assuming that the user clicks "forgot my password" then we ask them for their username,
-    //we will fetch the database to get the user type, email, etc.
-
-    try {
-        //get the username from the request
-        const username = req.body.username;
-        if (username == null || username.trim().length === 0) {
-            //this means that the username is either not entered
-            //or it was just a string of white spaces -- the trim method figures this out.
-            return res.status(400).json({ message: "Please enter your username." });
-        }
-        await userController.forgotMyPassword({ username });
-
-        //if the email is sent successfully, we will tell the frontend to display the message.
-        res.status(200).json({ message: "A reset password email has been sent. Please check your email. " });
-    } catch (error) {
-        res.status(error.code).json(error);
-    }
 })
 
 userRouter.post('/rateCourse', async (req, res) => {
@@ -404,4 +382,58 @@ userRouter.get('/walletDetails', async (req, res) => {
 
 
 
+
+userRouter.post('/acceptPolicy',async(req,res) => {
+    try{
+    const session = sessionDetails.getSession(req.session.id);
+    const userId = session.userId
+await userController.acceptPolicy({ userId})
+    
+    res.status(200).json("Thank you for accepting");
+    }
+    catch(err){
+      if (err instanceof DomainError) {
+        res.status(err.code).send(err.message)
+      } else {
+        res.status(500).send({ err });
+      }
+    }
+  })
+
+  userRouter.get('/viewProgress',async(req,res) => {
+    try{
+  const session = sessionDetails.getSession(req.session.id);
+  const userId = session.userId
+  const courseId=req.query.courseId
+const progress= await userController.viewProgress({ userId,courseId})
+console.log(progress)
+    
+    res.status(200).json();
+    }
+    catch(err){
+      if (err instanceof DomainError) {
+        res.status(err.code).send(err.message)
+      } else {
+        res.status(500).send({ err });
+      }
+    }
+  })
+module.exports = userRouter;
+
+userRouter.get('/requestRefund',async(req,res) => {
+    try{
+  const userId=req.query.userId
+  const courseId=req.query.courseId
+await userController.requestRefund({ userId,courseId})
+    
+    res.status(200).json("Refunded amout is now in your wallet");
+    }
+    catch(err){
+      if (err instanceof DomainError) {
+        res.status(err.code).send(err.message)
+      } else {
+        res.status(500).send({ err });
+      }
+    }
+  })
 module.exports = userRouter;

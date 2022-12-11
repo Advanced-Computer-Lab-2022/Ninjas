@@ -3,6 +3,7 @@ const countryEnums = require('../Enums/countryEnums')
 const { ratingSchema } = require('./rating')
 const { coursesSchema } = require('./courses')
 
+const { reportSchema } = require('./report')
 const Schema = mongoose.Schema;
 
 var validateEmail = function (email) {
@@ -71,16 +72,45 @@ const accountSchema = new Schema({
     default:0
 },
 
-contractStatus:{
+contractStatus:{ //for instructor
     type: Boolean,
     default: false
   //  required: true
+},
+
+certificates: {
+    type: [String],
+    default: []
+},
+progress: [
+    {
+        courseId: Schema.Types.ObjectId,
+        currentProgress: Number,
+    }
+],
+
+
+reports: {
+    type: [reportSchema],
+    default: [],
+companyPolicy: { 
+    type: Boolean,
+    default: false
+},
+wallet:{
+    type:Number,
+    deafult:0
+}
+
 
 },
+
+
 refundedCourses:{
     type:[coursesSchema],
     required: false
-}
+},
+
 
 })
 
