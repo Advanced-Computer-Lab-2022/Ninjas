@@ -27,6 +27,7 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import ResetPasswordPage from './components/ResetPassword';
 import MostPopular from './components/MostPopular';
+import Temp from './components/Temp';
 
 
 
@@ -37,6 +38,8 @@ function App() {
       <Routes>
       <Route path='/' element={<Login/>}></Route>
       <Route path='/signup' element={<Signup/>}></Route>
+      <Route path='/temp' element= {<Temp/>} >
+        </Route>
         <Route path='/changePassword' element= {<ChangePassword/>} >
         </Route>
         <Route path='/viewVideo' element= {<ViewVideo/>} >

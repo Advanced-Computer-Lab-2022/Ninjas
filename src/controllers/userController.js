@@ -11,6 +11,8 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const path = require("path");
 const RefundRequest = require("../models/refundRequest");
+const Report = require("../models/report");
+const RequestAccess = require("../models/requestAccess");
 require('dotenv').config()
 
 const maxAge = 3 * 24 * 60 * 60;
@@ -673,13 +675,112 @@ async viewProgress({ userId,courseId }) {
     catch (error) {
         if (error instanceof DomainError)
             throw error;
-
-        else
+            else
             throw new DomainError("internal error", 500);
+
     }
 
 
 },
+
+
+async ReportCourse( userId,courseId, problem ) {
+ try{
+    const user = await Account.findOne({ _id: userId }, { type: 1 }).catch(() => {
+        throw new DomainError("Wrong Id", 400)
+    });
+   
+    if (user.type == 'ADMIN' || !user.type) {
+        throw new DomainError("Unauthorized user", 401);
+    }
+
+  if (await Report.findOne({userId,courseId, problem })){
+    throw new DomainError("you already reported", 401);
+  }
+
+   const report = await Report.create( {userId,courseId, problem });
+   return "Done";
+}
+catch(err){
+
+    if (error instanceof DomainError) throw error;
+    else
+        throw new DomainError("internal error", 500);
+}
+},
+ 
+
+async ViewMyReports( userId ) {
+    
+   try{
+      const reports = await Report.find( {userId}).catch(() => {
+        throw new DomainError("no reports", 400)
+    });
+      return reports;
+   }
+   catch(err){
+   
+       if (error instanceof DomainError) throw error;
+       else
+           throw new DomainError("internal error", 500);
+   }
+   },
+
+
+   
+async ViewFolllowUp( userId , courseId , problem ) {
+    
+    try{
+       const reports = await Report.findOne( {userId, courseId , problem}).catch(() => {
+         throw new DomainError("no reports", 400)
+     });
+       return reports;
+    }
+    catch(err){
+    
+        if (error instanceof DomainError) throw error;
+        else
+            throw new DomainError("internal error", 500);
+    }
+    },
+ 
+    async viewVideo(courseId) {
+        try {
+            const video = await Course.findOne({
+                _id: courseId
+
+            }, {videoLink:1}).catch(() => {
+                video = null;
+            });
+
+           return video.videoLink;
+
+        } catch (err) {
+            
+            if (err instanceof DomainError) { throw err; }
+            throw new DomainError('error internally', 500);
+        }
+
+
+
+
+    },
+
+    async requestAccess(userId , courseId){
+
+        try{
+        const requested = await RequestAccess.create({userId , courseId}).catch(() => {
+            throw new DomainError("try again and check course availability", 400)
+        });
+
+        return "Done";
+    }
+    catch (err){
+        
+        if (err instanceof DomainError) { throw err; }
+        throw new DomainError('error internally', 500);
+    }
+    },
 
 async mostPopularCourses() {
     try {
@@ -693,7 +794,8 @@ async mostPopularCourses() {
     }
 }
 
-
 }
+
+
 
 module.exports = userController;
