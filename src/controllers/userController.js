@@ -10,6 +10,7 @@ const { assign } = require("nodemailer/lib/shared");
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const path = require("path");
+const RefundRequest = require("../models/refundRequest");
 const Report = require("../models/report");
 const RequestAccess = require("../models/requestAccess");
 require('dotenv').config()
@@ -97,6 +98,8 @@ const userController = {
             }
         }
     },
+
+
     async getSearchResult({
         userId = null, subject = null,
         minPrice = null, maxPrice = null,
@@ -616,14 +619,22 @@ const userController = {
 },
 
 async requestRefund({ userId,courseId }) {
-    var bol=false;
+
 
     try {
-    const account= Account.findOne({_id:userId})
+        console.log("in")
+    var bol=false;
+    const account=await Account.findOne({_id:userId})
+    console.log(account)
     for(var i=0;i<account.progress.length;i++){
-        if(account.progress[i].courseId==courseId){
-            if(account.progress[i].currentProgress<50){
-                const course= Course.findOne({_id:courseId})
+        if(account.progress[i].courseId.toString()==courseId){
+            if(parseInt(account.progress[i].currentProgress)<50){
+                const newRefundRequest = new RefundRequest({
+                    accountId:userId,
+                    courseId:courseId
+                })
+                newRefundRequest.save();
+    
                 //ad5al fel refund array el course
                // Account.updateOne({_id:userId},{wallet:wallet+course.price})
                 bol=true;
@@ -632,15 +643,17 @@ async requestRefund({ userId,courseId }) {
         }
     }
     if(bol==false){
-        throw new DomainError("Can't refund course with progress more than 50%", 401)
+        console.log("hello")
+        throw new DomainError("Can't refund course with progress more than 50%", 400)
     }
 
     }
-    catch (err) {
-        if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
-        throw new DomainError('error internally', 500);
+    catch (error) {
+        if (error instanceof DomainError)
+            throw error;
 
-
+        else
+            throw new DomainError("internal error", 500);
     }
 
 
@@ -659,10 +672,11 @@ async viewProgress({ userId,courseId }) {
     }
 
     }
-    catch (err) {
-        if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
-        throw new DomainError('error internally', 500);
-
+    catch (error) {
+        if (error instanceof DomainError)
+            throw error;
+            else
+            throw new DomainError("internal error", 500);
 
     }
 
@@ -766,8 +780,22 @@ async ViewFolllowUp( userId , courseId , problem ) {
         if (err instanceof DomainError) { throw err; }
         throw new DomainError('error internally', 500);
     }
+    },
+
+async mostPopularCourses() {
+    try {
+    //according to the TA on piazza we need the courses with most amount of registered students
+    //we will assume for now that we need to display the three most popular courses
+    const popularCourses = await Course.find().limit(3).sort({ numberOfRegistered: -1});
+    return popularCourses;
+    } catch(error) {
+        console.log(error);
+        throw new DomainError("internal error", 500);
     }
+}
 
 }
+
+
 
 module.exports = userController;

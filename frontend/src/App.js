@@ -24,7 +24,9 @@ import AddVideoSubtitle from './pages/AddVideoSubtitle';
 import Terms from './pages/Terms';
 import InstructorProfile from './pages/InstructorProfile';
 import Login from './components/Login';
+import Signup from './components/Signup';
 import ResetPasswordPage from './components/ResetPassword';
+import MostPopular from './components/MostPopular';
 import Temp from './components/Temp';
 
 
@@ -35,6 +37,7 @@ function App() {
       <BrowserRouter>
       <Routes>
       <Route path='/' element={<Login/>}></Route>
+      <Route path='/signup' element={<Signup/>}></Route>
       <Route path='/temp' element= {<Temp/>} >
         </Route>
         <Route path='/changePassword' element= {<ChangePassword/>} >
@@ -84,6 +87,7 @@ function App() {
         <Route path="/rateCourse" element={<RateCourse/>}/>
         <Route path="/solveExercise" element={<SolveExercise/>}/>
       <Route path="/resetPassword/:id" element={<ResetPasswordPage/>}/>
+      <Route path="/mostPopularCourses" element={<MostPopular/>}/>
       </Routes>
       </BrowserRouter>
     </div>

@@ -1,10 +1,12 @@
 const DomainError = require("../error/domainError");
 const { Account } = require("../models/account");
 const { Course } = require("../models/courses");
-const { Report } = require("../models/report");
+const  Report  = require("../models/report");
 const { Refund } = require("../models/refundRequest");
-const { Request} = require("../models/requestAccess");
-const { request } = require("express");
+const RequestAccess = require("../models/requestAccess");
+const {  } = require("../models/refundRequest");
+
+//const { request } = require("express");
 
 const adminCreateAccountsController =
 {
@@ -27,16 +29,15 @@ const adminCreateAccountsController =
       }
    },
     
-   async viewReportedProblems({ accountId})  {
+   async viewReportedProblems()  {
 
       try {
-         const thisAccount = await Account.findOne({ _id: accountId })
-         return thisAccount.reports
+         const Reports = await Report.find();
+         return Reports;
      
      } catch (err) {
          if (err._message && err._message == 'Account validation failed') { throw new DomainError('validation Error', 400); }
          throw new DomainError('error internally', 500);}
-
 
      },
 
@@ -47,18 +48,8 @@ const adminCreateAccountsController =
          const thisReport = await Report.findOne({ _id: reportId }).catch(() => {
             throw new DomainError("Wrong Id", 400)
          });
-         const accounts= await Account.find();
 
          await Report.updateOne({_id:reportId}, {progress:reportstatus})
-
-         for(var i=0; i<accounts.length;i++){
-           for(var j=0;j< accounts[i].reports.length ; j++){
-            if(accounts[i].reports[j].id== reportId){///////////////////////////////////////check//////////////////////////
-               await Account.updateOne({_id:accounts[i].id}, {reports:accounts[i].reports[j]})
-
-            }   
-         }
-         }
        
      
      } catch (err) {
@@ -67,20 +58,43 @@ const adminCreateAccountsController =
 
      },
 
-      async updateWallet(userId){ //refunded courses
+
+
+
+
+
+
+
+
+
+
+
+      async updateWallet({userId}){ //refunded courses
 
          let newWallet = 0;
+         let temp = [];
+      //   newWallet = theUser.wallet + (0.5* theUser.refundedCourses[i].price); 
+
+
         try{
             const theUser = await Account.findOne({_id: userId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });;
+            console.log(theUser);
          
-            if(theUser.type == 'INDIVIDUAL TRAINEE'){
+            if(theUser.type == 'INDIVIDUAL_TRAINEE'){
              for(var i=0; i<theUser.refundedCourses.length; i++){
-                 newWallet = theUser.wallet + (0.5* theUser.refundedCourses[i].price); 
+                const theCourse = await Course.findOne({_id: theUser.refundedCourses[i]});
+                console.log(theCourse);
+                temp.push(theCourse);
+
              }
-             await Account.updateOne({_id:userId}, {wallet: newWallet })
- 
+             for(var j=0; j<temp.length; j++){
+                newWallet = theUser.wallet + (0.5* temp[j].price); 
+             }
+             await Account.updateOne({_id:userId}, {wallet: newWallet });
+             await Account.updateOne({_id:userId}, {refundedCourses: []});
+
              
             }
         }
@@ -170,33 +184,57 @@ const adminCreateAccountsController =
 
 
 
- async viewCorporateRequest(){
-   let newRec = [];
+ async viewCorporateRequest(userId){
  
    try{
-     
-      const Requests = await Request.find();
+      
+      const Requests = await RequestAccess.find();
 
     for(var i=0; i<Requests.length; i++){
       const theUser = await Account.findOne({_id: Requests[i].accountId}).catch(() => {
          throw new DomainError("Wrong Id", 400)
      });;
-      if(theUser.type == 'CORPORATE TRAINEE'){ 
+      if(theUser.type == 'CORPORATE_TRAINEE'){ 
          newRec.push(Requests[i]);
          
   }}
-return newRec;
+     return newRec;
 
 
 
 }
   catch(err){
+       console.log(err);
       throw new DomainError('error internally', 500);
 
 
   }
 
   },
+  async acceptCorporateRequest({userId,courseId}){
+ 
+    
+    try{
+        const thisCourse = await Course.findOne({_id: userId});
+        const thisUser = await Account.findOne({_id: courseId});
+        ////////////////////////////////////////////////////
+     
+       
+    }
+    catch(err){
+        throw new DomainError('error internally', 500);
+
+
+    }
+ 
+   },
+
+
+
+
+
+
+
 
 }
 module.exports = adminCreateAccountsController;
