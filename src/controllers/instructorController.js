@@ -790,31 +790,24 @@ try {
     }
     },
 
-    async owedMoney(userId){
+    async owedMoney({userId}){
+        let myMoney = 0;
         try{
-            const courses = await Course.find({});
+
+            const courses = await Course.find();
             const theUser = await Account.findOne({_id: userId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });;
 
-         let courseRes = [];
-         let vidNo = 0;
-         let moneyTopay =0;
-            if(theUser.type == 'INSTRUCTOR'){
-                for(var i =0; i<courses.length; i++){
-                    if(courses[i].instructors[0].id == theUser.id){
-                        courseRes.push(courses[i]);
+            for(var i=0; i<courses.length; i++){
+                if(courses[i].instructors[0]._id.toString() == userId.toString()){
+                    myMoney = ((courses[i].price*courses[i].students.length) - (0.13*courses[i].price*courses[i].students.length));
 
-                    }
                 }
 
             }
-            for(var j=0; j<courseRes.length; j++){
-                vidNo = vidNo + courseRes[j].subtitles.length;
-            }
-            moneyTopay = moneyTopay + 0.13*vidNo;  //13% is % instructor agreed that company will take per video & materials
-
-            return moneyTopay;
+            await Account.updateOne({_id:userId}, {wallet: myMoney});
+            return myMoney;
         }
         catch(err){
             throw new DomainError('error internally', 500);

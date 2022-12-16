@@ -303,9 +303,10 @@ userRouter.get('/viewVideo', async (req, res) => {
 
 userRouter.get('/viewEnrolledCourses', async (req, res) => {
     try {
+        const session = sessionDetails.getSession(req.session.id);
+        const userId = session.userId;
 
-        const { userId } = req.query
-        const results = await userController.viewEnrolledCourses(userId)
+        const results = await userController.viewEnrolledCourses({userId})
         res.status(200).json(results)
 
 
@@ -359,11 +360,13 @@ userRouter.post('/payForCourse2', async (req, res) => {
 
 })
 
-userRouter.get('/walletDetails', async (req, res) => {
+userRouter.get('/viewWallet', async (req, res) => {
     try {
 
-        const { userId } = req.query
-        const results = await userController.walletDetails(userId)
+        const session = sessionDetails.getSession(req.session.id);
+        const userId = session.userId;
+        console.log(userId);
+        const results = await userController.viewWallet({userId})
         res.status(200).json(results)
 
     } catch (err) {
