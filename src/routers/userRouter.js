@@ -8,7 +8,6 @@ const { Exercise } = require("../models/exercise");
 const { question, questionSchema } = require("../models/question");
 const { Account } = require("../models/account");
 const { sessionDetails } = require("../middleware/authMiddleware");
-const session = sessionDetails.getSession();
 
 userRouter.post('/logout', (req, res) => {
     console.log(req.session.id);
@@ -92,7 +91,7 @@ userRouter.get('/viewAllCourses', async (req, res) => {
 
 userRouter.post('/selectCountry', async (req, res) => {
     try {
-        console.log(session)
+        const session = sessionDetails.getSession(req.session.id);
         const { userId, type } = session;
         const selectedCountry = req.body.country;
         if (!selectedCountry || !userId) {
@@ -330,14 +329,14 @@ userRouter.post('/payForCourse', async (req, res) => {
         const courseId = req.body.courseId
         await userController.payForCourse(userId, courseId)
         res.status(200).json("You have paid successfully");
-  }
-  catch(err){
-    if (err instanceof DomainError) {
-      res.status(err.code).send(err.message)
-    } else {
-      res.status(500).send({ err });
     }
-  }
+  catch(err){
+        if (err instanceof DomainError) {
+            res.status(err.code).send(err.message)
+        } else {
+            res.status(500).send({ err });
+        }
+    }
 
 })
 
@@ -350,14 +349,14 @@ userRouter.post('/payForCourse2', async (req, res) => {
         const country = req.body.country
         await userController.payForCourse2(userId, courseId, couresId, cardNo, country)
         res.status(200).json("You have paid successfully");
-  }
-  catch(err){
-    if (err instanceof DomainError) {
-      res.status(err.code).send(err.message)
-    } else {
-      res.status(500).send({ err });
     }
-  }
+  catch(err){
+        if (err instanceof DomainError) {
+            res.status(err.code).send(err.message)
+        } else {
+            res.status(500).send({ err });
+        }
+    }
 
 })
 
@@ -388,57 +387,75 @@ userRouter.get('/viewWallet', async (req, res) => {
 
 userRouter.post('/acceptPolicy',async(req,res) => {
     try{
-    const session = sessionDetails.getSession(req.session.id);
-    const userId = session.userId
+        const session = sessionDetails.getSession(req.session.id);
+        const userId = session.userId
 await userController.acceptPolicy({ userId})
-    
-    res.status(200).json("Thank you for accepting");
+
+        res.status(200).json("Thank you for accepting");
     }
     catch(err){
-      if (err instanceof DomainError) {
-        res.status(err.code).send(err.message)
-      } else {
-        res.status(500).send({ err });
-      }
+        if (err instanceof DomainError) {
+            res.status(err.code).send(err.message)
+        } else {
+            res.status(500).send({ err });
+        }
     }
-  })
+})
 
   userRouter.get('/viewProgress',async(req,res) => {
     try{
-  const session = sessionDetails.getSession(req.session.id);
-  const userId = session.userId
+        const session = sessionDetails.getSession(req.session.id);
+        const userId = session.userId
   const courseId=req.query.courseId
 const progress= await userController.viewProgress({ userId,courseId})
-console.log(progress)
-    
-    res.status(200).json();
+        console.log(progress)
+
+        res.status(200).json();
     }
     catch(err){
-      if (err instanceof DomainError) {
-        res.status(err.code).send(err.message)
-      } else {
-        res.status(500).send({ err });
-      }
+        if (err instanceof DomainError) {
+            res.status(err.code).send(err.message)
+        } else {
+            res.status(500).send({ err });
+        }
     }
-  })
+})
 module.exports = userRouter;
 
 userRouter.post('/requestRefund',async(req,res) => {
     try{
-  const session = sessionDetails.getSession(req.session.id);
-  const userId = session.userId
+        const session = sessionDetails.getSession(req.session.id);
+        const userId = session.userId
   const courseId=req.query.courseId
-await userController.requestRefund({ userId,courseId})
+    await userController.requestRefund({ userId,courseId})
 
+
+    res.status(200).json("Request is waiting for review");}
     
-    res.status(200).json("Refunded amout is now in your wallet");
-    }
     catch(err){
-      if (err instanceof DomainError) {
-        res.status(err.code).send(err.message)
-      } else {
-        res.status(500).send({ err });
-      }
+        if (err instanceof DomainError) {
+            res.status(err.code).send(err.message)
+        } else {
+            res.status(500).send({ err });
+        }
     }
-  })
+})
+
+userRouter.get('/mostPopularCourses', async (req, res) => {
+    try { //get the user type from the session
+        const session = sessionDetails.getSession(req.session.id);
+        const { type } = session;
+
+        //admins should not access the endpoint
+        if (type == 'ADMIN')
+            return res.status(401).json({ message: "Unauthorized user." });
+
+        const courses = await userController.mostPopularCourses();
+        res.status(200).json(courses);
+
+    } catch (error) {
+        console.log(error)
+        return res.status(error.code).json({ message: error.message });
+    }
+})
 module.exports = userRouter;
