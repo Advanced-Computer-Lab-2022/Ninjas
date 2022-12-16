@@ -89,22 +89,18 @@ progress: [
     }
 ],
 
-
 reports: {
     type: [reportSchema],
-    default: [],
+    default: []
+},
 companyPolicy: { 
     type: Boolean,
     default: false
 },
 wallet:{
     type:Number,
-    deafult:0
-}
-
-
+    default:0
 },
-
 
 refundedCourses:{
     type:[coursesSchema],

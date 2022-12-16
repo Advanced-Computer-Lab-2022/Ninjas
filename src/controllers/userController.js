@@ -476,17 +476,20 @@ const userController = {
 
     },
 
-    async viewEnrolledCourses(userId){
+    async viewEnrolledCourses({userId}){
         let myCourses = [];
         try{
-            const theUser = await Account.findOne({_id: userId}).catch(() => {
-                throw new DomainError("Wrong Id", 400)
-            });;
+
+            const theUser = await Account.findOne({_id: userId});
             const courses = await Course.find();
-            if(theUser.type == 'INDIVIDUAL TRAINEE' || theUser.type == 'CORPORATE TRIANEE'){
+
+
+            if(theUser.type == 'INDIVIDUAL_TRAINEE' || theUser.type == 'CORPORATE_TRIANEE'){
+
                 for(var i = 0 ; i<courses.length ; i++){
+
                     for(var j =0; j<courses[i].students.length; j++){
-                        if(userId == courses[i].students[j].id){
+                        if(userId == courses[i].students[j].toString()){
                             myCourses.push(courses[i]);
                             break;
                         }
@@ -504,7 +507,7 @@ const userController = {
         }
 
     },
-    async payForCourse(userId, courseId){ //from wallet
+    async payForCourse(userId, courseId){ //from wallet needs testing//////////////////
         try{
             const theUser = await Account.findOne({_id: userId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
@@ -674,6 +677,31 @@ async viewProgress({ userId,courseId }) {
 
 
 },
+
+async viewWallet({userId}) {
+
+
+      try {
+      const account= await Account.findOne({_id:userId});
+      if(account.type == 'INDIVIDUAL_TRAINEE'){
+        //balance = balance + account.wallet;
+        //console.log("wallettt");
+        //console.log(account);    
+       // console.log(account.wallet);
+        return account.wallet;
+  
+          }
+      }
+      catch (err) {
+          if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+          throw new DomainError('error internally', 500);
+  
+  
+      }
+  
+  
+  },
+
 
   
 

@@ -65,7 +65,7 @@ const coursesSchema = new Schema({
         required:true
     },
     students: {
-        type: [accountSchema],
+        type: [Schema.Types.ObjectId],
         required: false
 
     },

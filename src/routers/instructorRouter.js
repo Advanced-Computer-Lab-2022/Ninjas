@@ -6,6 +6,7 @@ const path = require('path');
 const { create } = require("../models/question");
 const { useId } = require("react");
 const { Account } = require("../models/account");
+const { sessionDetails } = require("../middleware/authMiddleware");
 
 
 instructorRouter.get('/', async (req, res) => {
@@ -303,8 +304,10 @@ instructorRouter.get('/filter', async (req, res) => {
 
 instructorRouter.post('/createcourse', async (req, res) => {
   try {
-
-    const { instructorId, subject, title, price, summary, subtitles, exercises } = req.body;
+    const session = sessionDetails.getSession(req.session.id);
+    const instructorId = session.userId;
+    const { subject, title, price, summary, subtitles, exercises } = req.body;
+    console.log(instructorId);
 
     const { type } = await Account.findOne({ _id: instructorId }, { type: 1 });
     if (type != 'INSTRUCTOR') {
@@ -606,7 +609,8 @@ instructorRouter.get('/owedMoney', async (req, res) =>{
 
   try{
 
-    const userId = req.query.userId;
+    const session = sessionDetails.getSession(req.session.id);
+    const userId = session.userId;
     const viewResults = await instructorController.owedMoney({ userId });
     return res.status(200).json(viewResults)
 

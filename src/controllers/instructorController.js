@@ -790,9 +790,10 @@ try {
     }
     },
 
-    async owedMoney(userId){
+    async owedMoney({userId}){/////////////////should be changed
         try{
-            const courses = await Course.find({});
+
+            const courses = await Course.find();
             const theUser = await Account.findOne({_id: userId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });;
@@ -801,9 +802,12 @@ try {
          let vidNo = 0;
          let moneyTopay =0;
             if(theUser.type == 'INSTRUCTOR'){
+                console.log(theUser);
                 for(var i =0; i<courses.length; i++){
-                    if(courses[i].instructors[0].id == theUser.id){
+                    console.log(courses[i].instructors[0]);
+                    if(courses[i].instructors[0]._id == theUser.id){
                         courseRes.push(courses[i]);
+                        console.log(courses[i].title);
 
                     }
                 }
@@ -813,7 +817,7 @@ try {
                 vidNo = vidNo + courseRes[j].subtitles.length;
             }
             moneyTopay = moneyTopay + 0.13*vidNo;  //13% is % instructor agreed that company will take per video & materials
-
+            console.log(moneyTopay);
             return moneyTopay;
         }
         catch(err){
