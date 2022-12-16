@@ -764,6 +764,8 @@ async viewWallet({userId}) {
       catch (err) {
           if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
           throw new DomainError('error internally', 500);
+        }
+    },
    
     async viewVideo(courseId) {
         try {
@@ -777,7 +779,7 @@ async viewWallet({userId}) {
            return video.videoLink;
 
       }
-          } catch (err) {
+           catch (err) {
             
               if (err instanceof DomainError) { throw err; }
             throw new DomainError('error internally', 500);
@@ -797,14 +799,9 @@ async viewWallet({userId}) {
 
         return "Done";
     }
+
     catch (err){
         
-  },
-
-
-  
-
-
         if (err instanceof DomainError) { throw err; }
         throw new DomainError('error internally', 500);
     }

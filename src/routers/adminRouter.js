@@ -170,6 +170,24 @@ catch (err) {
   }
 }
 
+})
+
+adminRouter.post('/acceptCorporateRequest', async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const courseId = req.body.courseId;
+    await adminCreateAccountsController.acceptCorporateRequest({ userId, courseId });
+    res.status(200).json("Your request is accepted");
+}
+
+catch (err) {
+  if (err instanceof DomainError) {
+    res.status(err.code).json({ code: err.code, message: err.message })
+  } else {
+    res.status(500).json({ err });
+  }
+}
+
 
 })
 
