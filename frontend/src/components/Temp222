@@ -26,74 +26,14 @@ import PropTypes from 'prop-types';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
-import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import SkipNextIcon from '@mui/icons-material/SkipNext';
-import { useTheme } from '@mui/material/styles';
-import { DataGrid, GridToolbarQuickFilter } from '@mui/x-data-grid';
-import { useDemoData } from '@mui/x-data-grid-generator';
-import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
-import EditIcon from '@mui/icons-material/Edit';
-import ArchiveIcon from '@mui/icons-material/Archive';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import {
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-  GridToolbarFilterButton,
-  GridToolbarExport,
-  GridToolbarDensitySelector,
-  GridToolbar
-} from '@mui/x-data-grid';
+
+
 
 const { post } = { description: "course gamel awyyy",
   image: logo ,
   imageText: "logo 3alabal ma nla2y sora",
   linkText: "matygy nshof",
   title: "course Gamed",};
-  
-  const StyledMenu = styled((props) => (
-    <Menu
-      elevation={0}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'right',
-      }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      {...props}
-    />
-  ))(({ theme }) => ({
-    '& .MuiPaper-root': {
-      borderRadius: 6,
-      marginTop: theme.spacing(1),
-      minWidth: 180,
-      color:
-        theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
-      boxShadow:
-        'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
-      '& .MuiMenu-list': {
-        padding: '4px 0',
-      },
-      '& .MuiMenuItem-root': {
-        '& .MuiSvgIcon-root': {
-          fontSize: 18,
-          color: theme.palette.text.secondary,
-          marginRight: theme.spacing(1.5),
-        },
-        '&:active': {
-          backgroundColor: alpha(
-            theme.palette.primary.main,
-            theme.palette.action.selectedOpacity,
-          ),
-        },
-      },
-    },
-  }));
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
@@ -124,8 +64,6 @@ const Search = styled('div')(({ theme }) => ({
       marginLeft: theme.spacing(1),
       width: 'auto',
     },
-
-     
   }));
   
   const SearchIconWrapper = styled('div')(({ theme }) => ({
@@ -183,39 +121,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     },
   }),
 );
-const [anchorEl, setAnchorEl] = React.useState(null);
-  const open2 = Boolean(anchorEl);
-  const [openSubject, setOpenSubject] = React.useState(false);
-  const [openRating, setOpenRating] = React.useState(false);
-  const [openPrice, setOpenPrice] = React.useState(false);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-    
-  };
-
-  const handleClickS = (event) => {
-    setOpenSubject(true);
-    
-  };
-  
-  
-  const handleClickR = (event) => {
-    setOpenRating(true);
-    
-  };
-  
-  const handleClickP = (event) => {
-    setOpenPrice(true);
-    
-  };
-  const handleClose = (event) => {
-    console.log(event)
-    setAnchorEl(null);
-  };
-
 
 const mdTheme = createTheme();
-const theme = useTheme();
+
   const [open, setOpen] = React.useState(false);
   const toggleDrawer = () => {
     setOpen(!open);
@@ -254,7 +162,15 @@ const theme = useTheme();
             >
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-           
+            <Search>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+            />
+          </Search>
           &nbsp;&nbsp;&nbsp;
           <box>
 
@@ -298,121 +214,31 @@ const theme = useTheme();
             height: '100vh',
             overflow: 'auto',
           }}
-          
         >
           <Toolbar />
-
-          <Toolbar>
-          <Container maxWidth="lg" sx={{ mt: 0, mb: 0 ,mr: 0 , ml: 0 }}  >
-            <Grid container spacing={0}>
-
-                 {/* filters */}
-            
-      <Button
-        id="demo-customized-button"
-        aria-controls={open2 ? 'demo-customized-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open2 ? 'true' : undefined}
-        variant="text"
-        disableElevation
-        onClick={handleClick}
-        endIcon={<KeyboardArrowDownIcon />}
-        style = {{ position: "relative", left: '-24px' }}
-        sx={{ color: 'black', }}
-      >
-        Filter
-      </Button>
-      <StyledMenu
-        id="demo-customized-menu"
-        MenuListProps={{
-          'aria-labelledby': 'demo-customized-button',
-        }}
-        anchorEl={anchorEl}
-        open={open2}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={handleClickS} disableRipple>
-          {/* <EditIcon /> */}
-          Subject
-        </MenuItem>
-        <Divider sx={{ my: 0.5 }} />
-        <MenuItem onClick={handleClose} disableRipple>
-          {/* <FileCopyIcon /> */}
-          Rating
-        </MenuItem>
-        <Divider sx={{ my: 0.5 }} />
-        <MenuItem onClick={handleClose} disableRipple>
-          {/* <ArchiveIcon /> */}
-          Price
-        </MenuItem>
-        
-        <StyledMenu
-        id="demo-customized-menu2"
-        MenuListProps={{
-          'aria-labelledby': 'demo-customized-button',
-        }}
-        sx={{ ml: 10 }}
-        anchorEl={anchorEl}
-        open={openSubject && open2}
-        onClose={handleClose}
-        
-      >
-        {/* handel close kol wa7da */}
-        <MenuItem onClick={handleClose} value='CS' disableRipple>
-          CS
-        </MenuItem>
-
-      </StyledMenu>
-
-
-
-      </StyledMenu>
-
-     
-
-      <Button
-        id="demo-customized-button2"
-        //onClick={handleClick} w ashel on double click w lma aft7 wa7da kolo y2fl
-        variant="outlined"
-        style = {{ position: "relative" , left: '955px' }}
-        sx={{ color: 'black', borderColor: '#03045E' }}
-      >
-        Search
-      </Button>
-
-
-      <Search  style = {{ position: "relative" , left: '260px' }}>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </Search>
-
+          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+            <Grid container spacing={3}>
+             
             </Grid>
-
-            
-
+           
           </Container>
-         
-          </Toolbar>
-         
-         <Divider/>
-         &nbsp;&nbsp;&nbsp;
-          <Toolbar>
-{/* trial   hyt3ml hna for loop */}
+{/* trial*/}
+<Card
+      sx={{
+        position: 'relative',
+        mb: 4,
+        backgroundSize: 'cover',
+        backgroundRepeat: 'no-repeat',
+        backgroundPosition: 'center',
+        backgroundColor: '#CAF0F8',
+       // backgroundImage: `${logo}`,
+      }}
+    > 
 
-<Card sx={{ display: 'flex' ,   backgroundColor: '#CAF0F8' }} style={{width:"98%", height:"30%"}} >
-<CardMedia
-        component="img"
-      sx={{ width: 300 }}
-      //style={{ width: 150, height: 200 }}
-        image={logo}
-        alt="Live from space album cover"
-      />
-         <Box
+      {/* Increase the priority of the hero background image */}
+      {/* {<img style={{ width: 70 }} src={logo} alt='hello'   />} */}
+      
+      <Box
         sx={{
           position: 'absolute',
           top: 0,
@@ -423,11 +249,11 @@ const theme = useTheme();
       />
        <CardContent sx={{ flex: '1 0 auto' }}>
       <Grid container>
-        <Grid item md={0}>
+        <Grid item md={6}>
           <Box
             sx={{
               position: 'relative',
-              p: { xs: 0, md: 0 },
+              p: { xs: 3, md: 6 },
               pr: { md: 0 },
             }}
           >
@@ -446,11 +272,20 @@ const theme = useTheme();
         </Grid>
       </Grid>
       </CardContent>
-      
+
+      <CardMedia
+        component="img"
+        sx={{ width: 151 }}
+        image={logo}
+        alt="Live from space album cover"
+      />
     </Card>
-    &nbsp;&nbsp;&nbsp;
-    </Toolbar>
+
+         
       
+
+
+     
         </Box>
        
       </Box>
