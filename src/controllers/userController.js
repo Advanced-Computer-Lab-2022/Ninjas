@@ -31,11 +31,10 @@ const helperMethods = {
         var count = reviewsArray.length;
         count++;
 
-        var ratingSum = newRating;
+        var ratingSum = parseInt(newRating);
         reviewsArray.forEach(review => {
-            ratingSum += review.rating;
+            ratingSum = parseInt(ratingSum) + parseInt(review.rating);
         });
-
         return (ratingSum / count);
     }
 }
@@ -49,7 +48,6 @@ const userController = {
             const hashedPassword = await bcrypt.hash(password, salt);
             //generates new user, with the hashed pw
             const usernameExists = await Account.findOne({ '$or': [{ username }, { email }] });
-            console.log(usernameExists)
             //the username and email should be unique
             if (usernameExists)
                 throw new DomainError("username and/or email already exists.", 400);
@@ -298,6 +296,7 @@ const userController = {
             );
 
         } catch (error) {
+            console.log(error)
             if (error instanceof DomainError)
                 throw error;
 
@@ -815,6 +814,44 @@ async mostPopularCourses() {
     return popularCourses;
     } catch(error) {
         console.log(error);
+        throw new DomainError("internal error", 500);
+    }
+},
+
+async getCourse({ courseId, userType, userId }) {
+    try {
+        let course;
+        let curr;
+        const { country }= await Account.findOne({ _id: userId }, {country:1})
+
+        if (userType == 'CORPORATE_TRAINEE') {
+            //they should not be able to see the price
+            course = await Course.findOne({ _id: courseId }, { price: 0 });
+        }
+        else {
+            course = await Course.findOne({ _id: courseId });
+            curr = countryPriceDetails.get(country);
+        }
+
+        if (course === null) {
+            throw new DomainError("Course not found.", 400);
+        }
+
+        const response = { course }
+        if (curr) {
+            response.currency = curr.currency;
+            response.factor = curr.factor;
+        }
+        else {
+            response.currency = "";
+            response.factor = 1;
+        }
+
+        return response;
+    } catch(error) {
+        console.log(error)
+        if (error instanceof DomainError) throw error;
+        else
         throw new DomainError("internal error", 500);
     }
 }
