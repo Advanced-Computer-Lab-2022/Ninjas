@@ -28,7 +28,12 @@ import Signup from './components/Signup';
 import ResetPasswordPage from './components/ResetPassword';
 import MostPopular from './components/MostPopular';
 import Temp from './components/Temp';
-
+import Admin from './components/Admin';
+import AdminViewReports from './components/AdminViewReports';
+import AdminAccessCourse from './components/AdminAccessCourse';
+import AdminSetPromo from './components/AdminSetPromo';
+import AdminAddUser from './components/AdminAddUser';
+import AdminRefundRequests from './components/AdminRefundRequests';
 
 
 function App() {
@@ -41,6 +46,18 @@ function App() {
       <Route path='/temp' element= {<Temp/>} >
         </Route>
         <Route path='/changePassword' element= {<ChangePassword/>} >
+        </Route>
+        <Route path='/admin' element= {<Admin/>} >
+        </Route>
+        <Route path='/AdminViewReports' element= {<AdminViewReports/>} >
+        </Route>
+        <Route path='/AdminAccessCourse' element= {<AdminAccessCourse/>} >
+        </Route>
+        <Route path='/AdminAddUser' element= {<AdminAddUser/>} >
+        </Route>
+        <Route path='/AdminSetPromo' element= {<AdminSetPromo/>} >
+        </Route>
+        <Route path='/AdminRefundRequests' element= {<AdminRefundRequests/>} >
         </Route>
         <Route path='/viewVideo' element= {<ViewVideo/>} >
         </Route>

@@ -70,6 +70,7 @@ adminRouter.get('/viewReportedProblems', async (req, res) => {
 
     const reports = await adminCreateAccountsController.viewReportedProblems();
     res.status(200).json(reports);
+    console.log("successfull");
 }
 
 catch (err) {
