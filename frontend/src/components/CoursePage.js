@@ -427,7 +427,9 @@ const CoursePage = () => {
                                                         backgroundColor: '#CAF0F8',
                                                     },
                                                 }}
-                                                onClick={registered ? () => window.location.href = `/solveExercise` : null}
+                                                onClick={registered ?
+                                                () => window.location.href = `/solveExercise?userId=${user._id}&courseId=${course._id}&exerciseId=${exercise._id}&subtitleId=${subtitle._id}`
+                                                : null}
                                             >
                                                 <MenuBookIcon /> {exercise.title}
                                             </Typography>
