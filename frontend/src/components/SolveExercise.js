@@ -1,87 +1,345 @@
-import { AppBar, Button, FormControl, FormControlLabel, FormLabel, IconButton, Radio, RadioGroup, Slider, TextField, Toolbar, Typography } from "@mui/material";
-import { Box } from "@mui/system";
-import axios from "axios";
-import { useEffect, useState } from "react";
 
+import * as React from 'react';
+import { styled, createTheme, ThemeProvider, alpha } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import MuiDrawer from '@mui/material/Drawer';
+import Box from '@mui/material/Box';
+import MuiAppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import List from '@mui/material/List';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Link from '@mui/material/Link';
+import MenuIcon from '@mui/icons-material/Menu';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import logo from '../logo Ninjas.jpeg';
+import InputBase from '@mui/material/InputBase';
+import SearchIcon from '@mui/icons-material/Search';
+import Button from '@mui/material/Button';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { Alert, AlertTitle, Backdrop, CircularProgress, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
+import TagFacesIcon from '@mui/icons-material/TagFaces';
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    '& .MuiInputBase-input': {
+        padding: theme.spacing(1, 1, 1, 0),
+        // vertical padding + font size from searchIcon
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+        transition: theme.transitions.create('width'),
+        width: '100%',
+        [theme.breakpoints.up('sm')]: {
+            width: '12ch',
+            '&:focus': {
+                width: '20ch',
+            },
+        },
+    },
+}));
+const Search = styled('div')(({ theme }) => ({
+    position: 'relative',
+    borderRadius: theme.shape.borderRadius,
+    backgroundColor: alpha(theme.palette.common.white, 0.15),
+    '&:hover': {
+        backgroundColor: alpha(theme.palette.common.white, 0.25),
+    },
+    marginLeft: 0,
+    width: '100%',
+    [theme.breakpoints.up('sm')]: {
+        marginLeft: theme.spacing(1),
+        width: 'auto',
+    },
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+    padding: theme.spacing(0, 2),
+    height: '100%',
+    position: 'absolute',
+    pointerEvents: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+}));
+
+const drawerWidth = 240;
 const SolveExercise = () => {
-    const [userId, setUserId] = useState('');
-    const [exerciseId, setExerciseId] = useState('');
-    const [courseId, setCourseId] = useState('');
-    const [subtitleId, setSubtitleId] = useState('');
-    const [exercise, setExercise] = useState(null);
+    const AppBar = styled(MuiAppBar, {
+        shouldForwardProp: (prop) => prop !== 'open',
+    })(({ theme, open }) => ({
+        zIndex: theme.zIndex.drawer + 1,
+        transition: theme.transitions.create(['width', 'margin'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        ...(open && {
+            marginLeft: drawerWidth,
+            width: `calc(100% - ${drawerWidth}px)`,
+            transition: theme.transitions.create(['width', 'margin'], {
+                easing: theme.transitions.easing.sharp,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+        }),
+    }));
 
-    const handleUserId = (event) => {
-        setUserId(event.target.value);
+    const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
+        ({ theme, open }) => ({
+            '& .MuiDrawer-paper': {
+                position: 'relative',
+                whiteSpace: 'nowrap',
+                width: drawerWidth,
+                transition: theme.transitions.create('width', {
+                    easing: theme.transitions.easing.sharp,
+                    duration: theme.transitions.duration.enteringScreen,
+                }),
+                boxSizing: 'border-box',
+                ...(!open && {
+                    overflowX: 'hidden',
+                    transition: theme.transitions.create('width', {
+                        easing: theme.transitions.easing.sharp,
+                        duration: theme.transitions.duration.leavingScreen,
+                    }),
+                    width: theme.spacing(7),
+                    [theme.breakpoints.up('sm')]: {
+                        width: theme.spacing(9),
+                    },
+                }),
+            },
+        }),
+    );
+
+    const mdTheme = createTheme();
+
+    const [open, setOpen] = React.useState(false);
+    const toggleDrawer = () => {
+        setOpen(!open);
     };
-    const handleCourseId = (event) => {
-        setCourseId(event.target.value);
-    };
-    const handleSubtitleId = (event) => {
-        setSubtitleId(event.target.value);
-    };
-    const handleExerciseId = (event) => {
-        setExerciseId(event.target.value);
-    };
-    const getExercise = async () => {
-        const response = await axios.get(`http://localhost:8000/solveExercise?userId=${userId}&courseId=${courseId}&exerciseId=${exerciseId}&subtitleId=${subtitleId}`)
+
+    //endpoint code
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get('userId');
+    const courseId = params.get('courseId');
+    const subtitleId = params.get('subtitleId');
+    const exerciseId = params.get('exerciseId');
+
+    const [exercise, setExercise] = useState(async () => {
+        await axios.get(`http://localhost:8000/solveExercise?userId=${userId}&courseId=${courseId}&exerciseId=${exerciseId}&subtitleId=${subtitleId}`)
+            .then(res => setExercise(res.data))
             .catch((error) => alert(error.response.data.message))
+    })
 
-        setExercise(response.data)
-    }
-
-    const submit = async () => {
-        //the user answers are set in the radio button onChange function
-        const submitExercise = await axios.post(`http://localhost:8000/submitExercise?userId=${userId}`
-        , {solvedExercise: exercise} )
-        .catch((error) => alert(error.response.data.message))
-
-        alert("Your solution has been submitted \nYour grade: "
-        + submitExercise.data.userGrade
-        + " out of " + exercise.totalGrade
-        + "\nwhich is " + submitExercise.data.gradePercentage + "%")
-    }
-
+    const [ready, setReady] = useState(false);
     useEffect(() => {
+        if (exercise._id)
+            setReady(true);
     }, [exercise])
 
+
+    const [gradeDetails, setGradeDetails] = useState(null);
+    const submit = async () => {
+        //the user answers are set in the radio button onChange function
+        await axios.post(`http://localhost:8000/submitExercise?userId=${userId}`
+            , { solvedExercise: exercise })
+            .then(response => setGradeDetails(response.data))
+            .catch((error) => alert(error.response.data.message))
+        setOpenPopup(true)
+    }
+
+    //to display the grade
+    const [openPopup, setOpenPopup] = useState(false);
+    const handleClose = () => {
+        setOpenPopup(false);
+        window.location.href= `/course/${courseId}`;
+    };
+    const handleToggle = () => {
+        setOpen(!open);
+    };
+
     return (
-        <div>
-            <AppBar position="static">
-                <Toolbar>
-                    <TextField variant="filled" label="user ID" onChange={handleUserId} />
-                    <TextField variant="filled" label="course ID" onChange={handleCourseId} />
-                    <TextField variant="filled" label="subtitle ID" onChange={handleSubtitleId} />
-                    <TextField variant="filled" label="exercise ID" onChange={handleExerciseId} />
-                </Toolbar>
-                <Button variant="filled" onClick={getExercise}>Start Solving</Button>
-            </AppBar>
-
-            {
-                exercise && exercise.questions.map((question) => (
-                <FormControl>
-                    <FormLabel id="demo-radio-buttons-group-label">{question.questionText}</FormLabel>
-                    <RadioGroup
-                        aria-labelledby="demo-radio-buttons-group-label"
-                        name="controlled-radio-buttons-group"
-                        onChange={(event) => question.userAnswer = event.target.value}
+        <ThemeProvider theme={mdTheme}>
+            <Box sx={{ display: 'flex' }}>
+                <AppBar position="absolute" open={open}>
+                    <Toolbar
+                        sx={{
+                            pr: '24px', // keep right padding when drawer closed
+                            bgcolor: '#03045E'
+                        }}
                     >
-                        <FormControlLabel value={question.mcqs[0]} control={<Radio />} label={question.mcqs[0]} />
-                        <FormControlLabel value={question.mcqs[1]} control={<Radio />} label={question.mcqs[1]} />
-                        <FormControlLabel value={question.mcqs[2]} control={<Radio />} label={question.mcqs[2]} />
-                        <FormControlLabel value={question.mcqs[3]} control={<Radio />} label={question.mcqs[3]} />
+                        <IconButton
+                            edge="start"
+                            color="inherit"
+                            aria-label="open drawer"
+                            onClick={toggleDrawer}
+                            sx={{
+                                marginRight: '36px',
+                                ...(open && { display: 'none' }),
+                            }}
+                        >
+                            <MenuIcon />
+                        </IconButton >
+                        <Typography
+                            component="h1"
+                            variant="h6"
+                            bgcolor='#03045E'
+                            noWrap
+                            sx={{ flexGrow: 1 }}
+                        >
+                            <img style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
+                        </Typography >
+                        <Search>
+                            <SearchIconWrapper>
+                                <SearchIcon />
+                            </SearchIconWrapper>
+                            <StyledInputBase
+                                placeholder="Search…"
+                                inputProps={{ 'aria-label': 'search' }}
+                            />
+                        </Search>
+                        &nbsp;&nbsp;&nbsp;
 
-                    </RadioGroup>
-                </FormControl>
-            )
-            )}
+                        {/* <IconButton color="inherit">
+              <Badge badgeContent={4} color="secondary">
+                <NotificationsIcon  />
+              </Badge>
+            </IconButton> */}
+                    </Toolbar>
+                </AppBar>
+                <Drawer variant="permanent" open={open}>
+                    <Toolbar
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'flex-end',
+                            px: [1],
+                        }}
+                    >
+                        <IconButton onClick={toggleDrawer}>
+                            <ChevronLeftIcon />
+                        </IconButton>
+                    </Toolbar>
 
-            <br></br>
+                    <Divider />
+                </Drawer>
+                <Box
+                    component="main"
+                    sx={{
+                        flexGrow: 1,
+                        height: '100vh',
+                        overflow: 'auto',
+                    }}
+                >
+                    <Toolbar />
+                    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+                        <Grid container spacing={3}>
 
-            { exercise && exercise.questions.length > 0 &&
-                <Button variant="contained" onClick={submit} >Submit</Button>
+                        </Grid>
+                    </Container>
+                    {/*start writing your body here*/}
+                    {
+                        !ready &&
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight="100vh"
+                        >
+                            <CircularProgress />
+                        </Box>
 
-            }
-        </div>
-    )
+                    }
+                    {
+                        ready &&
+                        <div>
+                            <Typography fontWeight={'bold'} color={'#03045E'} variant="h4" align='center'>{exercise.title}</Typography>
+                            {
+                                exercise.questions.map((question) => (
+                                    <div>
+                                        <FormControl sx={{ ml: 1 }}>
+                                            <Typography fontWeight={'bold'} color={'#03045E'}>{question.questionText}</Typography>
+                                            <RadioGroup
+                                                sx={{ mb: 1 }}
+                                                aria-labelledby="demo-radio-buttons-group-label"
+                                                name="controlled-radio-buttons-group"
+                                                onChange={(event) => question.userAnswer = event.target.value}
+                                            >
+                                                <FormControlLabel value={question.mcqs[0]} control={<Radio sx={{
+                                                    '&, &.Mui-checked': {
+                                                        color: '00B4D8',
+                                                    },
+                                                }} />}
+                                                    label={question.mcqs[0]} />
+
+                                                <FormControlLabel value={question.mcqs[1]} control={<Radio sx={{
+                                                    '&, &.Mui-checked': {
+                                                        color: '00B4D8',
+                                                    },
+                                                }} />}
+                                                    label={question.mcqs[1]} />
+
+                                                <FormControlLabel value={question.mcqs[2]} control={<Radio sx={{
+                                                    '&, &.Mui-checked': {
+                                                        color: '00B4D8',
+                                                    },
+                                                }} />}
+                                                    label={question.mcqs[2]} />
+
+                                                <FormControlLabel value={question.mcqs[3]} control={<Radio sx={{
+                                                    '&, &.Mui-checked': {
+                                                        color: '00B4D8',
+                                                    },
+                                                }} />}
+                                                    label={question.mcqs[3]} />
+                                            </RadioGroup>
+                                        </FormControl>
+                                        <Divider />
+                                    </div>
+                                ))
+                            }
+                            <Button size='large'
+                                sx={{ mt: 1, mb: 1, ml: 1, display: 'flex', flexDirection: 'column', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                onClick={submit}
+                            >
+                                Submit your answers
+                            </Button>
+
+                            
+                            { gradeDetails &&
+                                <Backdrop
+                                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                open={openPopup}
+                                onClick={handleClose}
+                            >
+                                <Alert sx={{ tabSize:'l' }} severity="success" color="info">
+                                    <AlertTitle>Your exercise has been submitted.</AlertTitle>
+                                    Your grade is {gradeDetails.userGrade} out of {exercise.totalGrade}
+                                    <br></br>
+                                    which is {gradeDetails.gradePercentage.toFixed(2)}% <TagFacesIcon />
+                                    <br></br>
+                                    <br></br>
+                                    Click anywhere to continue
+                                </Alert>
+                            </Backdrop>
+                            }
+
+                        </div>
+                    }
+
+                </Box>
+            </Box>
+        </ThemeProvider>
+
+    );
+
+
+
 }
 export default SolveExercise;
+
