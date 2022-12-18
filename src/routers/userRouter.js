@@ -283,13 +283,12 @@ userRouter.get('/viewCorrectAnswers', async (req, res) => {
 
 userRouter.get('/viewVideo', async (req, res) => {
     try {
+        const session = sessionDetails.getSession(req.session.id);
+        const { userId } = session;
 
         const { courseId, subtitleId } = req.query
-        const exersise = await userController.viewVideo(courseId, subtitleId)
+        const exersise = await userController.viewVideo(courseId, subtitleId, userId)
         res.status(200).json(exersise)
-
-
-
 
     } catch (err) {
         console.log(err)
