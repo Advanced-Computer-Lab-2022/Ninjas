@@ -26,13 +26,14 @@ import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
 import { useEffect } from 'react';
-import { CircularProgress, Dialog, DialogTitle, InputLabel, Rating, TextField } from '@mui/material';
+import { Alert, AlertTitle, Backdrop, CircularProgress, Dialog, DialogTitle, InputLabel, LinearProgress, Rating, TextField } from '@mui/material';
 import img from "../components/backgroundCourse.png";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import ReactPlayer from 'react-player/youtube';
 import PersonIcon from '@mui/icons-material/Person';
 import { Text } from '@react-pdf/renderer';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
@@ -76,6 +77,21 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 }));
 
 const drawerWidth = 240;
+function LinearProgressWithLabel(props) {
+    return (
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <Box sx={{ width: '100%', mr: 1 }}>
+                <LinearProgress variant="determinate" {...props} />
+            </Box>
+            <Box sx={{ minWidth: 35 }}>
+                <Typography variant="body2" color="text.secondary">{`${Math.round(
+                    props.value,
+                )}%`}</Typography>
+            </Box>
+        </Box>
+    );
+}
+
 const CoursePage = () => {
     const AppBar = styled(MuiAppBar, {
         shouldForwardProp: (prop) => prop !== 'open',
@@ -144,7 +160,7 @@ const CoursePage = () => {
     const [currency, setCurrency] = useState("");
     const [factor, setFactor] = useState(0);
     const [price, setPrice] = useState(0);
-
+    const [userProgress, setProgress] = useState(0);
     const [course, setCourses] = useState(async () => {
         await axios.get(`http://localhost:8000/course/${courseId}`)
             .then(res => {
@@ -181,28 +197,47 @@ const CoursePage = () => {
     const handleText = (event) => {
         setText(event.target.value);
     };
+
+    const [openPopup, setOpenPopup] = useState(false);
+    const handleClosePopup = () => {
+        setOpenPopup(false);
+        window.location.href= `/course/${courseId}`;
+    };
     const submitRating = async () => {
         const response = await axios.post(
             `http://localhost:8000/rateCourse?userId=${user._id}&courseId=${course._id}`,
             { rating, text })
             .catch((error) => alert(error.response.data.message))
-        alert(response.data.message);
+        setOpenRateCourse(false);
+        setOpenPopup(true);
     }
     useEffect(() => {
-        if (course._id && user._id) { //result of the backend request is ready
+        if (course._id && user._id) {
+            //result of the backend request is ready
             setReady(true);
+
+            //check if this user is registered
             setRegistered(course.students.includes(user._id));
+
+            //course instructors
             let instructs = "";
             course.instructors.map((instructor) => {
                 instructs += instructor.firstName + " " + instructor.lastName + "\n"
             })
             setInstructors(instructs);
+
+            //set the price to be displayed
             let priceAfterDiscount;
             if (course.discount > 0) {
                 priceAfterDiscount = course.price - (course.price * course.discount / 100);
                 setAfterDiscount(priceAfterDiscount * factor);
             }
             setPrice(course.price * factor);
+
+            //check the user's course progress. is there any? if no leave it as a zero, and if yes set the value.
+            const progress = user.progress.filter(prog => prog.courseId.toString() === courseId.toString())[0]
+            if (progress)
+                setProgress(progress.currentProgress);
         }
     }, [course])
 
@@ -393,6 +428,12 @@ const CoursePage = () => {
                                 />
                             </Box>
                             <Divider />
+                            {/*display the user's progress*/}
+                            <Box sx={{ ml:27, width: '70%' }}>
+                                <Typography align='center' variant='h6' color={'#03045E'}> Your current progress: </Typography>
+                                <LinearProgressWithLabel value={userProgress} />
+                                <Typography align='center' variant='h6' color={'#03045E'}> Keep it up! <AutoAwesomeIcon /> </Typography>
+                            </Box>
 
                             {
                                 course.subtitles.map((subtitle) => (
@@ -400,7 +441,8 @@ const CoursePage = () => {
                                         sx={{
                                             mb: 2,
                                             mr: 15,
-                                            p: 1, border: '3px dashed grey'
+                                            p: 1, border: '3px dashed grey',
+                                            borderColor:'#90E0EF'
                                         }}>
 
                                         <Typography color="#03045E" sx={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}> {subtitle.text} </Typography>
@@ -416,7 +458,7 @@ const CoursePage = () => {
                                             }}
                                             onClick={registered ? () => window.location.href = `/viewVideo` : null}
                                         >
-                                            <PlayCircleIcon /> {subtitle.videoTitles.title}: {subtitle.videoTitles.description}
+                                            <PlayCircleIcon color='#03045E' /> {subtitle.videoTitles.title}: {subtitle.videoTitles.description}
                                         </Typography>
 
                                         {subtitle.exercises.map((exercise) => (
@@ -428,10 +470,10 @@ const CoursePage = () => {
                                                     },
                                                 }}
                                                 onClick={registered ?
-                                                () => window.location.href = `/solveExercise?userId=${user._id}&courseId=${course._id}&exerciseId=${exercise._id}&subtitleId=${subtitle._id}`
-                                                : null}
+                                                    () => window.location.href = `/solveExercise?userId=${user._id}&courseId=${course._id}&exerciseId=${exercise._id}&subtitleId=${subtitle._id}`
+                                                    : null}
                                             >
-                                                <MenuBookIcon /> {exercise.title}
+                                                <MenuBookIcon color='#03045E' /> {exercise.title}
                                             </Typography>
                                         ))}
                                     </Box>
@@ -444,11 +486,11 @@ const CoursePage = () => {
                                 sx={{
                                     mb: 2,
                                     mr: 10,
-                                    p: 1, border: 2
+                                    p: 1, border: 2, borderColor:'#00B4D8'
                                 }}>
                                 <Typography color="#03045E" sx={{ width: 155, fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}> Course reviews </Typography>
                                 {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) &&
-                                    <Button sx={{ ml: 107, mt: -5, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                    <Button sx={{ ml: 140, mt: -5, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                         onClick={handleClickOpen}
                                     >
                                         Rate this course
@@ -478,18 +520,18 @@ const CoursePage = () => {
                                             maxWidth: "700px",
                                         },
                                     },
-                                    display:"flex", flexDirection:"column"
+                                    display: "flex", flexDirection: "column"
                                 }}>
                                 <DialogTitle align='center' display={"flex"} flexDirection={"column"} alignItems={"center"}>
-                                Rate the course
-                                <Rating
+                                    Rate the course
+                                    <Rating
                                         name="simple-controlled"
                                         onChange={handleRating}
                                     />
-                                    </DialogTitle>
+                                </DialogTitle>
 
                                 <TextField id="standard-basic" label="Add a comment." variant="standard"
-                                sx={{ mb:2}}
+                                    sx={{ mb: 2 }}
                                     onChange={handleText} />
 
                                 <Button
@@ -499,6 +541,17 @@ const CoursePage = () => {
                                     Submit your rating
                                 </Button>
                             </Dialog>
+                            {/*alert shows up after submitting the rating*/}
+                            <Backdrop
+                                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                open={openPopup}
+                                onClick={handleClosePopup}
+                            >
+                                <Alert sx={{ tabSize:'l' }} severity="success">
+                                    <AlertTitle>Your Rating has been submitted.</AlertTitle>
+                                    Click anywhere to continue
+                                </Alert>
+                            </Backdrop>
                         </div>
                     }
 
