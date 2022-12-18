@@ -31,11 +31,10 @@ const helperMethods = {
         var count = reviewsArray.length;
         count++;
 
-        var ratingSum = newRating;
+        var ratingSum = parseInt(newRating);
         reviewsArray.forEach(review => {
-            ratingSum += review.rating;
+            ratingSum = parseInt(ratingSum) + parseInt(review.rating);
         });
-
         return (ratingSum / count);
     }
 }
@@ -49,7 +48,6 @@ const userController = {
             const hashedPassword = await bcrypt.hash(password, salt);
             //generates new user, with the hashed pw
             const usernameExists = await Account.findOne({ '$or': [{ username }, { email }] });
-            console.log(usernameExists)
             //the username and email should be unique
             if (usernameExists)
                 throw new DomainError("username and/or email already exists.", 400);
@@ -298,6 +296,7 @@ const userController = {
             );
 
         } catch (error) {
+            console.log(error)
             if (error instanceof DomainError)
                 throw error;
 
@@ -478,17 +477,20 @@ const userController = {
 
     },
 
-    async viewEnrolledCourses(userId){
+    async viewEnrolledCourses({userId}){
         let myCourses = [];
         try{
-            const theUser = await Account.findOne({_id: userId}).catch(() => {
-                throw new DomainError("Wrong Id", 400)
-            });;
+
+            const theUser = await Account.findOne({_id: userId});
             const courses = await Course.find();
-            if(theUser.type == 'INDIVIDUAL TRAINEE' || theUser.type == 'CORPORATE TRIANEE'){
+
+
+            if(theUser.type == 'INDIVIDUAL_TRAINEE' || theUser.type == 'CORPORATE_TRIANEE'){
+
                 for(var i = 0 ; i<courses.length ; i++){
+
                     for(var j =0; j<courses[i].students.length; j++){
-                        if(userId == courses[i].students[j].id){
+                        if(userId == courses[i].students[j].toString()){
                             myCourses.push(courses[i]);
                             break;
                         }
@@ -506,7 +508,7 @@ const userController = {
         }
 
     },
-    async payForCourse(userId, courseId){ //from wallet
+    async payForCourse(userId, courseId){ //from wallet needs testing//////////////////
         try{
             const theUser = await Account.findOne({_id: userId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
@@ -743,7 +745,27 @@ async ViewFolllowUp( userId , courseId , problem ) {
             throw new DomainError("internal error", 500);
     }
     },
- 
+
+async viewWallet({userId}) {
+
+
+      try {
+      const account= await Account.findOne({_id:userId});
+      if(account.type == 'INDIVIDUAL_TRAINEE'){
+        //balance = balance + account.wallet;
+        //console.log("wallettt");
+        //console.log(account);    
+       // console.log(account.wallet);
+        return account.wallet;
+  
+          }
+      }
+      catch (err) {
+          if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+          throw new DomainError('error internally', 500);
+        }
+    },
+   
     async viewVideo(courseId) {
         try {
             const video = await Course.findOne({
@@ -755,9 +777,10 @@ async ViewFolllowUp( userId , courseId , problem ) {
 
            return video.videoLink;
 
-        } catch (err) {
+      }
+           catch (err) {
             
-            if (err instanceof DomainError) { throw err; }
+              if (err instanceof DomainError) { throw err; }
             throw new DomainError('error internally', 500);
         }
 
@@ -775,6 +798,7 @@ async ViewFolllowUp( userId , courseId , problem ) {
 
         return "Done";
     }
+
     catch (err){
         
         if (err instanceof DomainError) { throw err; }
@@ -790,6 +814,44 @@ async mostPopularCourses() {
     return popularCourses;
     } catch(error) {
         console.log(error);
+        throw new DomainError("internal error", 500);
+    }
+},
+
+async getCourse({ courseId, userType, userId }) {
+    try {
+        let course;
+        let curr;
+        const { country }= await Account.findOne({ _id: userId }, {country:1})
+
+        if (userType == 'CORPORATE_TRAINEE') {
+            //they should not be able to see the price
+            course = await Course.findOne({ _id: courseId }, { price: 0 });
+        }
+        else {
+            course = await Course.findOne({ _id: courseId });
+            curr = countryPriceDetails.get(country);
+        }
+
+        if (course === null) {
+            throw new DomainError("Course not found.", 400);
+        }
+
+        const response = { course }
+        if (curr) {
+            response.currency = curr.currency;
+            response.factor = curr.factor;
+        }
+        else {
+            response.currency = "";
+            response.factor = 1;
+        }
+
+        return response;
+    } catch(error) {
+        console.log(error)
+        if (error instanceof DomainError) throw error;
+        else
         throw new DomainError("internal error", 500);
     }
 }

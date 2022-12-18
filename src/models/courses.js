@@ -58,14 +58,14 @@ const coursesSchema = new Schema({
     discountDuration:{
         type: Number,
         default:0,
-        min: 1
+        //min: 1
     },
     videoLink:{
         type:String,
         required:true
     },
     students: {
-        type: [accountSchema],
+        type: [Schema.Types.ObjectId],
         required: false
 
     },
@@ -89,6 +89,10 @@ countryPriceDetails.set('France', {
     discount: 5,
     currency: 'EUR'
 })
-
+countryPriceDetails.set('United States', {
+    factor: 1,
+    discount: 10,
+    currency: 'USD'
+})
 const Course = mongoose.model('Course', coursesSchema);
 module.exports = { Course, countryPriceDetails };

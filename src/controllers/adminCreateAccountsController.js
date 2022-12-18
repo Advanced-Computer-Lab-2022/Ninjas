@@ -215,9 +215,14 @@ const adminCreateAccountsController =
  
     
     try{
-        const thisCourse = await Course.findOne({_id: userId});
-        const thisUser = await Account.findOne({_id: courseId});
-        ////////////////////////////////////////////////////
+        const thisCourse = await Course.findOne({_id: userId}).catch(() => {
+            throw new DomainError("Wrong Id", 400)
+         });;
+        const thisUser = await Account.findOne({_id: courseId}).catch(() => {
+            throw new DomainError("Wrong Id", 400)
+         });;
+        await Course.updateOne({_id:courseId}, {$push: { students : userId }});
+
      
        
     }
