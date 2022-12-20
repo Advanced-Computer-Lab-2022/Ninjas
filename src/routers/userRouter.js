@@ -283,13 +283,12 @@ userRouter.get('/viewCorrectAnswers', async (req, res) => {
 
 userRouter.get('/viewVideo', async (req, res) => {
     try {
+        const session = sessionDetails.getSession(req.session.id);
+        const { userId } = session;
 
         const { courseId, subtitleId } = req.query
-        const exersise = await userController.viewVideo(courseId, subtitleId)
+        const exersise = await userController.viewVideo(courseId, subtitleId, userId)
         res.status(200).json(exersise)
-
-
-
 
     } catch (err) {
         console.log(err)
@@ -330,7 +329,7 @@ userRouter.post('/payForCourse', async (req, res) => {
         await userController.payForCourse(userId, courseId)
         res.status(200).json("You have paid successfully");
     }
-  catch(err){
+    catch (err) {
         if (err instanceof DomainError) {
             res.status(err.code).send(err.message)
         } else {
@@ -431,7 +430,7 @@ userRouter.post('/requestRefund',async(req,res) => {
 
 
     res.status(200).json("Request is waiting for review");}
-    
+
     catch(err){
         if (err instanceof DomainError) {
             res.status(err.code).send(err.message)
@@ -455,7 +454,55 @@ userRouter.get('/mostPopularCourses', async (req, res) => {
 
     } catch (error) {
         console.log(error)
-        return res.status(error.code).json({ message: error.message });
+        res.status(error.code).json({ message: error.message });
+    }
+})
+
+userRouter.get('/course/:id', async (req, res) => {
+    try {
+        const session = sessionDetails.getSession(req.session.id);
+        const courseId = req.params.id;
+        const { userId, type: userType } = session;
+
+        const course = await userController.getCourse({ courseId, userType, userId });
+        res.status(200).json(course);
+    } catch (error) {
+        console.log(error)
+        res.status(error.code).json({ message: error.message });
+    }
+})
+
+userRouter.get('/currentUser', async (req, res) => {
+    try {
+        //gets the user details of the current user (using the session) and sends it to the frontend to deal with it
+        const session = sessionDetails.getSession(req.session.id);
+        const { userId } = session;
+        const user = await userController.getUserData({ userId });
+        res.status(200).json(user);
+    } catch(error) {
+        res.status(error.code).json({message: error.message});
+    }
+
+})
+
+userRouter.post('/requestAccess', async (req,res) => {
+    try {
+        const { userId, courseId } = req.query;
+        const response = await userController.requestAccess(userId, courseId);
+        if (response == "Done")
+        res.status(200).json({ message: "Your access request has been sent to the admin"});
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
+
+userRouter.get('/checkRequestedAccess', async (req,res) => {
+    try {
+    const { userId, courseId } = req.query;
+    const requested = await userController.checkRequestedAccess({ userId, courseId });
+    res.status(200).json(requested);
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
     }
 })
 module.exports = userRouter;
