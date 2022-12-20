@@ -481,7 +481,7 @@ const CoursePage = () => {
                             </Box>
                             <Divider />
                             {/*display the user's progress*/}
-                            { ["CORPORATE_TRAINEE","INDIVIDUAL_TRAINEE"].includes(user.type) && 
+                            { ["CORPORATE_TRAINEE","INDIVIDUAL_TRAINEE"].includes(user.type) && registered &&
                             <Box sx={{ ml: 27, width: '70%' }}>
                                 <Typography align='center' variant='h6' color={'#03045E'}> Your current progress: </Typography>
                                 <LinearProgressWithLabel value={userProgress} />

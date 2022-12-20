@@ -356,6 +356,9 @@ const userController = {
 
             const gradePercentage = (userGrade / solvedExercise.totalGrade) * 100;
 
+            //if the user has a record with the same exercise delete it, since we need the grades to be up to date
+            await UserExercise.deleteOne({ accountId: userId, "exercises._id": solvedExercise._id});
+
             await UserExercise.create({
                 accountId: userId,
                 exercises: [solvedExercise],
