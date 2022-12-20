@@ -170,7 +170,8 @@ const CoursePage = () => {
             })
             .catch((error) => {
                 console.log(error)
-                alert(error.response.data.message)
+                if (error.response.data.message === "you did not login")
+                    window.location.href = '/';
             })
     })
 
@@ -181,12 +182,23 @@ const CoursePage = () => {
             })
             .catch((error) => {
                 console.log(error)
-                alert(error.response.data.message)
+                if (error.response.data.message === "you did not login")
+                    window.location.href = '/';
             })
     })
     const [ready, setReady] = useState(false);
     const [afterdiscount, setAfterDiscount] = useState(0);
     const [registered, setRegistered] = useState(false);
+    //if the user is a registered student or an instructor that teaches the coures, return true
+    const isRegistered = () => {
+        if (user.type == 'INSTRUCTOR')
+            return course.instructors.map(instructor => instructor._id).includes(user._id);
+
+        else if (["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type))
+            return course.students.includes(user._id);
+
+        else return false;
+    }
 
     //for the rating
     const [rating, setRating] = useState(0);
@@ -201,7 +213,7 @@ const CoursePage = () => {
     const [openPopup, setOpenPopup] = useState(false);
     const handleClosePopup = () => {
         setOpenPopup(false);
-        window.location.href= `/course/${courseId}`;
+        window.location.href = `/course/${courseId}`;
     };
     const submitRating = async () => {
         const response = await axios.post(
@@ -211,13 +223,39 @@ const CoursePage = () => {
         setOpenRateCourse(false);
         setOpenPopup(true);
     }
+
+    //to check if the corporate trainee has requested access
+    const [reqAccess, setReqAccess] = useState(false);
+    const requestedAccess = async () => {
+        const response = await axios.get(`http://localhost:8000/checkRequestedAccess?userId=${user._id}&courseId=${course._id}`)
+            .catch((error) => console.log(error.response.data.message));
+
+        if (response.status == 200)
+            setReqAccess(true);
+    }
+
+
+    //when the corporate trainee clicks request access, this endpoint should be called.
+    const requestCourseAccess = async () => {
+        const response = await axios.post(`http://localhost:8000/requestAccess?userId=${user._id}&courseId=${course._id}`)
+            .catch((error) => console.log(error.response.data.message));
+
+        if (response.status == 200) //just refresh the page
+            window.location.href = `/course/${courseId}`;
+    }
+
+
     useEffect(() => {
         if (course._id && user._id) {
             //result of the backend request is ready
             setReady(true);
 
-            //check if this user is registered
-            setRegistered(course.students.includes(user._id));
+            //check if this user is registered 
+            setRegistered(isRegistered());
+
+            //check if the corporate trainee requested access
+            if (user.type == 'CORPORATE_TRAINEE')
+                requestedAccess();
 
             //course instructors
             let instructs = "";
@@ -408,12 +446,26 @@ const CoursePage = () => {
                                     </Button>
                                 }
 
-                                {user.type === "CORPORATE_TRAINEE" && !registered &&
+                                {user.type === "CORPORATE_TRAINEE" && !registered && !reqAccess &&
                                     <Button
                                         sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                        onClick={() => window.location.href = '/requestAccess'}
+                                        onClick={requestCourseAccess}
                                     >
                                         You are not enrolled in the course. If you want to view all the resources, click here to request access
+                                    </Button>
+                                }
+                                {
+                                    user.type === "CORPORATE_TRAINEE" && !registered && reqAccess &&
+                                    <Typography variant="subtitle1">
+                                        Your request is currently pending. Please wait for the admin's approval
+                                    </Typography>
+                                }
+                                {user.type === "GUEST" &&
+                                    <Button
+                                        sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                        onClick={() => window.location.href='/signUp'}
+                                    >
+                                    Want to enroll? Sign up now!
                                     </Button>
                                 }
                             </Box>
@@ -429,11 +481,20 @@ const CoursePage = () => {
                             </Box>
                             <Divider />
                             {/*display the user's progress*/}
-                            <Box sx={{ ml:27, width: '70%' }}>
+                            { ["CORPORATE_TRAINEE","INDIVIDUAL_TRAINEE"].includes(user.type) && 
+                            <Box sx={{ ml: 27, width: '70%' }}>
                                 <Typography align='center' variant='h6' color={'#03045E'}> Your current progress: </Typography>
                                 <LinearProgressWithLabel value={userProgress} />
+                                { userProgress < 100 &&
                                 <Typography align='center' variant='h6' color={'#03045E'}> Keep it up! <AutoAwesomeIcon /> </Typography>
+                                }
+                                { userProgress === 100 &&
+                                <Typography align='center' variant='h6' color={'#03045E'}>
+                                Congratulations on finishing the course! You will find the certificate in your email inbox as well as your certificate list <AutoAwesomeIcon />
+                                </Typography>
+                                }
                             </Box>
+                            }
 
                             {
                                 course.subtitles.map((subtitle) => (
@@ -442,7 +503,7 @@ const CoursePage = () => {
                                             mb: 2,
                                             mr: 15,
                                             p: 1, border: '3px dashed grey',
-                                            borderColor:'#90E0EF'
+                                            borderColor: '#00B4D8'
                                         }}>
 
                                         <Typography color="#03045E" sx={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}> {subtitle.text} </Typography>
@@ -476,8 +537,27 @@ const CoursePage = () => {
                                                 <MenuBookIcon color='#03045E' /> {exercise.title}
                                             </Typography>
                                         ))}
+                                        {
+                                            user.type == 'INSTRUCTOR' && registered &&
+                                            <Button
+                                                sx={{ mt:1, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                            >
+                                                Add another exercise
+                                            </Button>
+                                        }
                                     </Box>
                                 ))
+                            }
+
+                            {/*If the user is an instructor that teaches the course, display a button that allows them to add a sub*/}
+                            {
+                                user.type == 'INSTRUCTOR' && registered &&
+                                <Button
+                                    sx={{ ml: 75, mb: 1, size: 'large', align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+
+                                >
+                                    Add another subtitle
+                                </Button>
                             }
                             <Divider />
 
@@ -486,7 +566,7 @@ const CoursePage = () => {
                                 sx={{
                                     mb: 2,
                                     mr: 10,
-                                    p: 1, border: 2, borderColor:'#00B4D8'
+                                    p: 1, border: 2, borderColor: '#00B4D8'
                                 }}>
                                 <Typography color="#03045E" sx={{ width: 155, fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}> Course reviews </Typography>
                                 {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) &&
@@ -547,7 +627,7 @@ const CoursePage = () => {
                                 open={openPopup}
                                 onClick={handleClosePopup}
                             >
-                                <Alert sx={{ tabSize:'l' }} severity="success">
+                                <Alert sx={{ tabSize: 'l' }} severity="success">
                                     <AlertTitle>Your Rating has been submitted.</AlertTitle>
                                     Click anywhere to continue
                                 </Alert>
