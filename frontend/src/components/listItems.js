@@ -27,10 +27,10 @@ const  change1 =()=>{
 const mainListItems = (
   <React.Fragment>
     <ListItemButton onClick={()=> {change1()}}>
-      <ListItemIcon>
+      <ListItemIcon sx={{ color: '#CAF0F8' }}>
         <HomeIcon />
       </ListItemIcon>
-      <ListItemText primary="Home" />
+      <ListItemText />
     </ListItemButton>
      {/* <ListItemButton onClick={()=> {change2()}}>
       <ListItemIcon>

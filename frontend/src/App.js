@@ -4,7 +4,6 @@ import ChangeCountry from './components/ChangeCountry';
 import ForgotPasswordPage from './components/ForgotPassword';
 import InstructorCourses from './components/InstructorCourses';
 import InstructorPage from './components/InstructorHome';
-import RateCourse from './components/RateCourse';
 import SolveExercise from './components/SolveExercise';
 import TraineePage from './components/TraineeHome';
 import TraineeSearch from './components/TraineeSearch';
@@ -34,6 +33,8 @@ import AdminAccessCourse from './components/AdminAccessCourse';
 import AdminSetPromo from './components/AdminSetPromo';
 import AdminAddUser from './components/AdminAddUser';
 import AdminRefundRequests from './components/AdminRefundRequests';
+import CoursePage from './components/CoursePage';
+
 
 
 function App() {
@@ -103,10 +104,10 @@ function App() {
         element={<InstructorCourses/>}/>
         <Route path="/traineeSearch"
         element={<TraineeSearch/>}/>
-        <Route path="/rateCourse" element={<RateCourse/>}/>
         <Route path="/solveExercise" element={<SolveExercise/>}/>
       <Route path="/resetPassword/:id" element={<ResetPasswordPage/>}/>
       <Route path="/mostPopularCourses" element={<MostPopular/>}/>
+      <Route path="/course/:id" element={<CoursePage/>}/>
       </Routes>
       </BrowserRouter>
     </div>

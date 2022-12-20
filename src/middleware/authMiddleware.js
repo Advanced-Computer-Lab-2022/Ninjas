@@ -37,7 +37,10 @@ const sessionDetails = {
   removeSession(id) {
     const thisSession = sessions.filter(session => !(session.sessionId = id));
     sessions = thisSession;
-
+  },
+  checkUserExistence(username) {
+    const result = sessions.filter(session => session.username = username);
+    return result.length >0
   }
 
 }

@@ -28,6 +28,8 @@ import {useState,useEffect} from "react";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
+import mainListItems from './listItems';
+
 
 let k = 0;
 
@@ -88,21 +90,7 @@ const Search = styled('div')(({ theme }) => ({
 
 const drawerWidth = 240;
 const Temp = () => {
-    const[refunds,setRefunds]=useState([]);
-
-    const change = async ()=>{
-        const response=await axios.get(`http://localhost:8000/admin/viewRefundRequests`).then((res) => { 
-        const refunds = res.data
-        setRefunds(refunds)
-        
-    })
-        .catch( (error) => alert(error.response.data.message))
-        console.log(response.data)
-        if(response.status===200){
-            alert(response.data)
-        }}
-
-
+ 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
@@ -154,29 +142,36 @@ const mdTheme = createTheme();
     setOpen(!open);
   };
 
+  // const params = new URLSearchParams(window.location.search);
+  //   const userId = params.get('userId');
+  //   const courseId = params.get('courseId');
+  //   const subtitleId = params.get('subtitleId');
+  //   const exerciseId = params.get('exerciseId');
+
+    const [refunds, setRefunds] = useState(async () => {
+        await axios.get(`http://localhost:8000/admin/viewRefundRequests`)
+            .then(res => { setRefunds(res.data)})
+            .catch((error) => alert(error.response.data.message))
+    })
+
+    const [ready, setReady] = useState(false);
+    useEffect(() => {
+        if (refunds.length)
+            setReady(true);
+    }, [refunds])
+
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex'  }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open}>
+        <AppBar position="absolute">
           <Toolbar 
             sx={{
               pr: '24px', // keep right padding when drawer closed
               bgcolor: '#03045E'
             }}
           >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton >
+         
             <Typography
               component="h1"
               variant="h6"
@@ -186,11 +181,10 @@ const mdTheme = createTheme();
             >
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-            <box>
-
-            <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }} onClick={()=> {change()}}>Refresh</Button>
-            </box>
+         
           &nbsp;&nbsp;&nbsp;
+          <box>{mainListItems}</box>
+
           <box>
 
           <Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}>log out</Button>
@@ -199,22 +193,7 @@ const mdTheme = createTheme();
       
           </Toolbar>
         </AppBar>
-        <Drawer variant="permanent" open={open}>
-          <Toolbar
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: [1],
-            }}
-          >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          
-          <Divider />
-        </Drawer>
+       
         <Box
           component="main"
           sx={{
@@ -241,7 +220,7 @@ const mdTheme = createTheme();
 <Container sx={{ py: 1, mt:1}} >
           {/* End hero unit */}
           <Grid container spacing={4} >
-            {refunds.map((card) => (
+            {ready && refunds.map((card) => (
               <Grid item key={k+1} xs={10} sm={7} md={4}>
                 <Card 
                   sx={{ height: '100%', display: 'flex', flexDirection: 'column' , align:'center' ,backgroundColor:'#CAF0F8'}}

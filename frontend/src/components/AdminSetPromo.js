@@ -28,9 +28,10 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import TextField from "@mui/material/TextField";
+import mainListItems from './listItems';
+
 
 let k = 0;
-let flage = false;
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
@@ -76,41 +77,28 @@ const Search = styled('div')(({ theme }) => ({
 const drawerWidth = 240;
 const Temp = () => {
 
-    const theId = document.getElementById("courseId"); 
-    const[promotion,setPromotion]=useState('');
-    const[course,setCourse]=useState('');
-    const[courses,setCourses]=useState([]);
-    const handleChangPromotion = (event) => {
-        setPromotion(event.target.value);
-    }
-    const handleChangCourse = (event) => {
-        setPromotion(event.target.value);
-    }
+    // const theId = document.getElementById("courseId"); 
+    // const[promotion,setPromotion]=useState('');
+    // const[course,setCourse]=useState('');
   
-        const change = async ()=>{
-            const response=await axios.get(`http://localhost:8000/admin/getAllCoursesss`).then((res) => { 
-            const courses = res.data
-            setCourses(courses)
-            
-        })
-            .catch( (error) => alert(error.response.data.message))
-    
-    
-            console.log(response.data)
-            if(response.status===200){
-                alert(response.data)
-            }}
-
-            const change2 = async ()=>{
-                const response=await axios.put(`http://localhost:8000/admin/setPromotion`,{courseId:course,
-                promotion:promotion}).
-                catch( (error) => alert(error.response.data.message))
+    // const handleChangPromotion = (event) => {
+    //     setPromotion(event.target.value);
+    // }
+    // const handleChangCourse = (event) => {
+    //     setPromotion(event.target.value);
+    // }
+  
+      
+    //         const change2 = async ()=>{
+    //             const response=await axios.put(`http://localhost:8000/admin/setPromotion`,{courseId:course,
+    //             promotion:promotion}).
+    //             catch( (error) => alert(error.response.data.message))
         
         
-                console.log(response.data)
-                if(response.status===200){
-                    alert(response.data)
-                }}
+    //             console.log(response.data)
+    //             if(response.status===200){
+    //                 alert(response.data)
+    //             }}
 
              
 
@@ -167,29 +155,30 @@ const mdTheme = createTheme();
     setOpen(!open);
   };
 
+  const [courses, setCourses] = useState(async () => {
+    await axios.get(`http://localhost:8000/admin/getAllCoursesss`)
+        .then(res => { setCourses(res.data)})
+        .catch((error) => alert(error.response.data.message))
+})
+
+const [ready, setReady] = useState(false);
+useEffect(() => {
+    if (courses.length)
+        setReady(true);
+}, [courses])
+
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex'  }}>
         <CssBaseline />
-        <AppBar position="absolute" open={open}>
+        <AppBar position="absolute" >
           <Toolbar 
             sx={{
               pr: '24px', // keep right padding when drawer closed
               bgcolor: '#03045E'
             }}
           >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton >
+          
             <Typography
               component="h1"
               variant="h6"
@@ -202,39 +191,21 @@ const mdTheme = createTheme();
           
           &nbsp;&nbsp;&nbsp;
          
-           <box>
-          <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }} onClick={()=> {change()}}>REFRESH</Button>
-          </box> 
+          
           &nbsp;&nbsp;&nbsp;
+
+          <box>{mainListItems}</box>
+
 
           <box>
 
 <Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}>LOG OUT</Button>
 </box>
 &nbsp;&nbsp;&nbsp;
-            {/* <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon  />
-              </Badge>
-            </IconButton> */}
+          
           </Toolbar>
         </AppBar>
-        <Drawer variant="permanent" open={open}>
-          <Toolbar
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: [1],
-            }}
-          >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          
-          <Divider />
-        </Drawer>
+     
         <Box
           component="main"
           sx={{
@@ -248,12 +219,7 @@ const mdTheme = createTheme();
           }}
         >
           <Toolbar />
-          {/* <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={3}>
-             
-            </Grid>
-            <Copyright sx={{ pt: 4 }} />
-          </Container> */}
+         
           <Box>
             <Typography
            sx={{ mt: 4, ml: 4 , mb:2}}
@@ -266,46 +232,36 @@ const mdTheme = createTheme();
              align="center"
              glutterBottom
             >Please Specify Promotion amount & course ID</Typography>
-            <TextField  label="Promotion" sx={{ml: 53}}  id="promo" variant="outlined" onChange={(event)=>{handleChangPromotion(event)}}/>
-            <TextField  label="Course ID" sx={{ml: 4}}  id="promo" variant="outlined" onChange={(event)=>{handleChangCourse(event)}}/>
-            <Button  variant="contained"  sx={{ color: '#03045E', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8', ml:4, mt:1 }}  onClick={()=> {change2()}}>Set Promotion</Button>
+            <TextField  label="Promotion" sx={{ml: 53}}  id="promo" variant="outlined" /*onChange={(event)=>{handleChangPromotion(event)}}*//>
+            <TextField  label="Course ID" sx={{ml: 4}}  id="promo" variant="outlined" /*onChange={(event)=>{handleChangCourse(event)}}*//>
+            <Button  variant="contained"  sx={{ color: '#03045E', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8', ml:4, mt:1 }} /* onClick={()=> {change2()}}*/>Set Promotion</Button>
 
         </Box>
 <main>
 <Container sx={{ py: 8 }} >
           {/* End hero unit */}
           <Grid container spacing={4} >
-            {courses.map((card) => (
+            {ready && courses.map((card) => (
               <Grid item key={k+1} xs={10} sm={7} md={4}>
                 <Card
-                  sx={{ height: '100%', display: 'flex', flexDirection: 'column' , align:'center'}}
+                  sx={{ height: '100%', display: 'flex', flexDirection: 'column' , align:'center',backgroundColor:'#CAF0F8'}}
                 >
-                  {/* <CardMedia
-                    component="img"
-                    sx={{
-                      // 16:9
-                      pt: '56.25%',
-                    }}
-                    image={card.image}
-                   
-                  /> */}
+               
                   <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2">
-                      {card.title}
-                    </Typography>
-                    <Typography>
+                    <Typography gutterBottom variant="h5" component="h2" sx={{ color: '#03045E', fontWeight:'bold'}}>{card.title}</Typography>
+                    <Typography >
                     {card.subject}
                     </Typography>
                     <Typography>
                     {card.summary}
                     </Typography>
-                    <Typography>
+                    <Typography >
                     {card.rating}
                     </Typography>
-                    <Typography>
+                    <Typography >
                     {card.price}
                     </Typography>
-                    <Typography id="courseId">
+                    <Typography id="courseId" >
                       {card._id}
                     </Typography>
                     <Typography id="status" align="center" size="small" sx={{ color: 'white', backgroundColor: '#03045E', borderColor: '#CAF0F8' }}>

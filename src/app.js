@@ -27,6 +27,7 @@ app.use(cookieParser());
 app.use(session({
   secret: process.env.TOKEN,
   resave: false,
+  cookie: { secure: false },
   saveUninitialized: false,
 }))
 
@@ -43,6 +44,10 @@ app.get('/login', async (req, res) => {
       console.log( 'entered');
       const { username, password } = req.query;
       const { user, token } = await userController.login({ username, password });
+
+      //if this user is logged in, do not log them in again.
+      // if (sessionDetails.checkUserExistence(username))
+      // return res.status(400).json({ message: 'you are already logged in. Please log out of the other browser first'});
 
       //we will update our session in the middleware
       sessionDetails.setSession(req.session);

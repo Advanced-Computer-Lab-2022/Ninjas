@@ -108,7 +108,7 @@ const adminCreateAccountsController =
     },
 
 
-    async getAllCoursesss({courseId, promotion}){ //All courses
+    async getAllCoursesss(){ //All courses
 
      
         try{
@@ -234,10 +234,10 @@ const adminCreateAccountsController =
 
 
 
- async viewCorporateRequest(userId){
+ async viewCorporateRequest(){
  
    try{
-      
+      newRec = [];
       const Requests = await RequestAccess.find();
 
     for(var i=0; i<Requests.length; i++){

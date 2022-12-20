@@ -59,7 +59,6 @@ image: "https://tse3.mm.bing.net/th?id=OIP.GdBTwlyTzIG2tPr__bzTTgHaHa&pid=Api&P=
 {key:1, title:"Add Users", description:"Create accounts for different users", buttonText: "ADD",
 image: "https://tse1.mm.bing.net/th?id=OIP.0qMbAJ3oDdsvBO9JVsZzDQHaHa&pid=Api&P=0", function: change6}];
 
-//const mainListItems = ["Profile", "Change username", "Change password", "Change email"]
 
 const theme = createTheme();
 
@@ -177,29 +176,14 @@ const mdTheme = createTheme();
             > 
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-            {/* <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </Search> */}
+        
           &nbsp;&nbsp;&nbsp;
-          {/* <box>
-
-          <Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}>Sign In</Button>
-          </box>
-          &nbsp;&nbsp;&nbsp; */}
+          <box>{mainListItems}</box>
           <box>
+            
           <Button variant="outlined" sx={{ color: 'black', backgroundColor: '#CAF0F8',  borderColor: '#CAF0F8' }}>LOG OUT</Button>
           </box>
-            {/* <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon  />
-              </Badge>
-            </IconButton> */}
+          
           </Toolbar>
         </AppBar>
      
@@ -219,16 +203,7 @@ const mdTheme = createTheme();
          
   
           <CssBaseline />
-      {/* <AppBar position="relative">
-        <Toolbar>
-          <CameraIcon sx={{ mr: 2 }} />
-          <Typography variant="h6" color="inherit" noWrap>
-            Album layout
-          </Typography>
-        </Toolbar>
-      </AppBar> 
-      #CAF0F8
-      */}
+    
       <main>
         {/* Hero unit */}
         <Box
@@ -257,8 +232,7 @@ const mdTheme = createTheme();
               spacing={2}
               justifyContent="center"
             >
-              {/* <Button variant="contained">Main call to action</Button>
-              <Button variant="outlined">Secondary action</Button> */}
+          
             </Stack>
           </Container>
         </Box>
@@ -296,22 +270,7 @@ const mdTheme = createTheme();
           </Grid>
         </Container>
       </main>
-      {/* Footer */}
-      {/* <Box sx={{ bgcolor: 'background.paper', p: 6 }} component="footer">
-        <Typography variant="h6" align="center" gutterBottom>
-          Footer
-        </Typography>
-        <Typography
-          variant="subtitle1"
-          align="center"
-          color="text.secondary"
-          component="p"
-        >
-          Something here to give the footer a purpose!
-        </Typography>
-        <Copyright />
-      </Box> */}
-
+    
         </Box>
       </Box>
  

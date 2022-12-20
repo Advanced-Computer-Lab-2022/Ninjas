@@ -6,65 +6,42 @@ import MuiDrawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
 import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import logo from '../logo Ninjas.jpeg' ;
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import Button from '@mui/material/Button';
-import TableBody from '@mui/material/TableBody';
-import TableCell, { tableCellClasses } from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import Table from '@mui/material/Table';
-import axios from "axios";
-import {useState,useEffect} from "react";
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import mainListItems from './listItems';
+import List from '@mui/material/List';
+import SettingsIcon from '@mui/icons-material/Settings'; //alll users
+import HelpIcon from '@mui/icons-material/Help'; //all users
+import ReportIcon from '@mui/icons-material/Report'; //all users
+import CreateIcon from '@mui/icons-material/Create'; //instructor
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'; //instructor
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium'; //certificates trainess
+import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import Wallet from '@mui/icons-material/Wallet';
 
 
-let k =0;
 
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {''}
+      {'Copyright © '}
       <Link color="inherit" >
-        
+        Ninjas
       </Link>{' '}
-      {}
-      {''}
+      {new Date().getFullYear()}
+      {'.'}
     </Typography>
   );
 }
-const StyledTableCell = styled(TableCell)(({ theme }) => ({
-    [`&.${tableCellClasses.head}`]: {
-      backgroundColor: theme.palette.common.black,
-      color: theme.palette.common.white,
-    },
-    [`&.${tableCellClasses.body}`]: {
-      fontSize: 14,
-    },
-  }));
-
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     '& .MuiInputBase-input': {
@@ -154,35 +131,34 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
 
-const [open, setOpen] = React.useState(false);
-const toggleDrawer = () => {
- setOpen(!open);
+  const [open, setOpen] = React.useState(false);
+  const toggleDrawer = () => {
+    setOpen(!open);
   };
-
-  const [reports, setReports] = useState(async () => {
-    await axios.get(`http://localhost:8000/admin/viewReportedProblems`)
-        .then(res => { setReports(res.data)})
-        .catch((error) => alert(error.response.data.message))
-})
-
-const [ready, setReady] = useState(false);
-useEffect(() => {
-    if (reports.length)
-        setReady(true);
-}, [reports])
 
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex'  }}>
         <CssBaseline />
-        <AppBar position="absolute">
+        <AppBar position="absolute" open={open}>
           <Toolbar 
             sx={{
               pr: '24px', // keep right padding when drawer closed
               bgcolor: '#03045E'
             }}
           >
-           
+            <IconButton
+              edge="start"
+              color="inherit"
+              aria-label="open drawer"
+              onClick={toggleDrawer}
+              sx={{
+                marginRight: '36px',
+                ...(open && { display: 'none' }),
+              }}
+            >
+              <MenuIcon />
+            </IconButton >
             <Typography
               component="h1"
               variant="h6"
@@ -192,80 +168,88 @@ useEffect(() => {
             >
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-          
+            <Search>
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+            />
+          </Search>
           &nbsp;&nbsp;&nbsp;
-          <box>{mainListItems}</box>
-
           <box>
 
-          <Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}>Log out</Button>
+          <Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}>Sign In</Button>
           </box>
           &nbsp;&nbsp;&nbsp;
-        
-         
+          <box>
+          <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }}>Sign Up</Button>
+          </box>
+            {/* <IconButton color="inherit">
+              <Badge badgeContent={4} color="secondary">
+                <NotificationsIcon  />
+              </Badge>
+            </IconButton> */}
           </Toolbar>
         </AppBar>
-       
-        <Box
-          component="main"
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: '100vh',
-            overflow: 'auto',
-          }}
-        >
-          <Toolbar />
-          <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={3}>
-             
-            </Grid>
-            <Copyright sx={{ pt: 4 }} />
-          </Container>
-          <main>
-          <Container sx={{ py: 1, mt:1}} >
-          {/* End hero unit */}
-          <Grid container spacing={4} >
-            {ready && reports.map((card) => (
-              <Grid item key={k+1} xs={10} sm={7} md={4}>
-                <Card 
-                  sx={{ height: '100%', display: 'flex', flexDirection: 'column' , align:'center' ,backgroundColor:'#CAF0F8'}}
-                >
-                
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography sx={{ color: '#03045E'}}>User ID: {card.accountId} </Typography>
-                    <Typography sx={{ color: '#03045E'}}>Course ID: {card.courseId}</Typography>
-                    <Typography sx={{ color: '#03045E'}}>Problem: {card.problem}</Typography>
-                    <Typography sx={{ color: '#03045E'}}>Status: {card.progress}</Typography>
+        <Drawer variant="permanent" open={open}>
+          <Toolbar
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'flex-end',
+              px: [1],
+            }}
+          >
+            <IconButton onClick={toggleDrawer}>
+              <ChevronLeftIcon />
+            </IconButton>
+          </Toolbar>
+          
+          <Divider />
+          <List component="nav">
+          
+          <ListItemButton>
+            <ListItemIcon>
+          <WorkspacePremiumIcon sx={{color:'black' }} />
+          </ListItemIcon>
+          <ListItemText primary='Certificate'/>
+          </ListItemButton>
+          <ListItemButton>
+            <ListItemIcon>
+          <Wallet sx={{color:'black' }} />
+          </ListItemIcon>
+          <ListItemText primary='Wallet'/>
+          </ListItemButton>
+          <ListItemButton>
+            <ListItemIcon>
+          <SettingsIcon sx={{color:'black' }} />
+          </ListItemIcon>
+          <ListItemText primary='Settings'/>
+          </ListItemButton>
+          <ListItemButton>
+            <ListItemIcon>
+          <ReportIcon sx={{color:'black' }} />
+          </ListItemIcon>
+          <ListItemText primary='Report'/>
+          </ListItemButton>
+          <ListItemButton>
+            <ListItemIcon>
+          <HelpIcon sx={{color:'black' }} />
+          </ListItemIcon>
+          <ListItemText primary='Help'/>
+          </ListItemButton>
+          </List>
 
-                  <br></br>
-            <box>
-  <RadioGroup sx={{ml:8 }} aria-labelledby="demo-radio-buttons-group-label" defaultValue="female" name="radio-buttons-group">
-    <FormControlLabel fontWeight={'bold'} value="PENDING" control={<Radio fontWeight={'bold'}/>} label="Pending" />
-    <FormControlLabel fontWeight={'bold'} value="RESOLVED" control={<Radio fontWeight={'bold'}/>} label="Resolved" />
-   </RadioGroup>            </box>
-           
-                  </CardContent>
-                  <CardActions>
-                    
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-          </main>
-
-        
- 
-        </Box>
+        </Drawer>
       </Box>
     </ThemeProvider>
     
-  )};
+  );
 
+
+
+} 
 export default Temp;
 
