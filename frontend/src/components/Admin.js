@@ -160,36 +160,24 @@ const mdTheme = createTheme();
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex'  }}>
-        <AppBar position="absolute" open={open}>
+        <AppBar position="absolute" >
           <Toolbar 
             sx={{
               pr: '24px', // keep right padding when drawer closed
               bgcolor: '#03045E'
             }}
           >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
-              }}
-            >
-               
-              <MenuIcon />
-            </IconButton >
+           
             <Typography
               component="h1"
               variant="h6"
               bgcolor= '#03045E'
               noWrap
               sx={{ flexGrow: 1 }}
-            >
+            > 
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-            <Search>
+            {/* <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -197,15 +185,15 @@ const mdTheme = createTheme();
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
             />
-          </Search>
+          </Search> */}
           &nbsp;&nbsp;&nbsp;
-          <box>
+          {/* <box>
 
           <Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}>Sign In</Button>
           </box>
-          &nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;&nbsp; */}
           <box>
-          <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }}>Sign Up</Button>
+          <Button variant="outlined" sx={{ color: 'black', backgroundColor: '#CAF0F8',  borderColor: '#CAF0F8' }}>LOG OUT</Button>
           </box>
             {/* <IconButton color="inherit">
               <Badge badgeContent={4} color="secondary">
@@ -214,24 +202,7 @@ const mdTheme = createTheme();
             </IconButton> */}
           </Toolbar>
         </AppBar>
-        <Drawer variant="permanent" open={open}>
-          <Toolbar
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: [1],
-            }}
-          >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          <Divider />
-          <List component="nav">
-            {mainListItems}
-          </List>
-        </Drawer>
+     
         <Box
           component="main"
           sx={{

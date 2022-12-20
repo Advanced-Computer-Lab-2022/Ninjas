@@ -5,6 +5,7 @@ const adminRouter = express.Router();
 const path = require('path');
 const { Account } = require('../models/account');
 const { sessionDetails } = require("../middleware/authMiddleware");
+const { setPromotion } = require('../controllers/adminCreateAccountsController');
 const session = sessionDetails.getSession();
 
 const maxAge = 3 * 24 * 60 * 60;
@@ -179,6 +180,62 @@ adminRouter.post('/acceptCorporateRequest', async (req, res) => {
     const courseId = req.body.courseId;
     await adminCreateAccountsController.acceptCorporateRequest({ userId, courseId });
     res.status(200).json("Your request is accepted");
+}
+
+catch (err) {
+  if (err instanceof DomainError) {
+    res.status(err.code).json({ code: err.code, message: err.message })
+  } else {
+    res.status(500).json({ err });
+  }
+}
+
+
+})
+
+
+adminRouter.get('/getAllCoursesss', async (req, res) => {
+  try {
+
+    const courses = await adminCreateAccountsController.getAllCoursesss();
+    res.status(200).json(courses);
+}
+
+catch (err) {
+  if (err instanceof DomainError) {
+    res.status(err.code).json({ code: err.code, message: err.message })
+  } else {
+    res.status(500).json({ err });
+  }
+}
+
+
+})
+
+adminRouter.post('/setPromotion', async (req, res) => {
+  try {
+    const courseId = req.body.courseId;
+    const promotion = req.body.promotion;
+    await adminCreateAccountsController.setPromotion({courseId, promotion});
+    res.status(200).json("promotion is set to course successfully");
+}
+
+catch (err) {
+  if (err instanceof DomainError) {
+    res.status(err.code).json({ code: err.code, message: err.message })
+  } else {
+    res.status(500).json({ err });
+  }
+}
+
+
+})
+
+adminRouter.get('/viewRefundRequests', async (req, res) => {
+  try {
+
+    const refunds = await adminCreateAccountsController.viewRefundRequest();
+    res.status(200).json(refunds);
 }
 
 catch (err) {

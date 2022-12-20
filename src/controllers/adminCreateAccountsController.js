@@ -2,7 +2,7 @@ const DomainError = require("../error/domainError");
 const { Account } = require("../models/account");
 const { Course } = require("../models/courses");
 const  Report  = require("../models/report");
-const { Refund } = require("../models/refundRequest");
+const  RefundRequest  = require("../models/refundRequest");
 const RequestAccess = require("../models/requestAccess");
 const {  } = require("../models/refundRequest");
 
@@ -108,13 +108,63 @@ const adminCreateAccountsController =
     },
 
 
+    async getAllCoursesss({courseId, promotion}){ //All courses
+
+     
+        try{
+            const theCourses = await Course.find();
+            return theCourses;
+                 
+        }
+        catch(err){
+            throw new DomainError('error internally', 500);
+ 
+        }
+      },
+   
+      async setPromotion({courseId, promotion}){ //All courses
+
+     
+        try{
+            let newPrice = 0;
+            const theCourse = await Course.findOne({_id: courseId}).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });;
+            newPrice = theCourse.price - theCourse.price * (promotion/100);
+            await Course.updateOne({_id:courseId}, {price: newPrice} );
+            await Course.updateOne({_id:courseId}, {promoted: 'Promoted'} );
+           // this.getAllCoursesss();            
+            
+        }
+        catch(err){
+            throw new DomainError('error internally', 500);
+ 
+        }
+      },
+   
+
+
 
     async viewRefundRequest(){ //refunded courses
 
-     
      try{
-         const thisRefundRequest = await Refund.find();
-         return thisRefundRequest;
+        let result = [];
+      //  let uid=0;
+       // let cid =0;
+        //let cname="";
+
+         const thisRefundRequest = await RefundRequest.find();
+         for(var i=0; i<thisRefundRequest.length; i++){
+            const theUser = await Account.findOne({_id: thisRefundRequest[i].accountId});
+            const theCourse = await Course.findOne({_id: thisRefundRequest[i].courseId});
+            let uid = theUser._id;
+            let cid = theCourse._id;
+            let cname = theCourse.title;
+            let uname = theUser.username;
+            result.push({uid, uname, cid, cname});
+            
+         }
+         return result;
       
         
      }

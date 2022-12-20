@@ -9,28 +9,41 @@ import PeopleIcon from '@mui/icons-material/People';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LayersIcon from '@mui/icons-material/Layers';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import HomeIcon from '@mui/icons-material/Home';
+import PersonIcon from '@mui/icons-material/Person';
+import SettingsIcon from '@mui/icons-material/Settings';
+
+const  change1 =()=>{
+  window.location.href=`/admin`
+}
+// const  change2 =()=>{
+//   window.location.href=`/AdminProfile`
+// }
+// const  change3 =()=>{
+//   window.location.href=`/AdminSettings`
+// }
+
 
 const mainListItems = (
   <React.Fragment>
-    <ListItemButton>
+    <ListItemButton onClick={()=> {change1()}}>
       <ListItemIcon>
-        <DashboardIcon />
+        <HomeIcon />
       </ListItemIcon>
-      <ListItemText primary="Profile" />
+      <ListItemText primary="Home" />
     </ListItemButton>
-    <ListItemButton>
+     {/* <ListItemButton onClick={()=> {change2()}}>
       <ListItemIcon>
-        <ShoppingCartIcon />
+        <PersonIcon />
       </ListItemIcon>
-      <ListItemText primary="Change email" />
+    <ListItemText primary="Profile" />
     </ListItemButton>
-    <ListItemButton>
+    <ListItemButton onClick={()=> {change3()}}>
       <ListItemIcon>
-        <PeopleIcon />
+        <SettingsIcon />
       </ListItemIcon>
-      <ListItemText primary="Change password" />
-    </ListItemButton>
-  
+      <ListItemText primary="Settings" />
+    </ListItemButton>  */}
  
   </React.Fragment>
 );

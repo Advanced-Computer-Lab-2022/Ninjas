@@ -166,13 +166,20 @@ const [open, setOpen] = React.useState(false);
 const toggleDrawer = () => {
  setOpen(!open);
   };
-  const [reports, setReports] = useState(async () => {
-     await axios.get(`http://localhost:8000/admin/viewReportedProblems`)
-         .then(res => setReports(res.data))
-         .catch((error) => {
-             console.log(error)
-         })});
-
+//  const [reports, setReports] = useState( null);
+// //    await axios.get(`http://localhost:8000/admin/viewReportedProblems`)
+// //           .then(res => setReports(res.data))
+// //           .catch((error) => {
+// //               console.log(error)
+// //           })});
+//           useEffect(()=>{
+    
+//             async () => {
+//                 await axios.get(`http://localhost:8000/admin/viewReportedProblems`)
+//                        .then(res => setReports(res.data))
+//                        .catch((error) => {
+//                            console.log(error)
+//                        })}});
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex'  }}>
@@ -277,11 +284,10 @@ const toggleDrawer = () => {
       </TableRow>
     </TableHead>
     <TableBody>
-       {reports.map((report) => (
         
         <TableRow>
        
-          <TableCell align="center">{report.problem}</TableCell>
+          <TableCell align="center">hi</TableCell>
           <TableCell align="center"><Button color="primary" variant="contained" >
           View Course Details
         </Button> </TableCell>
@@ -292,11 +298,6 @@ const toggleDrawer = () => {
         </TableRow>
 
 
-      )
-
-
-
-    )}
     </TableBody>
   </Table>
 </TableContainer>
