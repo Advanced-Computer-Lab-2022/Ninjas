@@ -24,10 +24,16 @@ import AddVideoSubtitle from './pages/AddVideoSubtitle';
 import Terms from './pages/Terms';
 import InstructorProfile from './pages/InstructorProfile';
 import Login from './components/Login';
-import Signup from './components/Signup';
+import Signup from './nav/Signup';
 import ResetPasswordPage from './components/ResetPassword';
 import MostPopular from './components/MostPopular';
-import Temp from './components/Temp';
+import Temp from './nav/NoraTest';
+import Payment from './nav/PaymentForm';
+import Checkout from './nav/Checkout';
+import Home from './nav/Home';
+import TermsGuest from './nav/InstructorTerms';
+import InstructorHome from './nav/InstructorHome';
+import TraineeHome from './nav/TraineeHome';
 
 
 
@@ -38,7 +44,13 @@ function App() {
       <Routes>
       <Route path='/' element={<Login/>}></Route>
       <Route path='/signup' element={<Signup/>}></Route>
-      <Route path='/temp' element= {<Temp/>} >
+      <Route path='/temp' element= {<Temp/>} > </Route>
+      <Route path='/terms' element= {<TermsGuest/>} >  </Route>
+      <Route path='/iHome' element= {<InstructorHome/>} >  </Route>
+      <Route path='/tHome' element= {<TraineeHome/>} >
+       
+        </Route>
+        <Route path='/home' element= {<Home/>} >
         </Route>
         <Route path='/changePassword' element= {<ChangePassword/>} >
         </Route>
@@ -84,6 +96,10 @@ function App() {
         element={<InstructorCourses/>}/>
         <Route path="/traineeSearch"
         element={<TraineeSearch/>}/>
+        <Route path="/payment"
+        element={<Payment/>}/>
+        <Route path="/checkout"
+        element={<Checkout/>}/>
         <Route path="/rateCourse" element={<RateCourse/>}/>
         <Route path="/solveExercise" element={<SolveExercise/>}/>
       <Route path="/resetPassword/:id" element={<ResetPasswordPage/>}/>
