@@ -484,4 +484,25 @@ userRouter.get('/currentUser', async (req, res) => {
     }
 
 })
+
+userRouter.post('/requestAccess', async (req,res) => {
+    try {
+        const { userId, courseId } = req.query;
+        const response = await userController.requestAccess(userId, courseId);
+        if (response == "Done")
+        res.status(200).json({ message: "Your access request has been sent to the admin"});
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
+
+userRouter.get('/checkRequestedAccess', async (req,res) => {
+    try {
+    const { userId, courseId } = req.query;
+    const requested = await userController.checkRequestedAccess({ userId, courseId });
+    res.status(200).json(requested);
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
 module.exports = userRouter;

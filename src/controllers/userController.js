@@ -454,7 +454,7 @@ const userController = {
             const video = await Course.findOne({
                 _id: courseId
 
-            }, { subtitles: 1 })
+            }, { subtitles: 1, certificate: 1 })
 
             for (var i = 0; i < video.subtitles.length; i++) {
                 if (video.subtitles[i]._id == subtitleId) {
@@ -490,6 +490,14 @@ const userController = {
 
                             //update progress
                             courseProgress.currentProgress = ( courseProgress.videosWatched.length / video.subtitles.length ) * 100;
+
+                            //if the updated progress is 100 percent
+                            if (courseProgress.currentProgress === 100) {
+                                //email the user their certificate
+                                await this.emailCertificate({ userId, courseId});
+                                //add the certificate to the user's array of certificates
+                                await Account.updateOne({ _id: userId }, { $push: { certificates: video.certificate }});
+                            }
 
                             //update the user's data in the DB itself
                             await Account.updateOne(
@@ -834,7 +842,7 @@ async viewWallet({userId}) {
     async requestAccess(userId , courseId){
 
         try{
-        const requested = await RequestAccess.create({userId , courseId}).catch(() => {
+        const requested = await RequestAccess.create({accountId: userId , courseId}).catch(() => {
             throw new DomainError("try again and check course availability", 400)
         });
 
@@ -892,6 +900,20 @@ async getCourse({ courseId, userType, userId }) {
         return response;
     } catch(error) {
         console.log(error)
+        if (error instanceof DomainError) throw error;
+        else
+        throw new DomainError("internal error", 500);
+    }
+},
+
+async checkRequestedAccess({ userId, courseId }) {
+    try {
+    const requested = await RequestAccess.findOne({ accountId:userId, courseId});
+    if (!requested)
+    throw new DomainError("access was not requested", 400);
+    else
+    return requested;
+    } catch(error) {
         if (error instanceof DomainError) throw error;
         else
         throw new DomainError("internal error", 500);
