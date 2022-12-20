@@ -9,9 +9,6 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Container from '@mui/material/Container';
-import Grid from '@mui/material/Grid';
-import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import logo from '../logo Ninjas.jpeg' ;
@@ -23,25 +20,13 @@ import SettingsIcon from '@mui/icons-material/Settings'; //alll users
 import HelpIcon from '@mui/icons-material/Help'; //all users
 import ReportIcon from '@mui/icons-material/Report'; //all users
 import CreateIcon from '@mui/icons-material/Create'; //instructor
-import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline'; //instructor
-import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium'; //certificates trainess
 import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import Wallet from '@mui/icons-material/Wallet';
+import HomeIcon from '@mui/icons-material/Home';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 
 
 
-function Copyright(props) {
-  return (
-    <Typography variant="body2" color="text.secondary" align="center" {...props}>
-      {'Copyright © '}
-      <Link color="inherit" >
-        Ninjas
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     '& .MuiInputBase-input': {
@@ -177,20 +162,20 @@ const mdTheme = createTheme();
               inputProps={{ 'aria-label': 'search' }}
             />
           </Search>
-          &nbsp;&nbsp;&nbsp;
+          &nbsp;&nbsp;
           <box>
 
-          <Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}>Sign In</Button>
+          <ListItemButton  >
+            <ListItemIcon >
+          <HomeIcon sx={{color:'#CAF0F8' }} />
+          </ListItemIcon>
+          </ListItemButton>
           </box>
-          &nbsp;&nbsp;&nbsp;
+      
           <box>
-          <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }}>Sign Up</Button>
+          <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }}>Log Out</Button>
           </box>
-            {/* <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon  />
-              </Badge>
-            </IconButton> */}
+            
           </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
@@ -209,12 +194,17 @@ const mdTheme = createTheme();
           
           <Divider />
           <List component="nav">
-          
           <ListItemButton>
             <ListItemIcon>
-          <WorkspacePremiumIcon sx={{color:'black' }} />
+          <MenuBookIcon sx={{color:'black' }} />
           </ListItemIcon>
-          <ListItemText primary='Certificate'/>
+          <ListItemText primary='My Courses'/>
+          </ListItemButton>
+          <ListItemButton>
+            <ListItemIcon>
+          <CreateIcon sx={{color:'black' }} />
+          </ListItemIcon>
+          <ListItemText primary='Create Course'/>
           </ListItemButton>
           <ListItemButton>
             <ListItemIcon>
