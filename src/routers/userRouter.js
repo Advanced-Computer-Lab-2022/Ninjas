@@ -122,7 +122,15 @@ userRouter.get('/user/:id', async (req, res) => {
     }
 })
 
-
+userRouter.get('/userBySession', async (req,res) => {
+    try {
+        const { userId } = sessionDetails.getSession(req.session.id);
+        const user = await userController.getUserData({ userId });
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
 
 userRouter.get('/viewAndFilterCourses', async (req, res) => {
     try {
