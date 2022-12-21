@@ -283,13 +283,12 @@ userRouter.get('/viewCorrectAnswers', async (req, res) => {
 
 userRouter.get('/viewVideo', async (req, res) => {
     try {
+        const session = sessionDetails.getSession(req.session.id);
+        const { userId } = session;
 
         const { courseId, subtitleId } = req.query
-        const exersise = await userController.viewVideo(courseId, subtitleId)
+        const exersise = await userController.viewVideo(courseId, subtitleId, userId)
         res.status(200).json(exersise)
-
-
-
 
     } catch (err) {
         console.log(err)
@@ -484,5 +483,26 @@ userRouter.get('/currentUser', async (req, res) => {
         res.status(error.code).json({message: error.message});
     }
 
+})
+
+userRouter.post('/requestAccess', async (req,res) => {
+    try {
+        const { userId, courseId } = req.query;
+        const response = await userController.requestAccess(userId, courseId);
+        if (response == "Done")
+        res.status(200).json({ message: "Your access request has been sent to the admin"});
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
+
+userRouter.get('/checkRequestedAccess', async (req,res) => {
+    try {
+    const { userId, courseId } = req.query;
+    const requested = await userController.checkRequestedAccess({ userId, courseId });
+    res.status(200).json(requested);
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
+    }
 })
 module.exports = userRouter;

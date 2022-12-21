@@ -85,6 +85,7 @@ certificates: {
 progress: [
     {
         courseId: Schema.Types.ObjectId,
+        videosWatched: [Schema.Types.ObjectId],
         currentProgress: Number,
     }
 ],

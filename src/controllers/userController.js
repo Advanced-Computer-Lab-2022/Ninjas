@@ -36,7 +36,7 @@ const helperMethods = {
             ratingSum = parseInt(ratingSum) + parseInt(review.rating);
         });
         return (ratingSum / count);
-    }
+    },
 }
 
 
@@ -356,6 +356,9 @@ const userController = {
 
             const gradePercentage = (userGrade / solvedExercise.totalGrade) * 100;
 
+            //if the user has a record with the same exercise delete it, since we need the grades to be up to date
+            await UserExercise.deleteOne({ accountId: userId, "exercises._id": solvedExercise._id});
+
             await UserExercise.create({
                 accountId: userId,
                 exercises: [solvedExercise],
@@ -449,16 +452,66 @@ const userController = {
     },
 
 
-    async viewVideo(courseId, subtitleId) {
+    async viewVideo(courseId, subtitleId, userId) {
         try {
             const video = await Course.findOne({
                 _id: courseId
 
-            }, { subtitles: 1 })
+            }, { subtitles: 1, certificate: 1 })
 
             for (var i = 0; i < video.subtitles.length; i++) {
                 if (video.subtitles[i]._id == subtitleId) {
                     if (video.subtitles[i].videoTitles.link) {
+                        //the trainee's progress in the course depends on how many videos they have watched
+                        //if the video id is not in the user's watched videos, we should add it and update their progress
+                        const user = await Account.findOne( {_id: userId });
+
+                        //get the user's current progress in this course
+                        const courseProgress = user.progress.filter(prog => prog.courseId.equals(video._id))[0];
+                        
+                        //if there is no progress in this course, we should create one.
+                        if (!courseProgress) {
+                            //the percentage
+                            const currentProgress = (1 / video.subtitles.length) * 100;
+
+                            //the progress object
+                            const newProg = {
+                                courseId: video._id,
+                                videosWatched: [video.subtitles[i].videoTitles._id],
+                                currentProgress
+                            }
+
+                            //push it into the progress array
+                            await Account.updateOne( { _id: userId }, { $push: { progress: newProg } })
+                        }
+
+                        else if (!courseProgress.videosWatched.includes(video.subtitles[i].videoTitles._id)) {
+                            //this means that this is the first time that the user watches the video. let's update the progress
+                            
+                            //push the video into the watched videos
+                            courseProgress.videosWatched.push(video.subtitles[i].videoTitles._id);
+
+                            //update progress
+                            courseProgress.currentProgress = ( courseProgress.videosWatched.length / video.subtitles.length ) * 100;
+
+                            //if the updated progress is 100 percent
+                            if (courseProgress.currentProgress === 100) {
+                                //email the user their certificate
+                                await this.emailCertificate({ userId, courseId});
+                                //add the certificate to the user's array of certificates
+                                await Account.updateOne({ _id: userId }, { $push: { certificates: video.certificate }});
+                            }
+
+                            //update the user's data in the DB itself
+                            await Account.updateOne(
+                                { _id: userId, "progress.courseId": courseId },
+                                { $set : {
+                                     "progress.$.videosWatched": courseProgress.videosWatched,
+                                     "progress.$.currentProgress": courseProgress.currentProgress
+                                         }
+                                },
+                                );
+                        }
                         return video.subtitles[i].videoTitles;
                     }
                     else break;
@@ -766,7 +819,7 @@ async viewWallet({userId}) {
         }
     },
    
-    async viewVideo(courseId) {
+    async viewCourseVideo(courseId) {
         try {
             const video = await Course.findOne({
                 _id: courseId
@@ -792,7 +845,7 @@ async viewWallet({userId}) {
     async requestAccess(userId , courseId){
 
         try{
-        const requested = await RequestAccess.create({userId , courseId}).catch(() => {
+        const requested = await RequestAccess.create({accountId: userId , courseId}).catch(() => {
             throw new DomainError("try again and check course availability", 400)
         });
 
@@ -850,6 +903,20 @@ async getCourse({ courseId, userType, userId }) {
         return response;
     } catch(error) {
         console.log(error)
+        if (error instanceof DomainError) throw error;
+        else
+        throw new DomainError("internal error", 500);
+    }
+},
+
+async checkRequestedAccess({ userId, courseId }) {
+    try {
+    const requested = await RequestAccess.findOne({ accountId:userId, courseId});
+    if (!requested)
+    throw new DomainError("access was not requested", 400);
+    else
+    return requested;
+    } catch(error) {
         if (error instanceof DomainError) throw error;
         else
         throw new DomainError("internal error", 500);
