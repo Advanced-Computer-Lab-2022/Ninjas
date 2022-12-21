@@ -13,10 +13,13 @@ userRouter.post('/logout', (req, res) => {
     console.log(req.session.id);
     const session = sessionDetails.getSession(req.session.id);
 
-    const key = session.username + 'jwt';
+    const { userId, username } = session
+    //kill the JWT cookie
+    const key = username + 'jwt';
     res.clearCookie(key);
-    sessionDetails.removeSession(req.session.id);
-    res.status(200).json({ message: "logged out successfully" })
+    //remove all the local user sessions
+    sessionDetails.killUserSessions(userId);
+    res.status(200).json({ message: "logged out successfully" });
 
 })
 
@@ -119,7 +122,15 @@ userRouter.get('/user/:id', async (req, res) => {
     }
 })
 
-
+userRouter.get('/userBySession', async (req,res) => {
+    try {
+        const { userId } = sessionDetails.getSession(req.session.id);
+        const user = await userController.getUserData({ userId });
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
 
 userRouter.get('/viewAndFilterCourses', async (req, res) => {
     try {

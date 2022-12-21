@@ -19,10 +19,15 @@ import SettingsIcon from '@mui/icons-material/Settings'; //alll users
 import HelpIcon from '@mui/icons-material/Help'; //all users
 import ReportIcon from '@mui/icons-material/Report'; //all users
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium'; //certificates trainess
-import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
+import { ListItemButton, ListItemIcon, ListItemText, MenuItem, Select } from '@mui/material';
 import Wallet from '@mui/icons-material/Wallet';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
+import DownloadIcon from '@mui/icons-material/Download';
+import axios from 'axios';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import { Path } from '@react-pdf/renderer';
 
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -119,6 +124,33 @@ const mdTheme = createTheme();
     setOpen(!open);
   };
 
+const [ready, setReady] = useState(false);
+//gets user details using the session, so that we can use it later on in display my courses,certificates,etc
+const [user,setUser] = useState(async () => {
+  await axios.get('http://localhost:8000/userBySession')
+  .then(res => setUser(res.data))
+  .catch(err => {
+    if (err.response.status === 401) //you didn't login
+    window.location.href='/';
+  })
+})
+useEffect(() => {
+  if (user._id)
+      setReady(true);
+}, [user])
+
+//to show the certificates when clicked
+const[show,setShow]= useState(false);
+
+//logout button function
+const logout = async () => {
+  const response = await axios.post('http://localhost:8000/logout')
+  .catch(err => console.log(err));
+  
+  if(response.status===200)
+  window.location.href='/';
+}
+
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex'  }}>
@@ -171,7 +203,7 @@ const mdTheme = createTheme();
           </box>
       
           <box>
-          <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }}>Log Out</Button>
+          <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }} onClick={logout}>Log Out</Button>
           </box>
           </Toolbar>
         </AppBar>
@@ -197,12 +229,26 @@ const mdTheme = createTheme();
           </ListItemIcon>
           <ListItemText primary='My Courses'/>
           </ListItemButton>
-          <ListItemButton>
+          <ListItemButton onClick={() => setShow(!show)}>
+          {/*maps on the user certificates to display them*/}
             <ListItemIcon>
           <WorkspacePremiumIcon sx={{color:'black' }} />
           </ListItemIcon>
-          <ListItemText primary='Certificate'/>
+          <ListItemText primary='My Certificates'/>
           </ListItemButton>
+          {ready && show && user.certificates.map((certificate) => (
+            <ListItemButton
+              key={certificate}
+              value={certificate}
+              sx={{ backgroundColor:'#eeeeee'}}
+            >
+              {certificate}
+              <a href={`${certificate}`} download>
+              <DownloadIcon sx={{ ml:5, mt:0.5 }}/>
+              </a>
+            </ListItemButton>
+          ))}
+
           <ListItemButton>
             <ListItemIcon>
           <Wallet sx={{color:'black' }} />

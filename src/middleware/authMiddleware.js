@@ -41,6 +41,10 @@ const sessionDetails = {
   checkUserExistence(username) {
     const result = sessions.filter(session => session.username = username);
     return result.length >0
+  },
+  killUserSessions(userId) {
+    //when the user logs out remove all their sessions
+    sessions = sessions.filter(session => !(session.userId=userId));
   }
 
 }
