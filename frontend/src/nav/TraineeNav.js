@@ -23,6 +23,7 @@ import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import Wallet from '@mui/icons-material/Wallet';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
+import axios from 'axios';
 
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -119,6 +120,15 @@ const mdTheme = createTheme();
     setOpen(!open);
   };
 
+//logout button function
+const logout = async () => {
+  const response = await axios.post('http://localhost:8000/logout')
+  .catch(err => console.log(err));
+  
+  if(response.status===200)
+  window.location.href='/';
+}
+
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex'  }}>
@@ -171,7 +181,7 @@ const mdTheme = createTheme();
           </box>
       
           <box>
-          <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }}>Log Out</Button>
+          <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }} onClick={logout}>Log Out</Button>
           </box>
           </Toolbar>
         </AppBar>

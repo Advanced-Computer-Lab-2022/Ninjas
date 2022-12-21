@@ -57,19 +57,19 @@ const Login = () => {
 
       //we should check the user type, and redirect to the appropriate home page
       //we usually append the userId to the params so that we can use it later on
-      // switch (user.type) {
-      //   case ('INDIVIDUAL_TRAINEE'):
-      //     window.location.href = `/individualTrainee/${user._id}`; break;
+      switch (user.type) {
+        case ('INDIVIDUAL_TRAINEE'):
+          window.location.href = `/tHome`; break;
 
-      //   case ('CORPORATE_TRAINEE'):
-      //     window.location.href = `/corporateTrainee/${user._id}`; break;
+        case ('CORPORATE_TRAINEE'):
+          window.location.href = `/tHome`; break;
 
-      //   case ('INSTRUCTOR'):
-      //     window.location.href = `/instructor/${user._id}`; break;
+        case ('INSTRUCTOR'):
+          window.location.href = `/iHome`; break;
 
-      //   case ('ADMIN'):
-      //     window.location.href = `/admin/${user._id}`; break;
-      // }
+        // case ('ADMIN'):
+        //   window.location.href = `/admin/`; break;
+      }
 
       console.log(user.type);
     }
