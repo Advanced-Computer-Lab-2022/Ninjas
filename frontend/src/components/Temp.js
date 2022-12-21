@@ -1,5 +1,7 @@
 
 import * as React from 'react';
+import axios from "axios";
+import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Slider ,Rating} from "@mui/material";
 import { styled, createTheme, ThemeProvider , alpha} from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import MuiDrawer from '@mui/material/Drawer';
@@ -19,6 +21,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import logo from '../logo Ninjas.jpeg' ;
+import previewPic from '../coursesSearch2.jpg';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import Button from '@mui/material/Button';
@@ -30,23 +33,25 @@ import SkipPreviousIcon from '@mui/icons-material/SkipPrevious';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import { useTheme } from '@mui/material/styles';
-import { DataGrid, GridToolbarQuickFilter } from '@mui/x-data-grid';
-import { useDemoData } from '@mui/x-data-grid-generator';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import EditIcon from '@mui/icons-material/Edit';
-import ArchiveIcon from '@mui/icons-material/Archive';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import {
-  GridToolbarContainer,
-  GridToolbarColumnsButton,
-  GridToolbarFilterButton,
-  GridToolbarExport,
-  GridToolbarDensitySelector,
-  GridToolbar
-} from '@mui/x-data-grid';
+import { IoFilterSharp } from "react-icons/io5";
+import ListItemButton from '@mui/material/ListItemButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ListSubheader from '@mui/material/ListSubheader';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ReactPlayer from 'react-player/youtube'
+
+
+
+function valuetext(value) {
+  return value;
+}
 
 const { post } = { description: "course gamel awyyy",
   image: logo ,
@@ -188,15 +193,95 @@ const [anchorEl, setAnchorEl] = React.useState(null);
   const [openSubject, setOpenSubject] = React.useState(false);
   const [openRating, setOpenRating] = React.useState(false);
   const [openPrice, setOpenPrice] = React.useState(false);
+   const [search, setSearch] = React.useState(null);
+   const [subject, setSubject] = React.useState(null);
+   const [rating, setRating] = React.useState(null);
+   const [expanded, setExpanded] = React.useState(false);
+   const [minOn, setMinOn] = React.useState(false);
+   const [maxOn, setMaxOn] = React.useState(false);
+   const [MinV, setMinV] = React.useState(null);
+   const [MaxV, setMaxV] = React.useState(null);
+   const [result, setResult] = React.useState([]);
+
+   const getResult = async () => {
+    const response = await axios.get(`http://localhost:8000/`)
+        .catch((error) => alert(error.response.data.message))
+
+    setResult(response.data);
+    console.log(response.data.link);
+}
+
+
+
+   const handleChange = (panel) => (event, isExpanded) => {
+     setExpanded(isExpanded ? panel : false);
+   };
+ 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
     
   };
+  
+  const handleRating = (event) => {
+    if (rating == event.target.value){
+      setRating(null)
+       
+    }
+    else
+    {
+    setRating(event.target.value);}
+ 
+    
+  };
 
+  const handleSearch = (event) => {
+    setSearch(event.target.value)
+    
+  };
+
+
+  const handleMinV = (event) => {
+    setMinV(event.target.value)
+    
+  };
+
+  const handleMaxV = (event) => {
+    setMaxV(event.target.value)
+    
+  };
+
+  const handleSubject = (event) => {
+
+    console.log(event.target.value)
+    
+    if (subject == event.target.value){
+      setSubject(null)
+       
+    }
+    else
+    {
+    setSubject(event.target.value);}
+ 
+    
+  };
+
+
+  const handlMaxON = (event) => {
+
+    
+    setMaxOn(!maxOn)}
+ 
+
+    const handlMinON = (event) => {
+  
+          
+          setMinOn(!minOn)}
+       
+    
   const handleClickS = (event) => {
     setOpenSubject(true);
     
-  };
+  }
   
   
   const handleClickR = (event) => {
@@ -213,7 +298,7 @@ const [anchorEl, setAnchorEl] = React.useState(null);
     setAnchorEl(null);
   };
 
-
+ 
 const mdTheme = createTheme();
 const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -252,9 +337,24 @@ const theme = useTheme();
               noWrap
               sx={{ flexGrow: 1 }}
             >
-              <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
+              <img  style={{ width: 150, height: 60 }} src={logo} alt="Courses Planet" />
             </Typography >
            
+
+{/* lw ms7t mn el search htb3t null wala l2 */}
+            <Search  >
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+             defaultValue = {search}
+              //onChange={(e) => setSearch(e.target.value)}
+              onBlur={handleSearch}
+            />
+          </Search>
+
           &nbsp;&nbsp;&nbsp;
           <box>
 
@@ -286,6 +386,11 @@ const theme = useTheme();
           </Toolbar>
           
           <Divider />
+          <List component="nav">
+
+
+ 
+    </List>
         </Drawer>
 
 
@@ -307,9 +412,10 @@ const theme = useTheme();
             <Grid container spacing={0}>
 
                  {/* filters */}
-            
-      <Button
-        id="demo-customized-button"
+       {/* el filter */}
+
+
+       <Button id="demo-customized-button"
         aria-controls={open2 ? 'demo-customized-menu' : undefined}
         aria-haspopup="true"
         aria-expanded={open2 ? 'true' : undefined}
@@ -317,12 +423,16 @@ const theme = useTheme();
         disableElevation
         onClick={handleClick}
         endIcon={<KeyboardArrowDownIcon />}
-        style = {{ position: "relative", left: '-24px' }}
-        sx={{ color: 'black', }}
-      >
-        Filter
-      </Button>
-      <StyledMenu
+        sx={{ color: 'black', ml: -3 }}>
+      <ListItemIcon  sx={{ color: 'black', }}>
+        < IoFilterSharp/>
+      </ListItemIcon>
+      <ListItemText primary="Filter " />
+    </Button>
+
+
+    
+    <StyledMenu
         id="demo-customized-menu"
         MenuListProps={{
           'aria-labelledby': 'demo-customized-button',
@@ -331,66 +441,146 @@ const theme = useTheme();
         open={open2}
         onClose={handleClose}
       >
-        <MenuItem onClick={handleClickS} disableRipple>
-          {/* <EditIcon /> */}
-          Subject
+        <MenuItem  disableRipple>
+          
+        <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+            Subject
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Toolbar>
+          <RadioGroup
+                        //aria-labelledby="demo-radio-buttons-group-label"
+                       // name="controlled-radio-buttons-group"
+                        onChange={ handleSubject}
+                        onClick={handleSubject}
+                    >
+                      
+                        <FormControlLabel value={'CS'} control={<Radio />} label={'CS'} checked={subject == 'CS'} />
+                        <FormControlLabel value={'English'} control={<Radio />} label={'English'} checked={subject == 'English'} />
+                        <FormControlLabel value={'Math'} control={<Radio />} label={'Math'} checked={subject == 'Math'} />
+                       
+
+                    </RadioGroup>
+                    </Toolbar>
+        </AccordionDetails>
+      </Accordion>
+
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />
-        <MenuItem onClick={handleClose} disableRipple>
-          {/* <FileCopyIcon /> */}
+        <MenuItem  disableRipple>
+        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
           Rating
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          
+          <Rating
+                                        name="simple-controlled"
+                                        value = {rating}
+                                        onChange={handleRating}
+                                    />
+                
+        </AccordionDetails>
+      </Accordion>
+         
+          
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />
-        <MenuItem onClick={handleClose} disableRipple>
-          {/* <ArchiveIcon /> */}
+        <MenuItem  disableRipple>
+
+        <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
           Price
-        </MenuItem>
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+
+
+      
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+
+          <RadioGroup
+                        //aria-labelledby="demo-radio-buttons-group-label"
+                       // name="controlled-radio-buttons-group"
+                        onChange={ handlMinON}
+                        onClick={handlMinON}
+                    >
+          <FormControlLabel  control={<Radio />}  checked={minOn} />    {/* h3mlha on click */ }
+          </RadioGroup>
+          
+          minimum
+          </Typography>
         
-        <StyledMenu
-        id="demo-customized-menu2"
-        MenuListProps={{
-          'aria-labelledby': 'demo-customized-button',
-        }}
-        sx={{ ml: 10 }}
-        anchorEl={anchorEl}
-        open={openSubject && open2}
-        onClose={handleClose}
+{/* changeable default value */}
+        <Slider
+  aria-label="Temperature"
+  defaultValue={0}
+  value = {MinV}
+  onChange={handleMinV}
+  getAriaValueText={valuetext}
+  valueLabelDisplay="auto"
+  step={200}
+  marks
+  min={0}
+  max={1000}
+/>
+
+
+
+
+<Typography sx={{ width: '33%', flexShrink: 0 }}>
+<RadioGroup
+                        //aria-labelledby="demo-radio-buttons-group-label"
+                       // name="controlled-radio-buttons-group"
+                        onChange={ handlMaxON}
+                        onClick={handlMaxON}
+                    >
+          <FormControlLabel  control={<Radio />} checked={maxOn}   />    {/* h3mlha on click */ }
+          maximum
+          </RadioGroup>
+          </Typography>
         
-      >
-        {/* handel close kol wa7da */}
-        <MenuItem onClick={handleClose} value='CS' disableRipple>
-          CS
-        </MenuItem>
 
-      </StyledMenu>
-
-
-
+        <Slider
+  aria-label="Temperature"
+  defaultValue={0}
+  value = {MaxV}
+  onChange={handleMaxV}
+  getAriaValueText={valuetext}
+  valueLabelDisplay="auto"
+  step={500}
+  marks
+  min={0}
+  max={5000}
+/>
+                
+      
+         
+                
+        </AccordionDetails>
+      </Accordion>
+         </MenuItem>
       </StyledMenu>
 
      
-
-      <Button
-        id="demo-customized-button2"
-        //onClick={handleClick} w ashel on double click w lma aft7 wa7da kolo y2fl
-        variant="outlined"
-        style = {{ position: "relative" , left: '955px' }}
-        sx={{ color: 'black', borderColor: '#03045E' }}
-      >
-        Search
-      </Button>
-
-
-      <Search  style = {{ position: "relative" , left: '260px' }}>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </Search>
-
             </Grid>
 
             
@@ -399,20 +589,33 @@ const theme = useTheme();
          
           </Toolbar>
          
-         <Divider/>
-         &nbsp;&nbsp;&nbsp;
-          <Toolbar>
+        <Toolbar >
+          <Grid container spacing={2} sx={{ ml: 1 , mt:0.5}} style={{ gap: 20 }}>
 {/* trial   hyt3ml hna for loop */}
 
-<Card sx={{ display: 'flex' ,   backgroundColor: '#CAF0F8' }} style={{width:"98%", height:"30%"}} >
-<CardMedia
-        component="img"
-      sx={{ width: 300 }}
-      //style={{ width: 150, height: 200 }}
-        image={logo}
-        alt="Live from space album cover"
-      />
-         <Box
+<Card  sx={{ display: 'flex' ,   backgroundColor: '#CAF0F8' }} style={{width:"48%", height:"30%"}} >
+{/* <CardMedia
+ allow="autoPlay"
+ controls={true}
+         component="img"
+      sx={{ width: 280 }}
+      // //style={{ width: 150, height: 200 }}
+         src={previewPic}
+        alt="Preview"
+      > 
+
+  </CardMedia> */}
+{/*if video hntl30 else hntl3 sora*/}
+ <ReactPlayer url='https://www.youtube.com/watch?v=1yKYDzFLyg0'
+                        controls='true'
+                         alt="preview"
+                        allow='autoplay'
+                         width= '280px'
+                         height = 'relative' 
+                        /> 
+                       
+    
+         {/* <Box
         sx={{
           position: 'absolute',
           top: 0,
@@ -420,7 +623,7 @@ const theme = useTheme();
           right: 80,
           left: 0,
         }}
-      />
+      /> */}
        <CardContent sx={{ flex: '1 0 auto' }}>
       <Grid container>
         <Grid item md={0}>
@@ -431,14 +634,22 @@ const theme = useTheme();
               pr: { md: 0 },
             }}
           >
-            <Typography component="h1" variant="h3" color="inherit" gutterBottom>
-              hello
+           
+            <Typography  component="h3" variant="h3" color="inherit"  gutterBottom>
+              Tiltle
+            
             </Typography>
-            <Typography variant="h5" color="inherit" paragraph>
-            hello
+            <Rating
+                                  readOnly={true}
+                                        value = {5}
+                                    />
+
+            <Typography variant="h6" color="inherit" paragraph>
+            total hours : {}
             </Typography>
-            <Link variant="subtitle1" href="#">
-            hello
+            
+             <Link variant="subtitle1" href="">   {/*href view course */}
+              Lets explore
             </Link>
 
             
@@ -448,9 +659,10 @@ const theme = useTheme();
       </CardContent>
       
     </Card>
-    &nbsp;&nbsp;&nbsp;
+   
+   
+    </Grid>
     </Toolbar>
-      
         </Box>
        
       </Box>
