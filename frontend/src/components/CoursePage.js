@@ -1,32 +1,19 @@
 
 import * as React from 'react';
-import { styled, createTheme, ThemeProvider, alpha } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
-import MuiDrawer from '@mui/material/Drawer';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import MuiAppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
-import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import Link from '@mui/material/Link';
-import MenuIcon from '@mui/icons-material/Menu';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import logo from '../logo Ninjas.jpeg';
-import InputBase from '@mui/material/InputBase';
-import SearchIcon from '@mui/icons-material/Search';
 import Button from '@mui/material/Button';
 import { useParams } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
 import { useEffect } from 'react';
-import { Alert, AlertTitle, Backdrop, CircularProgress, Dialog, DialogTitle, InputLabel, LinearProgress, Rating, TextField } from '@mui/material';
+import { Alert, AlertTitle, Backdrop, CircularProgress, Dialog, DialogTitle, LinearProgress, Rating, TextField } from '@mui/material';
 import img from "../components/backgroundCourse.png";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -34,49 +21,12 @@ import ReactPlayer from 'react-player/youtube';
 import PersonIcon from '@mui/icons-material/Person';
 import { Text } from '@react-pdf/renderer';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import InstructorNav from './InstructorNav';
+import TraineeNav from './TraineeNav';
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-    color: 'inherit',
-    '& .MuiInputBase-input': {
-        padding: theme.spacing(1, 1, 1, 0),
-        // vertical padding + font size from searchIcon
-        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-        transition: theme.transitions.create('width'),
-        width: '100%',
-        [theme.breakpoints.up('sm')]: {
-            width: '12ch',
-            '&:focus': {
-                width: '20ch',
-            },
-        },
-    },
-}));
-const Search = styled('div')(({ theme }) => ({
-    position: 'relative',
-    borderRadius: theme.shape.borderRadius,
-    backgroundColor: alpha(theme.palette.common.white, 0.15),
-    '&:hover': {
-        backgroundColor: alpha(theme.palette.common.white, 0.25),
-    },
-    marginLeft: 0,
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-        marginLeft: theme.spacing(1),
-        width: 'auto',
-    },
-}));
 
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-    padding: theme.spacing(0, 2),
-    height: '100%',
-    position: 'absolute',
-    pointerEvents: 'none',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-}));
+const instructorNav = {};
 
-const drawerWidth = 240;
 function LinearProgressWithLabel(props) {
     return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -93,49 +43,6 @@ function LinearProgressWithLabel(props) {
 }
 
 const CoursePage = () => {
-    const AppBar = styled(MuiAppBar, {
-        shouldForwardProp: (prop) => prop !== 'open',
-    })(({ theme, open }) => ({
-        zIndex: theme.zIndex.drawer + 1,
-        transition: theme.transitions.create(['width', 'margin'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        ...(open && {
-            marginLeft: drawerWidth,
-            width: `calc(100% - ${drawerWidth}px)`,
-            transition: theme.transitions.create(['width', 'margin'], {
-                easing: theme.transitions.easing.sharp,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-        }),
-    }));
-
-    const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' })(
-        ({ theme, open }) => ({
-            '& .MuiDrawer-paper': {
-                position: 'relative',
-                whiteSpace: 'nowrap',
-                width: drawerWidth,
-                transition: theme.transitions.create('width', {
-                    easing: theme.transitions.easing.sharp,
-                    duration: theme.transitions.duration.enteringScreen,
-                }),
-                boxSizing: 'border-box',
-                ...(!open && {
-                    overflowX: 'hidden',
-                    transition: theme.transitions.create('width', {
-                        easing: theme.transitions.easing.sharp,
-                        duration: theme.transitions.duration.leavingScreen,
-                    }),
-                    width: theme.spacing(7),
-                    [theme.breakpoints.up('sm')]: {
-                        width: theme.spacing(9),
-                    },
-                }),
-            },
-        }),
-    );
 
     const mdTheme = createTheme();
 
@@ -143,20 +50,63 @@ const CoursePage = () => {
     const toggleDrawer = () => {
         setOpen(!open);
     };
-    const [openRateCourse, setOpenRateCourse] = React.useState(false);
 
+    //for the course rating
+    const [openRateCourse, setOpenRateCourse] = React.useState(false);
     const handleClickOpen = () => {
         setOpenRateCourse(true);
     };
-
-    const handleClose = (value) => {
+    const handleClose = () => {
         setOpenRateCourse(false);
     };
+    const [rating, setRating] = useState(0);
+    const [text, setText] = useState("")
+    const handleRating = (event) => {
+        setRating(event.target.value);
+    };
+    const handleText = (event) => {
+        setText(event.target.value);
+    };
 
+    const [openPopup, setOpenPopup] = useState(false);
+    const handleClosePopup = () => {
+        setOpenPopup(false);
+        window.location.href = `/course/${courseId}`;
+    };
+    const submitRating = async () => {
+        const response = await axios.post(
+            `http://localhost:8000/rateCourse?userId=${user._id}&courseId=${course._id}`,
+            { rating, text })
+            .catch((error) => alert(error.response.data.message))
+        if (response.status === 200)
+        {
+            setOpenRateCourse(false);
+            setOpenPopup(true);
+        }
+    }
+
+    //for the instructor rating
+    const [openRateInstructor, setOpenRateInstructor] = React.useState(false);
+    const openInstRate = () => {
+        setOpenRateInstructor(true);
+    };
+    const handleinstClose = () => {
+        setOpenRateInstructor(false);
+    };
+    //we can use the same rating and text variables in this case
+    const submitInstructorRating = async () => {
+        const response = await axios.put(`http://localhost:8000/rateInstructor?userId=${user._id}&instructorId=${course.instructors[0]._id}&ratingNumber=${rating}&ratingText=${text}`)
+        .catch((error) => alert(error.response.data.message))
+
+        if (response.status === 200) {
+            setOpenRateInstructor(false);
+            setOpenPopup(true);
+        }
+
+    }
 
     //endpoint code
     const { id: courseId } = useParams();
-    const [instructors, setInstructors] = useState("");
     const [currency, setCurrency] = useState("");
     const [factor, setFactor] = useState(0);
     const [price, setPrice] = useState(0);
@@ -200,30 +150,6 @@ const CoursePage = () => {
         else return false;
     }
 
-    //for the rating
-    const [rating, setRating] = useState(0);
-    const [text, setText] = useState("")
-    const handleRating = (event) => {
-        setRating(event.target.value);
-    };
-    const handleText = (event) => {
-        setText(event.target.value);
-    };
-
-    const [openPopup, setOpenPopup] = useState(false);
-    const handleClosePopup = () => {
-        setOpenPopup(false);
-        window.location.href = `/course/${courseId}`;
-    };
-    const submitRating = async () => {
-        const response = await axios.post(
-            `http://localhost:8000/rateCourse?userId=${user._id}&courseId=${course._id}`,
-            { rating, text })
-            .catch((error) => alert(error.response.data.message))
-        setOpenRateCourse(false);
-        setOpenPopup(true);
-    }
-
     //to check if the corporate trainee has requested access
     const [reqAccess, setReqAccess] = useState(false);
     const requestedAccess = async () => {
@@ -257,13 +183,6 @@ const CoursePage = () => {
             if (user.type == 'CORPORATE_TRAINEE')
                 requestedAccess();
 
-            //course instructors
-            let instructs = "";
-            course.instructors.map((instructor) => {
-                instructs += instructor.firstName + " " + instructor.lastName + "\n"
-            })
-            setInstructors(instructs);
-
             //set the price to be displayed
             let priceAfterDiscount;
             if (course.discount > 0) {
@@ -283,75 +202,12 @@ const CoursePage = () => {
     return (
         <ThemeProvider theme={mdTheme}>
             <Box sx={{ display: 'flex' }}>
-                <AppBar position="absolute" open={open}>
-                    <Toolbar
-                        sx={{
-                            pr: '24px', // keep right padding when drawer closed
-                            bgcolor: '#03045E'
-                        }}
-                    >
-                        <IconButton
-                            edge="start"
-                            color="inherit"
-                            aria-label="open drawer"
-                            onClick={toggleDrawer}
-                            sx={{
-                                marginRight: '36px',
-                                ...(open && { display: 'none' }),
-                            }}
-                        >
-                            <MenuIcon />
-                        </IconButton >
-                        <Typography
-                            component="h1"
-                            variant="h6"
-                            bgcolor='#03045E'
-                            noWrap
-                            sx={{ flexGrow: 1 }}
-                        >
-                            <img style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
-                        </Typography >
-                        <Search>
-                            <SearchIconWrapper>
-                                <SearchIcon />
-                            </SearchIconWrapper>
-                            <StyledInputBase
-                                placeholder="Search…"
-                                inputProps={{ 'aria-label': 'search' }}
-                            />
-                        </Search>
-                        &nbsp;&nbsp;&nbsp;
-                        <box>
-
-                            <Button variant="contained" sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}>Sign In</Button>
-                        </box>
-                        &nbsp;&nbsp;&nbsp;
-                        <box>
-                            <Button variant="outlined" sx={{ color: 'white', borderColor: '#CAF0F8' }}>Sign Up</Button>
-                        </box>
-                        {/* <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon  />
-              </Badge>
-            </IconButton> */}
-                    </Toolbar>
-                </AppBar>
-                <Drawer variant="permanent" open={open}>
-                    <Toolbar
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            px: [1],
-                        }}
-                    >
-                        <IconButton onClick={toggleDrawer}>
-                            <ChevronLeftIcon />
-                        </IconButton>
-                    </Toolbar>
-
-                    <Divider />
-                </Drawer>
+                {user.type === 'INSTRUCTOR' &&
+                    <InstructorNav post={instructorNav} />
+                }
+                {user.type !== 'INSTRUCTOR' &&
+                    <TraineeNav post={instructorNav} />
+                }
                 <Box
                     component="main"
                     sx={{
@@ -400,8 +256,16 @@ const CoursePage = () => {
                                 <Typography variant="h5" color="inherit" paragraph>
                                     {course.title}
                                 </Typography>
-                                <Typography variant="subtitle1">
-                                    Taught by {instructors}
+                                <Typography variant="subtitle1" sx={{ ml: 3 }}>
+                                    Taught by {course.instructors[0].firstName} {course.instructors[0].lastName}
+                                    <br></br>
+                                    { registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) &&
+                                        <Button variant="contained"
+                                        sx={{ ml: -3, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                        onClick={openInstRate}>
+                                        Rate this instructor
+                                    </Button>
+                                    }
                                 </Typography>
                             </Paper>
 
@@ -463,10 +327,21 @@ const CoursePage = () => {
                                 {user.type === "GUEST" &&
                                     <Button
                                         sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                        onClick={() => window.location.href='/signUp'}
+                                        onClick={() => window.location.href = '/signUp'}
                                     >
-                                    Want to enroll? Sign up now!
+                                        Want to enroll? Sign up now!
                                     </Button>
+                                }
+                                { ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE", "INSTRUCTOR"].includes(user.type) &&
+                                    <Typography sx={{ ml:132, mb:1}}> Something seems wrong? 
+                                    <Button variant="contained" size="small"
+                                        sx={{ ml:1, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                        onClick={() => window.location.href = '/signUp'}
+                                    >
+                                        Report a problem
+                                    </Button>
+
+                                    </Typography>
                                 }
                             </Box>
                             <Divider />
@@ -481,19 +356,19 @@ const CoursePage = () => {
                             </Box>
                             <Divider />
                             {/*display the user's progress*/}
-                            { ["CORPORATE_TRAINEE","INDIVIDUAL_TRAINEE"].includes(user.type) && registered &&
-                            <Box sx={{ ml: 27, width: '70%' }}>
-                                <Typography align='center' variant='h6' color={'#03045E'}> Your current progress: </Typography>
-                                <LinearProgressWithLabel value={userProgress} />
-                                { userProgress < 100 &&
-                                <Typography align='center' variant='h6' color={'#03045E'}> Keep it up! <AutoAwesomeIcon /> </Typography>
-                                }
-                                { userProgress === 100 &&
-                                <Typography align='center' variant='h6' color={'#03045E'}>
-                                Congratulations on finishing the course! You will find the certificate in your email inbox as well as your certificate list <AutoAwesomeIcon />
-                                </Typography>
-                                }
-                            </Box>
+                            {["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) && registered &&
+                                <Box sx={{ ml: 27, width: '70%' }}>
+                                    <Typography align='center' variant='h6' color={'#03045E'}> Your current progress: </Typography>
+                                    <LinearProgressWithLabel value={userProgress} />
+                                    {userProgress < 100 &&
+                                        <Typography align='center' variant='h6' color={'#03045E'}> Keep it up! <AutoAwesomeIcon /> </Typography>
+                                    }
+                                    {userProgress === 100 &&
+                                        <Typography align='center' variant='h6' color={'#03045E'}>
+                                            Congratulations on finishing the course! You will find the certificate in your email inbox as well as your certificate list <AutoAwesomeIcon />
+                                        </Typography>
+                                    }
+                                </Box>
                             }
 
                             {
@@ -540,7 +415,7 @@ const CoursePage = () => {
                                         {
                                             user.type == 'INSTRUCTOR' && registered &&
                                             <Button
-                                                sx={{ mt:1, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                                sx={{ mt: 1, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                             >
                                                 Add another exercise
                                             </Button>
@@ -569,7 +444,7 @@ const CoursePage = () => {
                                     p: 1, border: 2, borderColor: '#00B4D8'
                                 }}>
                                 <Typography color="#03045E" sx={{ width: 155, fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}> Course reviews </Typography>
-                                {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) &&
+                                {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) && registered &&
                                     <Button sx={{ ml: 140, mt: -5, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                         onClick={handleClickOpen}
                                     >
@@ -632,6 +507,37 @@ const CoursePage = () => {
                                     Click anywhere to continue
                                 </Alert>
                             </Backdrop>
+
+                            {/*RATE THE INSTRUCTOR POPUP DIALOGUE*/}
+                            <Dialog onClose={handleinstClose} open={openRateInstructor}
+                                sx={{
+                                    "& .MuiDialog-container": {
+                                        "& .MuiPaper-root": {
+                                            width: "100%",
+                                            maxWidth: "700px",
+                                        },
+                                    },
+                                    display: "flex", flexDirection: "column"
+                                }}>
+                                <DialogTitle align='center' display={"flex"} flexDirection={"column"} alignItems={"center"}>
+                                    Rate the Instructor: {course.instructors[0].firstName} {course.instructors[0].lastName}
+                                    <Rating
+                                        name="simple-controlled"
+                                        onChange={handleRating}
+                                    />
+                                </DialogTitle>
+
+                                <TextField id="standard-basic" label="Add a comment." variant="standard"
+                                    sx={{ mb: 2 }}
+                                    onChange={handleText} />
+
+                                <Button
+                                    sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                    onClick={submitInstructorRating}
+                                >
+                                    Submit your rating
+                                </Button>
+                            </Dialog>
                         </div>
                     }
 
