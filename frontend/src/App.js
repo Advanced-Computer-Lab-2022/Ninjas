@@ -26,7 +26,7 @@ import Login from './components/Login';
 import Signup from './nav/Signup';
 import ResetPasswordPage from './components/ResetPassword';
 import MostPopular from './components/MostPopular';
-import Temp from './nav/NoraTest';
+import Temp from './components/Search';
 import Payment from './nav/PaymentForm';
 import Checkout from './nav/Checkout';
 import Home from './nav/Home';

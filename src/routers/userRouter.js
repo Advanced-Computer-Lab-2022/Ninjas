@@ -22,15 +22,16 @@ userRouter.post('/logout', (req, res) => {
 
 userRouter.get('/search', async (req, res) => {
     try {
-        // const {
-        //     userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
-        // } = req.query;
-        console.log(req.query.userId)
-        console.log(JSON.parse(req.query))
+         const {
+             userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
+         } = req.query;
+       // console.log(req.query.userId)
+       // console.log(JSON.parse(req.query))
 
         const searchResults = await
             userController.getSearchResult({ userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours });
-        res.status(200).json({ result: searchResults });
+     //console.log(searchResults);                                                                        
+            res.status(200).json({ data: searchResults });
     } catch (error) {
         console.log(error)
         res.status(error.code).json({ message: error.message });
