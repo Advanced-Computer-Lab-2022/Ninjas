@@ -67,8 +67,8 @@ const Login = () => {
         case ('INSTRUCTOR'):
           window.location.href = `/iHome`; break;
 
-        // case ('ADMIN'):
-        //   window.location.href = `/admin/`; break;
+        case ('ADMIN'):
+          window.location.href = `/Admin`; break;
       }
 
       console.log(user.type);

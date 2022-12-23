@@ -516,4 +516,15 @@ userRouter.get('/checkRequestedAccess', async (req,res) => {
         res.status(error.code).json({ message: error.message });
     }
 })
+
+userRouter.get('/requestedTheRefund', async (req,res) => {
+    try {
+        const { userId, courseId } = req.query;
+        const result = await userController.checkRequestedRefund({ userId, courseId });
+
+        res.status(200).json(result);
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
 module.exports = userRouter;

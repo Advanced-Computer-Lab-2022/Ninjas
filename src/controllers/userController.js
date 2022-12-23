@@ -681,6 +681,17 @@ async requestRefund({ userId,courseId }) {
     var bol=false;
     const account=await Account.findOne({_id:userId})
     console.log(account)
+    if (account.progress.filter(prog => prog.courseId===courseId).length===0){
+        const newRefundRequest = new RefundRequest({
+            accountId:userId,
+            courseId:courseId
+        })
+        newRefundRequest.save();
+
+        //ad5al fel refund array el course
+       // Account.updateOne({_id:userId},{wallet:wallet+course.price})
+        bol=true;
+    }
     for(var i=0;i<account.progress.length;i++){
         if(account.progress[i].courseId.toString()==courseId){
             if(parseInt(account.progress[i].currentProgress)<50){
@@ -704,6 +715,7 @@ async requestRefund({ userId,courseId }) {
 
     }
     catch (error) {
+        console.log(error)
         if (error instanceof DomainError)
             throw error;
 
@@ -919,6 +931,18 @@ async checkRequestedAccess({ userId, courseId }) {
     } catch(error) {
         if (error instanceof DomainError) throw error;
         else
+        throw new DomainError("internal error", 500);
+    }
+},
+
+async checkRequestedRefund({ userId, courseId }) {
+    try {
+        const requested = await RefundRequest.findOne({ accountId: userId, courseId});
+        if (!requested)
+            throw new DomainError("access was not requested", 400);
+        else
+            return requested;
+    } catch(error) {
         throw new DomainError("internal error", 500);
     }
 }

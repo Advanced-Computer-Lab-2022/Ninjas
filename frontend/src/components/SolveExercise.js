@@ -28,6 +28,8 @@ import { useState } from 'react';
 import { useEffect } from 'react';
 import { Alert, AlertTitle, Backdrop, CircularProgress, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup } from '@mui/material';
 import TagFacesIcon from '@mui/icons-material/TagFaces';
+import InstructorNav from './InstructorNav';
+import TraineeNav from './TraineeNav';
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
@@ -126,6 +128,7 @@ const SolveExercise = () => {
     //endpoint code
     const params = new URLSearchParams(window.location.search);
     const userId = params.get('userId');
+    const userType = params.get('userType')
     const courseId = params.get('courseId');
     const subtitleId = params.get('subtitleId');
     const exerciseId = params.get('exerciseId');
@@ -157,7 +160,6 @@ const SolveExercise = () => {
     const [openPopup, setOpenPopup] = useState(false);
     const handleClose = () => {
         setOpenPopup(false);
-        window.location.href= `/course/${courseId}`;
     };
     const handleToggle = () => {
         setOpen(!open);
@@ -166,68 +168,12 @@ const SolveExercise = () => {
     return (
         <ThemeProvider theme={mdTheme}>
             <Box sx={{ display: 'flex' }}>
-                <AppBar position="absolute" open={open}>
-                    <Toolbar
-                        sx={{
-                            pr: '24px', // keep right padding when drawer closed
-                            bgcolor: '#03045E'
-                        }}
-                    >
-                        <IconButton
-                            edge="start"
-                            color="inherit"
-                            aria-label="open drawer"
-                            onClick={toggleDrawer}
-                            sx={{
-                                marginRight: '36px',
-                                ...(open && { display: 'none' }),
-                            }}
-                        >
-                            <MenuIcon />
-                        </IconButton >
-                        <Typography
-                            component="h1"
-                            variant="h6"
-                            bgcolor='#03045E'
-                            noWrap
-                            sx={{ flexGrow: 1 }}
-                        >
-                            <img style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
-                        </Typography >
-                        <Search>
-                            <SearchIconWrapper>
-                                <SearchIcon />
-                            </SearchIconWrapper>
-                            <StyledInputBase
-                                placeholder="Search…"
-                                inputProps={{ 'aria-label': 'search' }}
-                            />
-                        </Search>
-                        &nbsp;&nbsp;&nbsp;
-
-                        {/* <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon  />
-              </Badge>
-            </IconButton> */}
-                    </Toolbar>
-                </AppBar>
-                <Drawer variant="permanent" open={open}>
-                    <Toolbar
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            px: [1],
-                        }}
-                    >
-                        <IconButton onClick={toggleDrawer}>
-                            <ChevronLeftIcon />
-                        </IconButton>
-                    </Toolbar>
-
-                    <Divider />
-                </Drawer>
+            { userType==='INSTRUCTOR' &&
+            <InstructorNav post={{}} />
+            }
+            { userType!=='INSTRUCTOR' &&
+                <TraineeNav post={{}} />
+            }
                 <Box
                     component="main"
                     sx={{
@@ -303,12 +249,14 @@ const SolveExercise = () => {
                                     </div>
                                 ))
                             }
-                            <Button size='large'
+                            { userType !== 'INSTRUCTOR' &&
+                                <Button size='large'
                                 sx={{ mt: 1, mb: 1, ml: 1, display: 'flex', flexDirection: 'column', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                 onClick={submit}
                             >
                                 Submit your answers
                             </Button>
+                            }
 
                             
                             { gradeDetails &&
@@ -324,7 +272,9 @@ const SolveExercise = () => {
                                     which is {gradeDetails.gradePercentage.toFixed(2)}% <TagFacesIcon />
                                     <br></br>
                                     <br></br>
-                                    Click anywhere to continue
+                                    <Button variant='outlined' sx={{color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8'}}
+                                    onClick={() => window.location.href=`/viewCorrectAnswers?courseId=${courseId}&subtitleId=${subtitleId}&exerciseId=${exerciseId}`}>
+                                     Click here to view the correct answers </Button>
                                 </Alert>
                             </Backdrop>
                             }
