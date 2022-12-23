@@ -86,8 +86,7 @@ const Login = () => {
 
     if (response.status === 200) {
       console.log("guest login ", response.data)
-      const user = response.data;
-      // window.location.href = `/guest/${user._id}`;
+      window.location.href = `/tHome`;
     }
   }
 

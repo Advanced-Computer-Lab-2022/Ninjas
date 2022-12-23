@@ -27,8 +27,10 @@ import DownloadIcon from '@mui/icons-material/Download';
 import axios from 'axios';
 import { useState } from 'react';
 import { useEffect } from 'react';
-import { Path } from '@react-pdf/renderer';
-
+import csCertificate from '../csCertificate.pdf';
+import englishCertificate from '../englishCertificate.pdf';
+import mathCertificate from '../mathCertificate.pdf';
+import generalCertificate from '../generalCertificate.pdf';
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
@@ -122,6 +124,7 @@ const mdTheme = createTheme();
   const [open, setOpen] = React.useState(false);
   const toggleDrawer = () => {
     setOpen(!open);
+    setShow(false);
   };
 
 const [ready, setReady] = useState(false);
@@ -136,7 +139,9 @@ const [user,setUser] = useState(async () => {
 })
 useEffect(() => {
   if (user._id)
-      setReady(true);
+
+      { console.log(user)
+        setReady(true);}
 }, [user])
 
 //to show the certificates when clicked
@@ -229,7 +234,7 @@ const logout = async () => {
           </ListItemIcon>
           <ListItemText primary='My Courses'/>
           </ListItemButton>
-          <ListItemButton onClick={() => setShow(!show)}>
+          <ListItemButton onClick={() => open? setShow(!show) : null}>
           {/*maps on the user certificates to display them*/}
             <ListItemIcon>
           <WorkspacePremiumIcon sx={{color:'black' }} />
@@ -243,9 +248,29 @@ const logout = async () => {
               sx={{ backgroundColor:'#eeeeee'}}
             >
               {certificate}
-              <a href={`${certificate}`} download>
+
+              { certificate === 'englishCertificate.pdf' &&
+              <a href = {englishCertificate} download>
               <DownloadIcon sx={{ ml:5, mt:0.5 }}/>
               </a>
+              }
+              { certificate === 'csCertificate.pdf' &&
+              <a href = {csCertificate} download>
+              <DownloadIcon sx={{ ml:5, mt:0.5 }}/>
+              </a>
+              }
+              { certificate === 'mathCertificate.pdf' &&
+              <a href = {mathCertificate} download>
+              <DownloadIcon sx={{ ml:5, mt:0.5 }}/>
+              </a>
+              }
+              {
+                certificate === 'generalCertificate.pdf' &&
+                <a href = {generalCertificate} download>
+                <DownloadIcon sx={{ ml:5, mt:0.5 }}/>
+              </a>
+              }
+
             </ListItemButton>
           ))}
 
