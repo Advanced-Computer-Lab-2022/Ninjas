@@ -33,7 +33,9 @@ import Home from './nav/Home';
 import TermsGuest from './nav/InstructorTerms';
 import InstructorHome from './nav/InstructorHome';
 import TraineeHome from './nav/TraineeHome';
+import CreateExercise from './nav/CreateExercise';
 import CoursePage from './components/CoursePage';
+import Settings from './nav/Settings';
 
 
 
@@ -47,9 +49,9 @@ function App() {
       <Route path='/temp' element= {<Temp/>} > </Route>
       <Route path='/terms' element= {<TermsGuest/>} >  </Route>
       <Route path='/iHome' element= {<InstructorHome/>} >  </Route>
-      <Route path='/tHome' element= {<TraineeHome/>} >
-       
-        </Route>
+      <Route path='/tHome' element= {<TraineeHome/>} > </Route>
+      <Route path='/exercise' element= {<CreateExercise/>} > </Route>
+      <Route path='/settings' element= {<Settings/>} > </Route>
         <Route path='/home' element= {<Home/>} >
         </Route>
         <Route path='/changePassword' element= {<ChangePassword/>} >
