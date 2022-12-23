@@ -78,8 +78,7 @@ const CoursePage = () => {
             `http://localhost:8000/rateCourse?userId=${user._id}&courseId=${course._id}`,
             { rating, text })
             .catch((error) => alert(error.response.data.message))
-        if (response.status === 200)
-        {
+        if (response.status === 200) {
             setOpenRateCourse(false);
             setOpenPopup(true);
         }
@@ -96,7 +95,7 @@ const CoursePage = () => {
     //we can use the same rating and text variables in this case
     const submitInstructorRating = async () => {
         const response = await axios.put(`http://localhost:8000/rateInstructor?userId=${user._id}&instructorId=${course.instructors[0]._id}&ratingNumber=${rating}&ratingText=${text}`)
-        .catch((error) => alert(error.response.data.message))
+            .catch((error) => alert(error.response.data.message))
 
         if (response.status === 200) {
             setOpenRateInstructor(false);
@@ -170,6 +169,34 @@ const CoursePage = () => {
             window.location.href = `/course/${courseId}`;
     }
 
+    //when an enrolled user wants a refund
+    const [requested, setRequested] = useState(false);
+    const [openRefundPopup, setORP] = useState(false);
+    const handleCloseRefundPopup = () => {
+        setORP(false);
+        window.location.href=`/course/${course._id}`
+    }
+    const requestedTheRefund = async () => {
+        const response = await axios.get(`http://localhost:8000/requestedTheRefund?userId=${user._id}&courseId=${course._id}`)
+            .catch((error) => console.log(error.response.data.message));
+
+        if (response.status === 200)
+            {
+                setRequested(true);
+            }
+
+    }
+    const requestRefund = async () => {
+        const response = await axios.post(`http://localhost:8000/requestRefund?courseId=${course._id}`)
+            .catch((error) => console.log(error.response.data.message));
+
+        if (response.status == 200)
+        {
+            setORP(true);
+        }
+    }
+    
+
 
     useEffect(() => {
         if (course._id && user._id) {
@@ -178,6 +205,9 @@ const CoursePage = () => {
 
             //check if this user is registered 
             setRegistered(isRegistered());
+
+            //check if requested refund
+            requestedTheRefund();
 
             //check if the corporate trainee requested access
             if (user.type == 'CORPORATE_TRAINEE')
@@ -259,12 +289,12 @@ const CoursePage = () => {
                                 <Typography variant="subtitle1" sx={{ ml: 3 }}>
                                     Taught by {course.instructors[0].firstName} {course.instructors[0].lastName}
                                     <br></br>
-                                    { registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) &&
+                                    {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) &&
                                         <Button variant="contained"
-                                        sx={{ ml: -3, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                        onClick={openInstRate}>
-                                        Rate this instructor
-                                    </Button>
+                                            sx={{ ml: -3, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                            onClick={openInstRate}>
+                                            Rate this instructor
+                                        </Button>
                                     }
                                 </Typography>
                             </Paper>
@@ -332,14 +362,14 @@ const CoursePage = () => {
                                         Want to enroll? Sign up now!
                                     </Button>
                                 }
-                                { ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE", "INSTRUCTOR"].includes(user.type) &&
-                                    <Typography sx={{ ml:132, mb:1}}> Something seems wrong? 
-                                    <Button variant="contained" size="small"
-                                        sx={{ ml:1, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                        onClick={() => window.location.href = '/signUp'}
-                                    >
-                                        Report a problem
-                                    </Button>
+                                {["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE", "INSTRUCTOR"].includes(user.type) &&
+                                    <Typography sx={{ ml: 132, mb: 1 }}> Something seems wrong?
+                                        <Button variant="contained" size="small"
+                                            sx={{ ml: 1, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                            onClick={() => window.location.href = '/signUp'}
+                                        >
+                                            Report a problem
+                                        </Button>
 
                                     </Typography>
                                 }
@@ -362,6 +392,23 @@ const CoursePage = () => {
                                     <LinearProgressWithLabel value={userProgress} />
                                     {userProgress < 100 &&
                                         <Typography align='center' variant='h6' color={'#03045E'}> Keep it up! <AutoAwesomeIcon /> </Typography>
+                                    }
+                                    {
+                                        userProgress < 50 && user.type === 'INDIVIDUAL_TRAINEE' && !requested &&
+                                        <Typography sx={{ mt: 1 }} color={'#03045E'} align='center' variant="subtitle1">
+                                            Would you like to unroll?
+                                            <Button
+                                                sx={{ mb: 1, ml: 1, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                                onClick={requestRefund}>
+
+                                                Request Refund </Button>
+
+                                        </Typography>
+                                    }
+                                    {requested &&
+                                        <Typography sx={{ mt: 1 }} color={'#03045E'} align='center' variant="subtitle1">
+                                            Your refund request is currently pending for the admin's approval
+                                        </Typography>
                                     }
                                     {userProgress === 100 &&
                                         <Typography align='center' variant='h6' color={'#03045E'}>
@@ -538,6 +585,17 @@ const CoursePage = () => {
                                     Submit your rating
                                 </Button>
                             </Dialog>
+                            {/*alert shows up after requesting a refund*/}
+                            <Backdrop
+                                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                open={openRefundPopup}
+                                onClick={handleCloseRefundPopup}
+                            >
+                                <Alert sx={{ tabSize: 'l' }} severity="success">
+                                    <AlertTitle>Your refund request has been submitted.</AlertTitle>
+                                    Click anywhere to continue
+                                </Alert>
+                            </Backdrop>
                         </div>
                     }
 
