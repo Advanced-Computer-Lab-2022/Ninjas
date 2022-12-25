@@ -25,7 +25,7 @@ import Wallet from '@mui/icons-material/Wallet';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import axios from 'axios';
-import { searchtemp } from '../components/Search';
+
 
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -129,22 +129,24 @@ const logout = async () => {
   if(response.status===200)
   window.location.href='/';
 }
-const [user,setUser] = React.useState(async () => {
-  await axios.get('http://localhost:8000/userBySession')
-  .then(res => setUser(res.data))
-  .catch(err => {
-    if (err.response.status === 401) //you didn't login
-    window.location.href='/';
-  })
-})
+
+
+
+const [search, setSearch] = React.useState( null);
+// const handleSearch = (event) => {
+//   setSearch(event.target.value)
+  
+// };
+
 const handleKeypress = e => {
   //it triggers by pressing the enter key
 if (e.key === 'Enter') {
   console.log('renteeer')
  // handleSearch(e)
-  window.location.href=`/temp?userId=${user._id}&search=${e.target.value}`
+  window.location.href=`temp/search=${e.target.value}`
 }
 };
+
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex'  }}>
@@ -184,7 +186,7 @@ if (e.key === 'Enter') {
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
-             defaultValue = {searchtemp}
+             defaultValue = {search}
               //onChange={(e) => setSearch(e.target.value)}
               onKeyPress={handleKeypress}
               

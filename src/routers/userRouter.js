@@ -13,24 +13,28 @@ userRouter.post('/logout', (req, res) => {
     console.log(req.session.id);
     const session = sessionDetails.getSession(req.session.id);
 
-    const key = session.username + 'jwt';
+    const { userId, username } = session
+    //kill the JWT cookie
+    const key = username + 'jwt';
     res.clearCookie(key);
-    sessionDetails.removeSession(req.session.id);
-    res.status(200).json({ message: "logged out successfully" })
+    //remove all the local user sessions
+    sessionDetails.killUserSessions(userId);
+    res.status(200).json({ message: "logged out successfully" });
 
 })
 
 userRouter.get('/search', async (req, res) => {
     try {
-        // const {
-        //     userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
-        // } = req.query;
-        console.log(req.query.userId)
-        console.log(JSON.parse(req.query))
+         const {
+             userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
+         } = req.query;
+       // console.log(req.query.userId)
+       // console.log(JSON.parse(req.query))
 
         const searchResults = await
             userController.getSearchResult({ userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours });
-        res.status(200).json({ result: searchResults });
+     //console.log(searchResults);                                                                        
+            res.status(200).json({ data: searchResults });
     } catch (error) {
         console.log(error)
         res.status(error.code).json({ message: error.message });
@@ -119,7 +123,15 @@ userRouter.get('/user/:id', async (req, res) => {
     }
 })
 
-
+userRouter.get('/userBySession', async (req,res) => {
+    try {
+        const { userId } = sessionDetails.getSession(req.session.id);
+        const user = await userController.getUserData({ userId });
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
 
 userRouter.get('/viewAndFilterCourses', async (req, res) => {
     try {
@@ -460,7 +472,12 @@ userRouter.get('/mostPopularCourses', async (req, res) => {
 
 userRouter.get('/course/:id', async (req, res) => {
     try {
+
         const session = sessionDetails.getSession(req.session.id);
+        if (!session){
+            res.status(400).json({message:"you did not login"});
+           // throw new DomainError ("you did not login",400)
+    }
         const courseId = req.params.id;
         const { userId, type: userType } = session;
 
@@ -501,6 +518,61 @@ userRouter.get('/checkRequestedAccess', async (req,res) => {
     const { userId, courseId } = req.query;
     const requested = await userController.checkRequestedAccess({ userId, courseId });
     res.status(200).json(requested);
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
+
+userRouter.post('/reportCourse', async (req, res) => {
+    try {
+        const { courseId, userId , problem } = req.query
+        const reported = await userController.ReportCourse( userId,courseId,problem);
+        res.status(200).json({message:'Done'})
+    }
+    catch (err) {
+      // console.log(err);
+        if (err instanceof DomainError) {
+            res.status(err.code).json({ message: err.message })
+        } else {
+            res.status(500).json({ err });
+        }
+    }
+})
+
+
+userRouter.post('/followUp', async (req, res) => {
+    try {
+        const { courseId, userId , problem} = req.query
+        const reported = await userController.folllowUp( userId,courseId,problem);
+        res.status(200).json({message:reported})
+    }
+    catch (err) {
+      // console.log(err);
+        if (err instanceof DomainError) {
+            res.status(err.code).json({ message: err.message })
+        } else {
+            res.status(500).json({ err });
+        }
+    }
+})
+
+userRouter.get('/viewMyReports', async (req,res) => {
+    try {
+        const { userId } = req.query;
+        const result = await userController.ViewMyReports( userId );
+
+        res.status(200).json(result);
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
+
+userRouter.get('/requestedTheRefund', async (req,res) => {
+    try {
+        const { userId, courseId } = req.query;
+        const result = await userController.checkRequestedRefund({ userId, courseId });
+
+        res.status(200).json(result);
     } catch(error) {
         res.status(error.code).json({ message: error.message });
     }

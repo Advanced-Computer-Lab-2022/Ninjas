@@ -26,7 +26,7 @@ import Login from './components/Login';
 import Signup from './nav/Signup';
 import ResetPasswordPage from './components/ResetPassword';
 import MostPopular from './components/MostPopular';
-import Temp from './nav/NoraTest';
+import Temp from './components/Search';
 import Payment from './nav/PaymentForm';
 import Checkout from './nav/Checkout';
 import Home from './nav/Home';
@@ -39,7 +39,9 @@ import AdminAccessCourse from './components/AdminAccessCourse';
 import AdminSetPromo from './components/AdminSetPromo';
 import AdminAddUser from './components/AdminAddUser';
 import AdminRefundRequests from './components/AdminRefundRequests';
+import CreateExercise from './nav/CreateExercise';
 import CoursePage from './components/CoursePage';
+import Settings from './nav/Settings';
 
 
 
@@ -53,9 +55,9 @@ function App() {
       <Route path='/temp' element= {<Temp/>} > </Route>
       <Route path='/terms' element= {<TermsGuest/>} >  </Route>
       <Route path='/iHome' element= {<InstructorHome/>} >  </Route>
-      <Route path='/tHome' element= {<TraineeHome/>} >
-       
-        </Route>
+      <Route path='/tHome' element= {<TraineeHome/>} > </Route>
+      <Route path='/exercise' element= {<CreateExercise/>} > </Route>
+      <Route path='/settings' element= {<Settings/>} > </Route>
         <Route path='/home' element= {<Home/>} >
         </Route>
         <Route path='/changePassword' element= {<ChangePassword/>} >

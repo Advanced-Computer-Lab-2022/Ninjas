@@ -4,18 +4,29 @@ import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import Select, { SelectChangeEvent } from '@mui/material/Select';
+import MenuItem from '@mui/material/Container';
 import FormControl from '@mui/material/Container';
-import {useState} from "react";
+import InputLabel from '@mui/material/Container';
+import { useState, useEffect } from "react";
 import axios from "axios";
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormLabel from '@mui/material/FormLabel';
+//import MenuItem from '@mui/material/MenuItem';
+import EditIcon from '@mui/icons-material/Edit';
+import Divider from '@mui/material/Divider';
+import ArchiveIcon from '@mui/icons-material/Archive';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Menu from '@mui/material/Menu';
 import { styled, alpha } from '@mui/material/styles';
 import PropTypes from 'prop-types';
@@ -27,7 +38,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { Toolbar } from '@mui/material';
+import { Alert, AlertTitle, FormHelperText, Toolbar } from '@mui/material';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -112,16 +123,16 @@ const theme = createTheme();
 
 export default function Signup() {
   // username, firstName, lastName, email, password, gender
-  const[firstName,setFirstName]=useState('');
-  const[lastName,setLastName]=useState('');
-  const[email,setEmail]=useState('');
-  const[password,setPassword]=useState('');
-  const[confirm,setConfirm]=useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
   const [gender, setGender] = useState('');
   const [username, setUsername] = useState('');
 
   const [open, setOpen] = React.useState(false);
-
+  
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -129,242 +140,339 @@ export default function Signup() {
     setOpen(false);
   };
 
-const handleChangeGender = (event) => {
+  const handleChangeGender = (event) => {
     setGender(event.target.value);
-}
-const handleChangeFirstName = (event) => {
-  setFirstName(event.target.value);
-}
-const handleChangeLastName = (event) => {
-  setLastName(event.target.value);
-}
-const handleChangeEmail = (event) => {
-  setEmail(event.target.value);
-}
-const handleChangePassword = (event) => {
-  setPassword(event.target.value);
-}
-const handleChangeConfirm = (event) => {
-  setConfirm(event.target.value);
-}
+  }
+  const handleChangeFirstName = (event) => {
+    setFirstName(event.target.value);
+  }
+  const handleChangeLastName = (event) => {
+    setLastName(event.target.value);
+  }
+  const handleChangeEmail = (event) => {
+    setEmail(event.target.value);
+  }
+  const handleChangePassword = (event) => {
+    setPassword(event.target.value);
+  }
+  const handleChangeConfirm = (event) => {
+    setConfirm(event.target.value);
+  }
 
-const handleChangeUsername = (event) => {
-  setUsername(event.target.value);
-}
-const [anchorEl, setAnchorEl] = React.useState(null);
+  const handleChangeUsername = (event) => {
+    setUsername(event.target.value);
+  }
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
 
+  var validateEmail = function (email) {
+    var re = /^\w+([\.-]?\w+)@\w+([\.-]?\w+)(\.\w{2,3})+$/;
+    return re.test(email)
+  };
 
+
+  //handling errors in fields
+  const [firstNameErr, setFirstNameErr] = useState(false);
+  const [lastNameErr, setLastNameErr] = useState(false);
+  const [emailErr, setEmailErr] = useState(false);
+  const [passwordErr, setPasswordErr] = useState(false);
+  const [confirmErr, setConfirmErr] = useState(false);
+  const [genderErr, setGenderErr] = useState(false);
+  const [usernameErr, setUsernameErr] = useState(false);
+
+  const falsify = () => {
+    setFirstNameErr(true);
+    setLastNameErr(true);
+    setEmailErr(true);
+    setPasswordErr(true);
+    setConfirmErr(true);
+    setGenderErr(true);
+    setUsernameErr(true);
+  }
+
+  const allCorrect = () => {
+    const bool = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
+    //they all have to be set to false
+    return !bool;
+  }
 
   const handleSubmit = (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+
+    //set the values to false, in case something was corrected
+    falsify();
+
+    //before proceeding we have to make sure that the data is correct
+    if (data.get('firstName').trim().length < 2)
+      setFirstNameErr(true);
+
+    if (data.get('lastName').trim().length < 2)
+      setLastNameErr(true);
+
+    if (!validateEmail(data.get('email')))
+      setEmailErr(true);
+
+    if (data.get('username').trim().length < 6)
+      setUsernameErr(true);
+
+    if (data.get('password').trim().length < 6)
+      setPasswordErr(true);
+
+    if (!data.get('password') === data.get('confirmpassword') || data.get('confirmpassword').trim().length < 6) //passwords do not match
+      setConfirmErr(true);
+
+    if (!data.get('maleButton') && !data.get('femaleButton')) //they did not choose their gender
+      setGenderErr(true);
+
+    //if all the inputs are valid, open the contract dialogue
+    let errorsExist= false;
+    errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
+    //setError(!errorsExist);
+    console.log(errorsExist)
+    if (errorsExist)
+    console.log(true);
+    else
+    handleClickOpen();
   };
 
-  const change = async ()=>{
-    window.location.href=`/`
-    const response=await axios.post(`http://localhost:8000/signUp/`,{username:username,
-     firstName:firstName, 
-     lastName:lastName,
-    email:email,
-    password:password,
-    g:gender}).
+  const[responseErr, setresErr] = useState('');
+  const change = async () => {
+    //window.location.href = `/`
+    //remember to handle close
+    const response = await axios.post(`http://localhost:8000/signUp/`, {
+      username: username,
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      password: password,
+      gender: gender
+    }).
 
-    catch( (error) => alert(error.response.data.message))
-
+      catch((error) => setresErr(error.response.data.message))
 
     console.log(response.data)
-    if(response.status===200){
-        alert(response.data)
-    }}
-    
+    if (response.status === 200) {
+        window.location.href = `/`
+    }
+    let errorsExist= false;
+    errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
+    //setError(!errorsExist);
+    console.log(errorsExist)
+    if (errorsExist)
+    console.log(true);
+    else
+    handleClickOpen();
+
+  }
+
 
   return (
     <ThemeProvider theme={theme}>
-       <Toolbar >
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: '#00B4D8' }}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign up
-          </Typography>
-          <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  autoComplete="given-name"
-                  name="firstName"
-                  required
-                  fullWidth
-                  id="firstName"
-                  label="First Name"
-                 autoFocus
-                />
+      <Toolbar >
+        <Container component="main" maxWidth="xs">
+          <Box
+            sx={{
+              marginTop: 8,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+            }}
+          >
+            {
+              responseErr &&
+              <Alert severity="error">
+                <AlertTitle>Error</AlertTitle>
+                <strong>{responseErr}</strong>
+              </Alert>
+            }
+            <Avatar sx={{ m: 1, bgcolor: '#00B4D8' }}>
+              <LockOutlinedIcon />
+            </Avatar>
+            <Typography component="h1" variant="h5">
+              Sign up
+            </Typography>
+            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    error={firstNameErr}
+                    helperText={firstNameErr ? "Please enter at least 2 characters." : null}
+                    autoComplete="given-name"
+                    name="firstName"
+                    required
+                    fullWidth
+                    id="firstName"
+                    label="First Name"
+                    autoFocus
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    required
+                    fullWidth
+                    error={lastNameErr}
+                    helperText={lastNameErr ? "Please enter at least 2 characters." : null}
+                    id="lastName"
+                    label="Last Name"
+                    name="lastName"
+                    autoComplete="family-name"
+                    onChange={(event) => { handleChangeLastName(event) }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    error={usernameErr}
+                    helperText={usernameErr ? "Please enter at least 6 characters." : null}
+                    name="username"
+                    label="Username"
+                    id="username"
+                    autoComplete="new-password"
+                    onChange={(event) => { handleChangeUsername(event) }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    error={emailErr}
+                    helperText={emailErr ? "Please enter a valid email." : null}
+                    id="email"
+                    label="Email Address"
+                    name="email"
+                    autoComplete="email"
+                    onChange={(event) => { handleChangeEmail(event) }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    error={passwordErr}
+                    helperText={passwordErr ? "Please enter at least 6 characters." : null}
+                    name="password"
+                    label="Password"
+                    type="password"
+                    id="password"
+                    autoComplete="new-password"
+                    onChange={(event) => { handleChangePassword(event) }}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    error={confirmErr}
+                    helperText={confirmErr ? "The two passwords do not match." : null}
+                    name="confirmpassword"
+                    label="Confirm Password"
+                    type="password"
+                    id="confirmpassword"
+                    autoComplete="new-password"
+                    onChange={(event) => { handleChangeConfirm(event) }}
+                  />
+                </Grid>
+                &nbsp;
+                <FormControl>
+                  <FormLabel error={genderErr} id="demo-row-radio-buttons-group-label" >
+                    Gender
+                  </FormLabel>
+                  <RadioGroup
+                    row
+                    onClick={handleChangeGender}
+                    aria-labelledby="demo-row-radio-buttons-group-label"
+                    name="row-radio-buttons-group"
+                  >
+                    <FormControlLabel name="femaleButton" value={"FEMALE"} control={<Radio />} label="Female" />
+                    <FormControlLabel name="maleButton" value={"MALE"} control={<Radio />} label="Male" />
+
+                  </RadioGroup>
+                  {
+                    genderErr &&
+                    <FormHelperText sx={{ color: '#cc0000' }}> Please choose a gender. </FormHelperText>
+                  }
+                </FormControl>
+
+
+
               </Grid>
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  required
-                  fullWidth
-                  id="lastName"
-                  label="Last Name"
-                  name="lastName"
-                  autoComplete="family-name"
-                  onChange={(event)=>{handleChangeLastName(event)}}
-                />
+
+
+
+              <Button type="submit"
+                fullWidth
+                variant="contained"
+                sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E', mt: 3, mb: 2 }}>
+                Sign Up
+              </Button>
+
+              <BootstrapDialog
+                onClose={handleClose}
+                aria-labelledby="customized-dialog-title"
+                open={open}
+              >
+                <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+                  <Typography gutterBottom component="h1" variant="h5">
+                    Online Career Course Refund Policy
+                  </Typography>
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                  <Typography gutterBottom>
+                    Students who register for a training course occasionally change their mind for one reason or another.
+                    Regardless of the reason, we believe there should be a definite refund policy for students who decide not to take the course.
+                    Refunds for online courses are only given under the following circumstances:
+                  </Typography>
+                  <Typography gutterBottom>
+                    1. The student/user did not access any portion of the online course AND the student/user requests a refund, in writing via email within three business days from the date of the registration (email notification sent).
+                    There will be no refunds for any online courses (or curricula) once a course has been accessed in any manner.
+                  </Typography>
+                  <Typography gutterBottom>
+                    2. A full refund will be issued less an administrative fee of $100.
+                  </Typography>
+                  <Typography gutterBottom component="h1" variant="h5">
+                    Online Professional Development Refund Policy
+                  </Typography>
+                  <Typography gutterBottom>
+                    The student/user did not access any portion of the online course AND the student/user requests a refund,
+                    in writing via email within 72 hours of enrolling in the course.
+                    We are unable to offer refunds after the exam has been attempted.
+                  </Typography>
+                  <Typography gutterBottom component="h1" variant="h5">
+                    Online Enrichment Course Refund Policy
+                  </Typography>
+                  <Typography gutterBottom>
+                    The student/user did not access any portion of the online course AND the student/user requests a refund, in writing via email within 72 hours of enrolling in the course.
+                    We are unable to offer refunds after the exam has been attempted.
+                    A refund will be issued less the materials fee for the course.
+                  </Typography>
+                </DialogContent>
+                <DialogActions>
+                  <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E' }} onClick={change}>
+                    Accept and Proceed
+                  </Button>
+                </DialogActions>
+              </BootstrapDialog>
+
+              <Grid container justifyContent="flex-end">
+                <Grid item>
+                  <Link href="/" variant="body2">
+                    Already have an account? Sign in
+                  </Link>
+                </Grid>
               </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="username"
-                  label="Username"
-                  id="username"
-                  autoComplete="new-password"
-                  onChange={(event)=>{handleChangeUsername(event)}}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  id="email"
-                  label="Email Address"
-                  name="email"
-                  autoComplete="email"
-                  onChange={(event)=>{handleChangeEmail(event)}}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  onChange={(event)=>{handleChangePassword(event)}}
-                />
-              </Grid>
-              <Grid item xs={12}>
-                <TextField
-                  required
-                  fullWidth
-                  name="password"
-                  label="Confirm Password"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
-                  onChange={(event)=>{handleChangeConfirm(event)}}
-                />
-              </Grid>
-              &nbsp;
-              <FormControl>
-      <FormLabel id="demo-row-radio-buttons-group-label" >Gender</FormLabel>
-      <RadioGroup
-        row
-        onClick={handleChangeGender}
-        aria-labelledby="demo-row-radio-buttons-group-label"
-        name="row-radio-buttons-group"
-      >
-        <FormControlLabel value={"FEMALE"} control={<Radio />} label="Female" />
-        <FormControlLabel value={"MALE"} control={<Radio />} label="Male" />
-      </RadioGroup>
-    </FormControl>
-   
-    
-           
-      </Grid>
-          
-         
-            
-      <Button type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E' , mt: 3, mb: 2 }} onClick={handleClickOpen}>
-        Sign Up
-      </Button>
-      <BootstrapDialog
-        onClose={handleClose}
-        aria-labelledby="customized-dialog-title"
-        open={open}
-      >
-        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-        <Typography gutterBottom component="h1" variant="h5">
-        Online Career Course Refund Policy
-        </Typography>
-        </BootstrapDialogTitle>
-        <DialogContent dividers>
-          <Typography gutterBottom>
-          Students who register for a training course occasionally change their mind for one reason or another. 
-          Regardless of the reason, we believe there should be a definite refund policy for students who decide not to take the course. 
-          Refunds for online courses are only given under the following circumstances:
-          </Typography>
-          <Typography gutterBottom>
-          1. The student/user did not access any portion of the online course AND the student/user requests a refund, in writing via email within three business days from the date of the registration (email notification sent). 
-          There will be no refunds for any online courses (or curricula) once a course has been accessed in any manner.
-          </Typography>
-          <Typography gutterBottom>
-          2. A full refund will be issued less an administrative fee of $100.
-          </Typography>
-          <Typography gutterBottom component="h1" variant="h5">
-          Online Professional Development Refund Policy
-          </Typography>
-          <Typography gutterBottom>
-          The student/user did not access any portion of the online course AND the student/user requests a refund, 
-          in writing via email within 72 hours of enrolling in the course.
-          We are unable to offer refunds after the exam has been attempted.
-          </Typography>
-          <Typography gutterBottom component="h1" variant="h5">
-         Online Enrichment Course Refund Policy
-          </Typography>
-          <Typography gutterBottom>
-The student/user did not access any portion of the online course AND the student/user requests a refund, in writing via email within 72 hours of enrolling in the course.
-We are unable to offer refunds after the exam has been attempted.
-A refund will be issued less the materials fee for the course.
-        </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} onClick={handleClose}>
-            Accept and Proceed
-          </Button>
-        </DialogActions>
-      </BootstrapDialog>
-  
-            <Grid container justifyContent="flex-end">
-              <Grid item>
-                <Link href="/" variant="body2">
-                  Already have an account? Sign in
-                </Link>
-              </Grid>
-            </Grid>
+            </Box>
           </Box>
-        </Box>
-        
-     
-      </Container>
-     </Toolbar>
-   
-      
-    
+
+
+        </Container>
+      </Toolbar>
+
+
+
     </ThemeProvider>
-    
-    
+
+
   );
 }
-
-

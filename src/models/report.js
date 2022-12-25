@@ -40,7 +40,11 @@ const reportSchema = new Schema({
         type: Schema.Types.ObjectId,
         required: false,
     },
+    followUp:{
+        type : Boolean,
+        default:false,
 
+    }
 
 })
 
