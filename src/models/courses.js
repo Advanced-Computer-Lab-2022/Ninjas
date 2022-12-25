@@ -71,6 +71,7 @@ const coursesSchema = new Schema({
     },
     certificate: {
         type: String,
+        default: 'generalCertificate.pdf'
     },
     numberOfRegistered: {
         type: Number,

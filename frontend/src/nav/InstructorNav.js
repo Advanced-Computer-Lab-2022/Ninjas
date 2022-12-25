@@ -24,6 +24,7 @@ import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import Wallet from '@mui/icons-material/Wallet';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
+import StarIcon from '@mui/icons-material/Star';
 import axios from 'axios';
 import { searchtemp } from '../components/Search';
 
@@ -129,6 +130,9 @@ const logout = async () => {
   if(response.status===200)
   window.location.href='/';
 }
+const viewRatings = async () => {
+  window.location.href='/Ratings';
+}
 const [user,setUser] = React.useState(async () => {
   await axios.get('http://localhost:8000/userBySession')
   .then(res => setUser(res.data))
@@ -227,6 +231,12 @@ if (e.key === 'Enter') {
           <MenuBookIcon sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='My Courses'/>
+          </ListItemButton>
+          <ListItemButton onClick={viewRatings} >
+            <ListItemIcon>
+          <StarIcon sx={{color:'black' }} />
+          </ListItemIcon>
+          <ListItemText primary='My Reviews'/>
           </ListItemButton>
           <ListItemButton>
             <ListItemIcon>
