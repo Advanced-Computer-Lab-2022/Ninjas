@@ -25,15 +25,16 @@ userRouter.post('/logout', (req, res) => {
 
 userRouter.get('/search', async (req, res) => {
     try {
-        // const {
-        //     userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
-        // } = req.query;
-        console.log(req.query.userId)
-        console.log(JSON.parse(req.query))
+         const {
+             userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
+         } = req.query;
+       // console.log(req.query.userId)
+       // console.log(JSON.parse(req.query))
 
         const searchResults = await
             userController.getSearchResult({ userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours });
-        res.status(200).json({ result: searchResults });
+     //console.log(searchResults);                                                                        
+            res.status(200).json({ data: searchResults });
     } catch (error) {
         console.log(error)
         res.status(error.code).json({ message: error.message });
@@ -471,7 +472,12 @@ userRouter.get('/mostPopularCourses', async (req, res) => {
 
 userRouter.get('/course/:id', async (req, res) => {
     try {
+
         const session = sessionDetails.getSession(req.session.id);
+        if (!session){
+            res.status(400).json({message:"you did not login"});
+           // throw new DomainError ("you did not login",400)
+    }
         const courseId = req.params.id;
         const { userId, type: userType } = session;
 

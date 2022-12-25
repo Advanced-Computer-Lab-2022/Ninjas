@@ -31,6 +31,8 @@ import csCertificate from '../csCertificate.pdf';
 import englishCertificate from '../englishCertificate.pdf';
 import mathCertificate from '../mathCertificate.pdf';
 import generalCertificate from '../generalCertificate.pdf';
+import { Path } from '@react-pdf/renderer';
+import { searchtemp } from '../components/Search';
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
@@ -156,6 +158,21 @@ const logout = async () => {
   window.location.href='/';
 }
 
+const [search, setSearch] = React.useState( null);
+// const handleSearch = (event) => {
+//   setSearch(event.target.value)
+  
+// };
+
+const handleKeypress = e => {
+  //it triggers by pressing the enter key
+if (e.key === 'Enter') {
+  console.log('renteeer')
+ // handleSearch(e)
+  window.location.href=`/temp?userId=${user._id}&search=${e.target.value}`
+}
+};
+
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex'  }}>
@@ -188,13 +205,17 @@ const logout = async () => {
             >
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-            <Search>
+            <Search  >
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+             defaultValue = {searchtemp}
+              //onChange={(e) => setSearch(e.target.value)}
+              onKeyPress={handleKeypress}
+              
             />
           </Search>
           &nbsp;&nbsp;
