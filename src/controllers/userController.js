@@ -308,7 +308,7 @@ const userController = {
                 throw new DomainError("Unauthorized user.", 401);
 
             //fetch the course
-            const course = await Course.findOne({ _id: courseId }).catch(() => {
+            let course = await Course.findOne({ _id: courseId }).catch(() => {
                 throw new DomainError("Wrong courseId", 400)
             });
 
@@ -318,6 +318,7 @@ const userController = {
 
             //create the rating object
             const newReview = await Rating.create({
+                id: user._id.toString(),
                 firstName: user.firstName,
                 lastName: user.lastName,
                 rating,
@@ -325,9 +326,13 @@ const userController = {
             });
 
             //update the course rating number
-            const updatedCourseRating = helperMethods.updateRatingValue({ reviewsArray: course.reviews, newRating: rating });
-            console.log(updatedCourseRating);
+            const reviewsArray = course.reviews.filter(rev => rev.id!==(user._id.toString()))
+            const updatedCourseRating = helperMethods.updateRatingValue({
+                reviewsArray, newRating: rating });
 
+            //if this user already rated the course, delete their rating. we want the data to be up to date -- bonus requirement
+            // i didn't pull and push in the same update statement as this would result in a conflict
+            await Course.updateOne({ _id: courseId}, { $pull: { "reviews": { id: user._id.toString() } }})
             //push the rating into the course reviews array and update the rating field
             await Course.updateOne(
                 { _id: courseId },

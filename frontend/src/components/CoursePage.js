@@ -21,12 +21,10 @@ import ReactPlayer from 'react-player/youtube';
 import PersonIcon from '@mui/icons-material/Person';
 import { Text } from '@react-pdf/renderer';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import InstructorNav from './InstructorNav';
-import TraineeNav from './TraineeNav';
-
-
+import TraineeNav from '../nav/TraineeNav';
+import InstructorNav from '../nav/InstructorNav';
 const instructorNav = {};
-
+const traineeNav = {};
 function LinearProgressWithLabel(props) {
     return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -45,11 +43,6 @@ function LinearProgressWithLabel(props) {
 const CoursePage = () => {
 
     const mdTheme = createTheme();
-
-    const [open, setOpen] = React.useState(false);
-    const toggleDrawer = () => {
-        setOpen(!open);
-    };
 
     //for the course rating
     const [openRateCourse, setOpenRateCourse] = React.useState(false);
@@ -71,7 +64,7 @@ const CoursePage = () => {
     const [openPopup, setOpenPopup] = useState(false);
     const handleClosePopup = () => {
         setOpenPopup(false);
-        window.location.href = `/course/${courseId}`;
+        window.location.reload();
     };
     const submitRating = async () => {
         const response = await axios.post(
@@ -138,7 +131,7 @@ const CoursePage = () => {
     const [ready, setReady] = useState(false);
     const [afterdiscount, setAfterDiscount] = useState(0);
     const [registered, setRegistered] = useState(false);
-    //if the user is a registered student or an instructor that teaches the coures, return true
+    //if the user is a registered student or an instructor that teaches the course, return true
     const isRegistered = () => {
         if (user.type == 'INSTRUCTOR')
             return course.instructors.map(instructor => instructor._id).includes(user._id);
@@ -166,7 +159,7 @@ const CoursePage = () => {
             .catch((error) => console.log(error.response.data.message));
 
         if (response.status == 200) //just refresh the page
-            window.location.href = `/course/${courseId}`;
+            window.location.reload();
     }
 
     //when an enrolled user wants a refund
@@ -174,7 +167,7 @@ const CoursePage = () => {
     const [openRefundPopup, setORP] = useState(false);
     const handleCloseRefundPopup = () => {
         setORP(false);
-        window.location.href=`/course/${course._id}`
+        window.location.reload();
     }
     const requestedTheRefund = async () => {
         const response = await axios.get(`http://localhost:8000/requestedTheRefund?userId=${user._id}&courseId=${course._id}`)
@@ -196,8 +189,6 @@ const CoursePage = () => {
         }
     }
     
-
-
     useEffect(() => {
         if (course._id && user._id) {
             //result of the backend request is ready
@@ -236,7 +227,7 @@ const CoursePage = () => {
                     <InstructorNav post={instructorNav} />
                 }
                 {user.type !== 'INSTRUCTOR' &&
-                    <TraineeNav post={instructorNav} />
+                    <TraineeNav post={traineeNav} />
                 }
                 <Box
                     component="main"
@@ -366,7 +357,7 @@ const CoursePage = () => {
                                     <Typography sx={{ ml: 132, mb: 1 }}> Something seems wrong?
                                         <Button variant="contained" size="small"
                                             sx={{ ml: 1, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                            onClick={() => window.location.href = '/signUp'}
+                                            onClick={() => window.location.href = '/reportProblem'}
                                         >
                                             Report a problem
                                         </Button>
@@ -456,7 +447,7 @@ const CoursePage = () => {
                                                     () => window.location.href = `/solveExercise?userId=${user._id}&userType=${user.type}&courseId=${course._id}&exerciseId=${exercise._id}&subtitleId=${subtitle._id}`
                                                     : null}
                                             >
-                                                <MenuBookIcon color='#03045E' /> {exercise.title}
+                                                <MenuBookIcon color='#03045E' /> Exercise: {exercise.title}
                                             </Typography>
                                         ))}
                                         {
@@ -491,11 +482,20 @@ const CoursePage = () => {
                                     p: 1, border: 2, borderColor: '#00B4D8'
                                 }}>
                                 <Typography color="#03045E" sx={{ width: 155, fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}> Course reviews </Typography>
-                                {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) && registered &&
+                                {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) && registered
+                                && course.reviews.filter(r => r.id===user._id.toString()).length===0 &&
                                     <Button sx={{ ml: 140, mt: -5, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                         onClick={handleClickOpen}
                                     >
-                                        Rate this course
+                                    Rate this course
+                                    </Button>
+                                }
+                                {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) && registered
+                                && course.reviews.filter(r => r.id===user._id.toString()).length>0 &&
+                                    <Button sx={{ ml: 140, mt: -5, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                        onClick={handleClickOpen}
+                                    >
+                                    Update my rating
                                     </Button>
                                 }
                                 {
