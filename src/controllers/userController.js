@@ -963,9 +963,19 @@ async viewWallet({userId}) {
 async mostPopularCourses() {
     try {
     //according to the TA on piazza we need the courses with most amount of registered students
+    const popularCourses = await Course.find();
+
+    //sorter that sorts by the length of the students array
+    const sorter = (a, b) => {
+        if(a.students.length > b.students.length) {
+           return -1;
+        } else {
+           return 1;
+        }
+     }
+
     //we will assume for now that we need to display the three most popular courses
-    const popularCourses = await Course.find().limit(3).sort({ numberOfRegistered: -1});
-    return popularCourses;
+    return popularCourses.sort(sorter).splice(0,3);
     } catch(error) {
         console.log(error);
         throw new DomainError("internal error", 500);
@@ -989,6 +999,16 @@ async getCourse({ courseId, userType, userId }) {
 
         if (course === null) {
             throw new DomainError("Course not found.", 400);
+        }
+
+        //if there is currently a discount that should've been expired
+        if (course.discountDuration && Date.now() > course.discountDuration) { 
+            //update the local course object
+            course.discountDuration = null;
+            course.discount = 0;
+
+            //update the value in the DB
+            await Course.updateOne({ _id: courseId }, { discountDuration: null, discount:0 });
         }
 
         const response = { course }
