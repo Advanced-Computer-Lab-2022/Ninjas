@@ -111,7 +111,7 @@ const userController = {
             // lw 7d msh mwgod hytl3 null ?? for next sprints
          
           
-            const user = null;
+            var user = null;
             ///el a7san check eno he is not loged in 3shan lw admin hyd5l
             if (userId == 'null') userId = null;
             console.log(userId)
@@ -141,18 +141,30 @@ const userController = {
             } else {
                 console.log (subject)
                 let queryArray = [];
-                if (subject != "null") { queryArray.push({ subject: { '$regex': "" + subject, '$options': 'i' } }) }
-                if (rating != "null") { queryArray.push({ rating: rating }) }
-                if (title != 'null') { queryArray.push({ title: { '$regex': "" + title, '$options': 'i' } }) }
-                if (instructor != '') {
-                    queryArray.push({
+                if (subject != "null") { queryArray.push({ subject: { '$regex': '.*' + subject + '.*', '$options': 'i' } }) }
+                if (rating != "null") { queryArray.push({'$and':[{ rating: { 
+                    '$gt':  (rating-1)
+                } }, { rating: { 
+                    '$lte': (rating)
+                } }]}) }
+                if (title != 'null') {
+                    
+                    queryArray.push(
+
+                       { '$or': [  
+                        { subject: { '$regex': '.*' +  title + '.*', '$options': 'i' } },
+                    { title: { '$regex': '.*' +  title + '.*', '$options': 'i' } },
+                
+                    {
                         instructors: {
                             $elemMatch: {
-                                '$or': [{ firstName: { '$regex': "" + instructor, '$options': 'i' } },
-                                { lastName: { '$regex': "" + instructor, '$options': 'i' } }]
+                                '$or': [{ firstName: { '$regex':'.*' +  title + '.*', '$options': 'i' } },
+                                { lastName: { '$regex': '.*' +  title + '.*', '$options': 'i' } }]
                             }
                         }
-                    })
+                    }
+                ]}
+                )
                 }
 
 
@@ -187,10 +199,10 @@ const userController = {
                 // }
             }
             
-            return { courses: courses2, currency: details.currency };
+            return { courses: courses2, currency: details.currency , userType: user? user.type : 'GUEST'};
         }
         catch (err) {
-           // console.log(err);
+            console.log(err);
             if (err instanceof DomainError) { throw err; }
             else {
                 console.log(err)
