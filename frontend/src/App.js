@@ -35,7 +35,8 @@ import InstructorHome from './nav/InstructorHome';
 import TraineeHome from './nav/TraineeHome';
 import CreateExercise from './nav/CreateExercise';
 import CoursePage from './components/CoursePage';
-import Settings from './nav/Settings';
+import Settings2 from './nav/Settings2';
+import Ratings from './nav/Ratings';
 
 
 
@@ -51,7 +52,8 @@ function App() {
       <Route path='/iHome' element= {<InstructorHome/>} >  </Route>
       <Route path='/tHome' element= {<TraineeHome/>} > </Route>
       <Route path='/exercise' element= {<CreateExercise/>} > </Route>
-      <Route path='/settings' element= {<Settings/>} > </Route>
+      <Route path='/settings' element= {<Settings2/>} > </Route>
+      <Route path='/ratings' element={<Ratings/>}></Route>
         <Route path='/home' element= {<Home/>} >
         </Route>
         <Route path='/changePassword' element= {<ChangePassword/>} >

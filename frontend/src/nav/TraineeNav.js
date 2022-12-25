@@ -141,6 +141,7 @@ useEffect(() => {
 
 //to show the certificates when clicked
 const[show,setShow]= useState(false);
+const[showAmount,setShowAmount]= useState(false);
 
 //logout button function
 const logout = async () => {
@@ -149,6 +150,10 @@ const logout = async () => {
   
   if(response.status===200)
   window.location.href='/';
+}
+
+const viewCourse = async () => {
+  window.location.href='/MyCourse';
 }
 
   return (
@@ -223,15 +228,16 @@ const logout = async () => {
           
           <Divider />
           <List component="nav">
-          <ListItemButton>
+          <ListItemButton onClick={viewCourse}>
             <ListItemIcon>
           <MenuBookIcon sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='My Courses'/>
           </ListItemButton>
+
           <ListItemButton onClick={() => setShow(!show)}>
           {/*maps on the user certificates to display them*/}
-            <ListItemIcon>
+          <ListItemIcon>
           <WorkspacePremiumIcon sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='My Certificates'/>
@@ -249,18 +255,32 @@ const logout = async () => {
             </ListItemButton>
           ))}
 
-          <ListItemButton>
+{ user.type==='INDIVIDUAL_TRAINEE' &&
+<div>
+ <ListItemButton onClick={() => setShowAmount(!showAmount)}>
             <ListItemIcon>
+            
           <Wallet sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='Wallet'/>
           </ListItemButton>
+          {showAmount &&
+            <ListItemButton
+              sx={{ backgroundColor:'#eeeeee'}}
+            >
+              Account balance: {user.wallet}
+            </ListItemButton>
+          } 
+</div>
+}  
+
           <ListItemButton>
             <ListItemIcon>
           <SettingsIcon sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='Settings'/>
           </ListItemButton>
+          
           <ListItemButton>
             <ListItemIcon>
           <ReportIcon sx={{color:'black' }} />
