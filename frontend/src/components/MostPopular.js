@@ -74,7 +74,7 @@ const MostPopular = () => {
 
                     >
                         <InputLabel>{course.subject}: {course.title}</InputLabel>
-                        <InputLabel>Number of registered students: {course.numberOfRegistered}</InputLabel>
+                        <InputLabel>Number of registered students: {course.students.length}</InputLabel>
 
                     </Box>
                 ))
