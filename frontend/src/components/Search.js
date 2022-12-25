@@ -538,8 +538,8 @@ console.log(searchResult.userType)
          
           
         </MenuItem>
-        { searchResult.userType != 'GUEST' && <Divider sx={{ my: 0.5 }} />}
-        { searchResult.userType != 'GUEST' &&  <MenuItem  disableRipple>
+        { searchResult.userType != 'CORPORATE_TRAINEE' && <Divider sx={{ my: 0.5 }} />}
+        { searchResult.userType != 'CORPORATE_TRAINEE' &&  <MenuItem  disableRipple>
         
         <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
         <AccordionSummary
@@ -716,7 +716,7 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
             total hours : {course.totalHours}
             </Typography>
             
-            { searchResult.userType != 'GUEST' &&  <Typography variant="h6" color="inherit"style={{width:'210px'}} >
+            { searchResult.userType != 'CORPORATE_TRAINEE' &&  <Typography variant="h6" color="inherit"style={{width:'210px'}} >
             price : {course.price}  {searchResult.currency}
             </Typography>}
 
