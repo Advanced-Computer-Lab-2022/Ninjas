@@ -39,7 +39,51 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import mainListItems from './listItems';
+import { CircularProgress } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import CloseIcon from '@mui/icons-material/Close';
+import PropTypes from 'prop-types';
 
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
+
+function BootstrapDialogTitle(props) {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+}
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired,
+};
 
 let k =0;
 
@@ -159,17 +203,54 @@ const toggleDrawer = () => {
  setOpen(!open);
   };
 
+  const handleClose = async () => {
+    const response = await axios.get(`http://localhost:8000/admin/changeProgressP?reportId=${reportId}&progress=${progress}`)
+    .catch(err=>console.log(err))
+
+    if (response.status === 200)
+    {
+      window.location.href='/AdminViewReports';
+    }
+    setOpen(false)
+  };
+
+  const[reportId, setReportId] = useState('');
+  const[progress, setProgress] = useState('');
+
+
   const [reports, setReports] = useState(async () => {
     await axios.get(`http://localhost:8000/admin/viewReportedProblems`)
         .then(res => { setReports(res.data)})
         .catch((error) => alert(error.response.data.message))
 })
 
+const viewUnseen = async (reportId) => {
+  console.log(reportId);
+  const response = await axios.get(`http://localhost:8000/admin/viewUnseenProblems?reportId=${reportId}`)
+  .catch(err=>console.log(err))
+
+  if (response.status === 200)
+  {
+    window.location.href='/AdminViewReports';
+  }
+};
+
 const [ready, setReady] = useState(false);
 useEffect(() => {
-    if (reports.length)
+    if (reports.length>=0)
         setReady(true);
 }, [reports])
+
+const handleChangeProgress = (event) => {
+  setProgress(event.target.value);
+  
+}
+const handleClickOpen = (reportId) => {
+  console.log(reportId)
+  setReportId(reportId)
+  setOpen(true);
+};
+
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -226,32 +307,117 @@ useEffect(() => {
             <Copyright sx={{ pt: 4 }} />
           </Container>
           <main>
+          {
+                        !ready &&
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight="100vh"
+                        >
+                            <CircularProgress />
+                        </Box>
+
+                    }
           <Container sx={{ py: 1, mt:1}} >
           {/* End hero unit */}
+          <Typography sx={{ color: '#03045E', fontWeight: 'bold', mb: 2}}>Unseen Reports</Typography>
           <Grid container spacing={4} >
-            {ready && reports.map((card) => (
+            {ready && reports[1].map((card) => (
               <Grid item key={k+1} xs={10} sm={7} md={4}>
                 <Card 
                   sx={{ height: '100%', display: 'flex', flexDirection: 'column' , align:'center' ,backgroundColor:'#CAF0F8'}}
                 >
                 
-                  <CardContent sx={{ flexGrow: 1 }}>
+                  <CardContent sx={{ flexGrow: 1 , align: 'center' }}>
+                  <Typography sx={{ color: '#03045E', fontWeight: 'bold' , align: 'center', mb: 2 }}>Report</Typography>
+                  <Button sx={{ backgroundColor: '#03045E' , color:'#CAF0F8', align: 'center' }} onClick={() =>
+                  viewUnseen(card._id)}>View</Button>
+                   
+                  </CardContent>
+                 
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+          <Typography sx={{ color: '#03045E', fontWeight: 'bold' , mb: 2, mt : 2}}>Seen Reports</Typography>
+          <Grid container spacing={4} >
+
+          {ready && reports[0].map((card) => (
+               <Grid item key={k+1} xs={10} sm={7} md={4}>
+              <Card 
+                  sx={{ height: '100%', display: 'flex', flexDirection: 'column' , align:'center' ,backgroundColor:'#CAF0F8'}}
+                >
+                
+                  <CardContent sx={{ flexGrow: 1 , align: 'center' }}>
+                  <Typography sx={{ color: '#03045E', fontWeight: 'bold' , align: 'center', mb:2 }}>Report</Typography>
                     <Typography sx={{ color: '#03045E'}}>User ID: {card.accountId} </Typography>
                     <Typography sx={{ color: '#03045E'}}>Course ID: {card.courseId}</Typography>
                     <Typography sx={{ color: '#03045E'}}>Problem: {card.problem}</Typography>
-                    <Typography sx={{ color: '#03045E'}}>Status: {card.progress}</Typography>
-
+                    <Typography align="center" sx={{ color: '#00B4D8', backgroundColor:'white', fontWeight:'bold', mt:2}}>
+                      {card.progress}</Typography>
+                   
                   <br></br>
             <box>
+              <FormControl>
   <RadioGroup sx={{ml:8 }} aria-labelledby="demo-radio-buttons-group-label" defaultValue="female" name="radio-buttons-group">
-    <FormControlLabel fontWeight={'bold'} value="PENDING" control={<Radio fontWeight={'bold'}/>} label="Pending" />
-    <FormControlLabel fontWeight={'bold'} value="RESOLVED" control={<Radio fontWeight={'bold'}/>} label="Resolved" />
-   </RadioGroup>            </box>
-           
+    <FormControlLabel value="PENDING" control={<Radio />} label="Pending" 
+    onChange={(event)=>{handleChangeProgress(event)}}/>
+    <FormControlLabel value="RESOLVED" control={<Radio />} label="Resolved" 
+    onChange={(event)=>{handleChangeProgress(event)}}/>
+   </RadioGroup>
+   </FormControl>
+   <Button sx={{ backgroundColor: '#03045E' , color:'#CAF0F8', align: 'center', mt:6, ml:4 }} onClick={() =>
+                  handleClickOpen(card._id)}>Confirm</Button>   
+    </box>
+   <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Are you sure you want to change report progress ?
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose()}>
+            YES
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
                   </CardContent>
                   <CardActions>
                     
                   </CardActions>
+                </Card>
+             </Grid>
+                 ))}
+</Grid>
+<Typography sx={{ color: '#03045E', fontWeight: 'bold', mb: 2, mt:2}}>Resolved Reports</Typography>
+          <Grid container spacing={4} >
+            {ready && reports[2].map((card) => (
+              <Grid item key={k+1} xs={10} sm={7} md={4}>
+                <Card 
+                  sx={{ height: '100%', display: 'flex', flexDirection: 'column' , align:'center' ,backgroundColor:'#CAF0F8'}}
+                >
+                
+                  <CardContent sx={{ flexGrow: 1 , align: 'center' }}>
+                  <Typography sx={{ color: '#03045E', fontWeight: 'bold' , align: 'center', mb:2 }}>Report</Typography>
+                    <Typography sx={{ color: '#03045E'}}>User ID: {card.accountId} </Typography>
+                    <Typography sx={{ color: '#03045E'}}>Course ID: {card.courseId}</Typography>
+                    <Typography sx={{ color: '#03045E'}}>Problem: {card.problem}</Typography>
+                    <Typography align="center" sx={{ color: 'white', fontWeight:'bold', backgroundColor:'#00B4D8', mt:2}}>
+                    {card.progress}</Typography>
+                   
+                  </CardContent>
+                 
                 </Card>
               </Grid>
             ))}

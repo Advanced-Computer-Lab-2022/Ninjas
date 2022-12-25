@@ -22,19 +22,28 @@ const createToken = (user) => {
 adminRouter.get('/create', (req, res) => {
   res.sendFile(path.resolve('views/Admin.html'))
 })
-adminRouter.post('/create', async (req, res) => {
+adminRouter.put('/create', async (req, res) => {
   try {
-    const { userId, accountType, username, password, firstName, lastName, gender, country } = req.body;
 
-    const { type } = await Account.findOne({ _id: userId }, { type: 1 }).catch((err) => { throw new DomainError("you are not an admin", 401) });
+ const session = sessionDetails.getSession(req.session.id);
+ const userId = session.userId;
+ console.log(userId);
+    const {username, password, firstName, lastName, email, gender, type } = req.body;
 
-    if (type != 'ADMIN') {
+    const theUser  = await Account.findOne({ _id: userId }).catch((err) => { throw new DomainError("Wrong ID", 401) });
+    console.log(theUser);
+
+    if (theUser.type != 'ADMIN') {
+      console.log(theUser.type);
+      
       throw new DomainError("you are not an admin", 401)
+      
     }
-    const flag = await adminCreateAccountsController.adminCreateAccounts({ accountType, username, password, firstName, lastName, gender, country });
+    
+    const flag = await adminCreateAccountsController.adminCreateAccounts({ username, password, firstName, lastName, email, gender, type});
     if (!flag)
       res.status(500).send("notCreated");
-    else res.status(201).send("created");
+    else res.status(200).send()
 
   }
   catch (err) {
@@ -71,7 +80,25 @@ adminRouter.get('/viewReportedProblems', async (req, res) => {
 
     const reports = await adminCreateAccountsController.viewReportedProblems();
     res.status(200).json(reports);
-    console.log("successfull");
+}
+
+catch (err) {
+  if (err instanceof DomainError) {
+    res.status(err.code).json({ code: err.code, message: err.message })
+  } else {
+    res.status(500).json({ err });
+  }
+}
+
+
+})
+
+adminRouter.get('/viewUnseenProblems', async (req, res) => {
+  try {
+
+    const reportId = req.query.reportId;
+    const reports = await adminCreateAccountsController.viewUnseenProblems({reportId});
+    return res.status(200).json(reports);
 }
 
 catch (err) {
@@ -108,10 +135,9 @@ adminRouter.get('/viewCorporateRequest', async (req, res) => {
     try {
 
       const reportId = req.body.reportId; 
-      const reportstatus = req.body.reportstatus; 
-      await adminCreateAccountsController.changeProgress({reportId,reportstatus});
-
-      res.status(200).json("Update Successfully");
+      const progress = req.body.progress; 
+      const res = await adminCreateAccountsController.changeProgress({reportId,progress});
+      res.status(200).json(res);
   
     }
   
@@ -126,7 +152,27 @@ adminRouter.get('/viewCorporateRequest', async (req, res) => {
     
     })
 
-
+    adminRouter.get('/changeProgressP', async (req, res) => {
+      try {
+  
+        const reportId = req.query.reportId; 
+        const progress = req.query.progress; 
+        const results = await adminCreateAccountsController.changeProgressP({reportId,progress});
+  
+        res.status(200).json(results);
+    
+      }
+    
+      catch (err) {
+        if (err instanceof DomainError) {
+          res.status(err.code).json({ code: err.code, message: err.message })
+        } else {
+          res.status(500).json({ err });
+        }
+      }
+      
+      
+      })
 
 
 
@@ -157,14 +203,18 @@ catch (err) {
 adminRouter.get('/acceptRefundRequest', async (req, res) => {
   try {
 
-const session = sessionDetails.getSession(req.session.id);
-const userId = session.userId;
+// const session = sessionDetails.getSession(req.session.id);
+// const userId = session.userId;
+const refundRequestid  = req.query.refundRequestid;
+console.log("reee ", req.query);
 
-await adminCreateAccountsController.addDiscountAdmin({ accountId });
-res.status(200).json("Update Succesfully");
+const results = await adminCreateAccountsController.acceptRefundRequest({ refundRequestid });
+console.log("hiii");
+res.status(200).json(results);
 }
 
 catch (err) {
+  console.log(err)
   if (err instanceof DomainError) {
     res.status(err.code).json({ code: err.code, message: err.message })
   } else {
@@ -174,12 +224,11 @@ catch (err) {
 
 })
 
-adminRouter.post('/acceptCorporateRequest', async (req, res) => {
+adminRouter.get('/acceptCorporateRequest', async (req, res) => {
   try {
-    const userId = req.body.userId;
-    const courseId = req.body.courseId;
-    await adminCreateAccountsController.acceptCorporateRequest({ userId, courseId });
-    res.status(200).json("Your request is accepted");
+    const requestId = req.query.requestId;
+    const results = await adminCreateAccountsController.acceptCorporateRequest({ requestId });
+    res.status(200).json(results);
 }
 
 catch (err) {
@@ -212,12 +261,12 @@ catch (err) {
 
 })
 
-adminRouter.post('/setPromotion', async (req, res) => {
+adminRouter.put('/setPromotion', async (req, res) => {
   try {
-    const courseId = req.body.courseId;
+    const selectedCourses = req.body.selectedCourses;
     const promotion = req.body.promotion;
-    await adminCreateAccountsController.setPromotion({courseId, promotion});
-    res.status(200).json("promotion is set to course successfully");
+    await adminCreateAccountsController.setPromotion({selectedCourses, promotion});
+    res.status(200).send();
 }
 
 catch (err) {

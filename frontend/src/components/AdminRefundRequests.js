@@ -30,8 +30,56 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import mainListItems from './listItems';
 
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import CloseIcon from '@mui/icons-material/Close';
+import PropTypes from 'prop-types';
+import { CircularProgress } from '@mui/material';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
+
+function BootstrapDialogTitle(props) {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+}
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired,
+};
+
 
 let k = 0;
+let m = 0;
+
 
 
 
@@ -142,23 +190,42 @@ const mdTheme = createTheme();
     setOpen(!open);
   };
 
-  // const params = new URLSearchParams(window.location.search);
-  //   const userId = params.get('userId');
-  //   const courseId = params.get('courseId');
-  //   const subtitleId = params.get('subtitleId');
-  //   const exerciseId = params.get('exerciseId');
+  const[reqId, setReqId] = useState('');
+  const handleClickOpen = (reqIdInput) => {
+    setReqId(reqIdInput)
+    setOpen(true);
+  };
+  const handleClose = async () => {
+    console.log(reqId);
+    const response = await axios.get(`http://localhost:8000/admin/acceptRefundRequest?refundRequestid=${reqId}`)
+    .catch(err=>console.log(err))
+
+    if (response.status === 200)
+    {
+      window.location.href='/AdminRefundRequests';
+    }
+    setOpen(false);
+  };
+ 
 
     const [refunds, setRefunds] = useState(async () => {
         await axios.get(`http://localhost:8000/admin/viewRefundRequests`)
             .then(res => { setRefunds(res.data)})
-            .catch((error) => alert(error.response.data.message))
+            .catch((error) => 
+            {
+              if (error.response.data.message === "you did not login")
+              window.location.href = '/';
+            })
     })
 
     const [ready, setReady] = useState(false);
     useEffect(() => {
-        if (refunds.length)
+        if (refunds.length>=0)
             setReady(true);
     }, [refunds])
+
+   
+
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -217,8 +284,19 @@ const mdTheme = createTheme();
 
 
           <main>
+          {
+                        !ready &&
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight="100vh"
+                        >
+                            <CircularProgress />
+                        </Box>
+
+                    }
 <Container sx={{ py: 1, mt:1}} >
-          {/* End hero unit */}
           <Grid container spacing={4} >
             {ready && refunds.map((card) => (
               <Grid item key={k+1} xs={10} sm={7} md={4}>
@@ -227,6 +305,8 @@ const mdTheme = createTheme();
                 >
                 
                   <CardContent sx={{ flexGrow: 1 }}>
+                  <Typography sx={{ color: '#03045E', fontWeight:'bold'}}>Request #{(m)+=1} </Typography>
+
                   <Typography sx={{ color: '#03045E'}}>Username: {card.uname} </Typography>
                     <Typography sx={{ color: '#03045E'}}>User ID: {card.uid} </Typography>
                     
@@ -234,8 +314,31 @@ const mdTheme = createTheme();
                     <Typography sx={{ color: '#03045E'}}>Course ID: {card.cid}</Typography>
                   <br></br>
             <box>
-                <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E' }}>Accept Refund</Button>
+                <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E' }} onClick={() =>
+                  handleClickOpen(card.reqId)}>Accept Refund</Button>
             </box>
+            <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Are you sure you want to accept this refund request ?
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose()}>
+            YES
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
            
                   </CardContent>
                   <CardActions>

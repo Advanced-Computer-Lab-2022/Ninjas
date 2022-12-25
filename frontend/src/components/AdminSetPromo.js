@@ -30,6 +30,54 @@ import CardContent from '@mui/material/CardContent';
 import TextField from "@mui/material/TextField";
 import mainListItems from './listItems';
 
+import Checkbox from '@mui/material/Checkbox';
+import FormGroup from '@mui/material/FormGroup';
+
+import { CircularProgress } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import CloseIcon from '@mui/icons-material/Close';
+import PropTypes from 'prop-types';
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
+
+function BootstrapDialogTitle(props) {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+}
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired,
+};
 
 let k = 0;
 
@@ -76,33 +124,6 @@ const Search = styled('div')(({ theme }) => ({
 
 const drawerWidth = 240;
 const Temp = () => {
-
-    // const theId = document.getElementById("courseId"); 
-    // const[promotion,setPromotion]=useState('');
-    // const[course,setCourse]=useState('');
-  
-    // const handleChangPromotion = (event) => {
-    //     setPromotion(event.target.value);
-    // }
-    // const handleChangCourse = (event) => {
-    //     setPromotion(event.target.value);
-    // }
-  
-      
-    //         const change2 = async ()=>{
-    //             const response=await axios.put(`http://localhost:8000/admin/setPromotion`,{courseId:course,
-    //             promotion:promotion}).
-    //             catch( (error) => alert(error.response.data.message))
-        
-        
-    //             console.log(response.data)
-    //             if(response.status===200){
-    //                 alert(response.data)
-    //             }}
-
-             
-
-
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -155,6 +176,21 @@ const mdTheme = createTheme();
     setOpen(!open);
   };
 
+  const handleClose = async () => {
+    const response = await axios.put(`http://localhost:8000/admin/setPromotion?selectedCourses=${selects}&promotion=${promotion}`)
+    .catch(err=>console.log(err))
+
+    if (response.status === 200)
+    {
+      window.location.href='/AdminSetPromo';
+    }
+    setOpen(false)
+  };
+
+  const [selects, setSelected] = useState([]);
+  const [promotion, setPromotion] = useState('');
+
+
   const [courses, setCourses] = useState(async () => {
     await axios.get(`http://localhost:8000/admin/getAllCoursesss`)
         .then(res => { setCourses(res.data)})
@@ -166,6 +202,28 @@ useEffect(() => {
     if (courses.length)
         setReady(true);
 }, [courses])
+
+const handleChangeCourse = (newSelected,checked) => {
+  if (checked)
+  setSelected([...selects, newSelected]);
+  if(!checked)
+  {
+    setSelected(selects.filter(c => c!==newSelected));
+  }
+
+}
+const handleChangePromotion = (event) => {
+  setPromotion(event.target.value);
+}
+
+const handleClickOpen = () => {
+  //console.log(reportId)
+  setOpen(true);
+};
+useEffect( () => {
+  console.log(selects)
+
+},[selects]);
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -222,19 +280,18 @@ useEffect(() => {
          
           <Box>
             <Typography
-           sx={{ mt: 4, ml: 4 , mb:2}}
+           sx={{ mt: 6, ml:20, mb:4}}
             
              component="h4"
              variant="h4"
              fontWeight={'bold'}
              fontSize={'30px'}
              color="#03045E"
-             align="center"
              glutterBottom
-            >Please Specify Promotion amount & course ID</Typography>
-            <TextField  label="Promotion" sx={{ml: 53}}  id="promo" variant="outlined" /*onChange={(event)=>{handleChangPromotion(event)}}*//>
-            <TextField  label="Course ID" sx={{ml: 4}}  id="promo" variant="outlined" /*onChange={(event)=>{handleChangCourse(event)}}*//>
-            <Button  variant="contained"  sx={{ color: '#03045E', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8', ml:4, mt:1 }} /* onClick={()=> {change2()}}*/>Set Promotion</Button>
+            >Please specify promotion amount and select course(s)</Typography>
+            <TextField  label="Promotion" sx={{ml: 20}}  id="promo" variant="outlined" onChange={(event)=>{handleChangePromotion(event)}}/>
+            <Button  variant="contained"  sx={{ color: 'white', backgroundColor: '#03045E', borderColor: '#03045E', ml:4, mt:1 }} onClick={() =>
+                  handleClickOpen()}>Set Promotion</Button>
 
         </Box>
 <main>
@@ -248,25 +305,55 @@ useEffect(() => {
                 >
                
                   <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h5" component="h2" sx={{ color: '#03045E', fontWeight:'bold'}}>{card.title}</Typography>
+                 
+                    <Typography gutterBottom variant="h5" component="h2" sx={{ color: '#03045E', fontWeight:'bold'}}>
+                       {card.title}<Checkbox
+                      onChange={(event)=>
+                      { 
+                        event.target.checked? setSelected([...selects, card._id]) : setSelected(selects.filter( c => c!==(card._id)))
+                      }}/>
+                      </Typography>
                     <Typography >
-                    {card.subject}
+                    Subject: {card.subject}
                     </Typography>
                     <Typography>
-                    {card.summary}
+                    Summary: {card.summary}
                     </Typography>
                     <Typography >
                     {card.rating}
                     </Typography>
                     <Typography >
-                    {card.price}
+                    Price: {card.price}
                     </Typography>
-                    <Typography id="courseId" >
+                    {/* <Typography id="courseId" >
                       {card._id}
-                    </Typography>
-                    <Typography id="status" align="center" size="small" sx={{ color: 'white', backgroundColor: '#03045E', borderColor: '#CAF0F8' }}>
+                    </Typography> */}
+                    <Typography id="status" align="center" size="small" 
+                    sx={{ color: 'white', backgroundColor: '#00B4D8', fontWeight: 'bold', mt:2 }}>
                         {card.promoted}</Typography>
 
+  <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Are you sure you want to set this promotion to selected course(s) ?
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose()}>
+            YES
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
                   </CardContent>
                   <CardActions>
                     

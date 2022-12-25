@@ -29,7 +29,53 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import mainListItems from './listItems';
+import {useState,useEffect} from "react";
+import axios from "axios";
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import CloseIcon from '@mui/icons-material/Close';
+import PropTypes from 'prop-types';
+import { CircularProgress } from '@mui/material';
 
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
+
+function BootstrapDialogTitle(props) {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+}
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired,
+};
 
 
 function Copyright(props) {
@@ -136,6 +182,64 @@ const mdTheme = createTheme();
     setOpen(!open);
   };
 
+  const handleClose = async () => {
+    window.location.href='/AdminAddUser';
+    setOpen(false);
+  };
+  const handleClickOpen = async ()=>{
+    const response = await axios.put(`http://localhost:8000/admin/create/`,{
+    username:username,
+    password:password,
+    firstName:firstName,
+    lastName:lastName,
+    email: email,
+    gender: gender,
+    type: type}).
+    catch( (error) => alert(error.response.data.message)) 
+    console.log(response.data)
+    if(response.status===200){
+      setOpen(true);
+      // alert(response.data);
+    }}
+ 
+
+  const[firstName,setFirstName]=useState('');
+  const[lastName,setLastName]=useState('');
+  const[username,setUsername]=useState('');
+  const[email,setEmail]=useState('');
+  const[password,setPassword]=useState('');
+  const[gender,setGender]=useState('');
+  const[type,setType]=useState('');
+  const[confirmPassword,setConfirmPassword]=useState('');
+  const [errMsg, setMsg] = useState('');
+
+
+  const handleChangeFirstName = (event) => {
+    setFirstName(event.target.value);
+  }
+  const handleChangeLastName = (event) => {
+    setLastName(event.target.value);
+  }
+  const handleChangeUsername = (event) => {
+    setUsername(event.target.value);
+  }
+  const handleChangeEmail = (event) => {
+    setEmail(event.target.value);
+  }
+  const handleChangePassword = (event) => {
+    setPassword(event.target.value);
+  }
+  const handleChangeConfirm = (event) => {
+    setConfirmPassword(event.target.value);
+}
+const handleChangeGender = (event) => {
+  setGender(event.target.value);
+}
+const handleChangeType = (event) => {
+  setType(event.target.value);
+}
+
+
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex'  }}>
@@ -147,18 +251,7 @@ const mdTheme = createTheme();
               bgcolor: '#03045E'
             }}
           >
-            {/* <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton > */}
+           
             <Typography
               component="h1"
               variant="h6"
@@ -168,15 +261,7 @@ const mdTheme = createTheme();
             >
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-            {/* <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </Search> */}
+           
           &nbsp;&nbsp;&nbsp;
           <box>{mainListItems}</box>
 
@@ -211,28 +296,52 @@ const mdTheme = createTheme();
           </Container>
           <main>
           <Grid container spacing={2}  sx={{ ml: 5 }}>
-          <Grid item xs={6.5}>
-                <TextField 
-                  required
-                  fullWidth
-                  id="email"
-                  label="Username"
-                  name="email"
-                  autoComplete="email"
-                />
-              </Grid>
-              <Grid item xs={6.5}>
+          <Grid item xs={5}>
                 <TextField
                   required
                   fullWidth
-                  name="password"
-                  label="Email"
-                  type="password"
-                  id="password"
-                  autoComplete="new-password"
+                  name="First Name"
+                  label="First Name"
+                  type="First Name"
+                  id="firstName"
+                  autoComplete="First Name" onChange={(event)=>{handleChangeFirstName(event)}}
                 />
               </Grid>
-              <Grid item xs={6.5}>
+              <Grid item xs={5}>
+                <TextField
+                  required
+                  fullWidth
+                  name="Last Name"
+                  label="Last Name"
+                  type="Last Name"
+                  id="lastName"
+                  autoComplete="Last Name" onChange={(event)=>{handleChangeLastName(event)}}
+                />
+              </Grid>
+             
+<Grid item xs={5}>
+                <TextField 
+                  required
+                  fullWidth
+                  id="Username"
+                  label="Username"
+                  name="Usename"
+                  autoComplete="Username" onChange={(event)=>{handleChangeUsername(event)}}
+                />
+              </Grid>
+              <Grid item xs={5}>
+                <TextField
+                  required
+                  fullWidth
+                  name="Email"
+                  label="Email"
+                  type="Email"
+                  id="Email"
+                  autoComplete="Email" onChange={(event)=>{handleChangeEmail(event)}}
+                />
+              </Grid>
+        
+              <Grid item xs={5}>
                 <TextField
                   required
                   fullWidth
@@ -240,10 +349,10 @@ const mdTheme = createTheme();
                   label="Password"
                   type="password"
                   id="password"
-                  autoComplete="new-password"
+                  autoComplete="new-password" onChange={(event)=>{handleChangePassword(event)}}
                 />
               </Grid>
-              <Grid item xs={6.5}>
+              <Grid item xs={5}>
                 <TextField
                   required
                   fullWidth
@@ -251,27 +360,67 @@ const mdTheme = createTheme();
                   label="Confirm Password"
                   type="password"
                   id="password"
-                  autoComplete="new-password"
+                  autoComplete="new-password" onChange={(event)=>{handleChangeConfirm(event)}}
                 />
               </Grid>
-              </Grid>
-              <FormControl>
-  <FormLabel id="demo-radio-buttons-group-label" sx={{mt: 3, ml:8, mb:1}}>Account Type</FormLabel>
-  <RadioGroup sx={{ml:8}}
+              <Grid item xs={5} sx={{ mt : 4}}>
+              <FormControl >
+              <FormLabel id="demo-radio-buttons-group-label" sx={{ ml:2, mb:1}}>Gender</FormLabel>
+  <RadioGroup sx={{ml:2}}
     aria-labelledby="demo-radio-buttons-group-label"
     defaultValue="female"
     name="radio-buttons-group"
   >
-    <FormControlLabel value="female" control={<Radio />} label="Instructor" />
-    <FormControlLabel value="male" control={<Radio />} label="Individual Trainee" />
-    <FormControlLabel value="other" control={<Radio />} label="Corporate Trainee" />
-    <FormControlLabel value="other" control={<Radio />} label="Admin" />
+    <FormControlLabel value="FEMALE" control={<Radio />} label="female" onChange={(event)=>{handleChangeGender(event)}}/>
+    <FormControlLabel value="MALE" control={<Radio />} label="male" onChange={(event)=>{handleChangeGender(event)}}/>
+  
+  </RadioGroup>
+</FormControl >
+</Grid>
+              <FormControl  sx={{ mt : 6}}>
+  <FormLabel id="demo-radio-buttons-group-label" sx={{ml:2, mb:1}}>Account Type</FormLabel>
+  <RadioGroup sx={{ml:2}}
+    aria-labelledby="demo-radio-buttons-group-label"
+    defaultValue="female"
+    name="radio-buttons-group"
+  >
+    <FormControlLabel value="INSTRUCTOR" control={<Radio />} label="Instructor" onChange={(event)=>{handleChangeType(event)}}/>
+    <FormControlLabel value="INDIVIDUAL_TRAINEE" control={<Radio />} label="Individual Trainee" onChange={(event)=>{handleChangeType(event)}}/>
+    <FormControlLabel value="CORPORATE_TRAINEE" control={<Radio />} label="Corporate Trainee" onChange={(event)=>{handleChangeType(event)}}/>
+    <FormControlLabel value="ADMIN" control={<Radio />} label="Admin" onChange={(event)=>{handleChangeType(event)}}/>
 
   </RadioGroup>
 </FormControl>
+              </Grid>
+             
 <box>
-                <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E', mt:23, ml: 15 }}>Add User</Button>
-  </box>          
+                <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E', mt:2, ml: 8 }} 
+                onClick={()=> {handleClickOpen()}}>Add User</Button>
+</box>
+<BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            User Created Successfully
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose()}>
+            YES
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+
+
           </main>
 
 

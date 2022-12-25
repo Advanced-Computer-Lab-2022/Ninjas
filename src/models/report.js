@@ -24,7 +24,7 @@ const reportSchema = new Schema({
 
     progress:  {
         type:String,
-        enum: ['RESOLVED', 'PENDING'],
+        enum: ['RESOLVED', 'PENDING','INITIAL'],
         default:'PENDING',
         required: true
        

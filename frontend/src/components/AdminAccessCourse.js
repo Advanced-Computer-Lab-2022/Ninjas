@@ -40,6 +40,54 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import mainListItems from './listItems';
 
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import CloseIcon from '@mui/icons-material/Close';
+import PropTypes from 'prop-types';
+import { CircularProgress } from '@mui/material';
+
+
+
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
+
+function BootstrapDialogTitle(props) {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+}
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired,
+};
 
 let k =0;
 
@@ -159,6 +207,24 @@ const [open, setOpen] = React.useState(false);
 const toggleDrawer = () => {
  setOpen(!open);
   };
+  const[requestId, setRequestId] = useState('');
+
+  const handleClickOpen = (requestId) => {
+    console.log(requestId)
+    setRequestId(requestId)
+    setOpen(true);
+  };
+  const handleClose = async () => {
+    console.log(requestId);
+    const response = await axios.get(`http://localhost:8000/admin/acceptCorporateRequest?requestId=${requestId}`)
+    .catch(err=>console.log(err))
+
+    if (response.status === 200)
+    {
+      window.location.href='/AdminAccessCourse';
+    }
+    setOpen(false);  
+};
 
   const [requests, setRequests] = useState(async () => {
     await axios.get(`http://localhost:8000/admin/viewCorporateRequest`)
@@ -168,7 +234,7 @@ const toggleDrawer = () => {
 
 const [ready, setReady] = useState(false);
 useEffect(() => {
-    if (requests.length)
+    if (requests.length>=0)
         setReady(true);
 }, [requests])
 
@@ -246,6 +312,22 @@ useEffect(() => {
             <Copyright sx={{ pt: 4 }} />
           </Container>
           <main>
+          {
+                        !ready &&
+                        <Box
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight="100vh"
+                        >
+                            <CircularProgress />
+                        </Box>
+
+                    }
+
+
+
+
           <Container sx={{ py: 1, mt:1}} >
           {/* End hero unit */}
           <Grid container spacing={4} >
@@ -256,14 +338,37 @@ useEffect(() => {
                 >
                 
                   <CardContent sx={{ flexGrow: 1 }}>
+                
                     <Typography sx={{ color: '#03045E'}}>User ID: {card.accountId} </Typography>
                     <Typography sx={{ color: '#03045E'}}>Course ID: {card.courseId}</Typography>
                     
                   <br></br>
                     <box>
-                <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E' }}>Grant Access</Button>
+                <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E' }} onClick={() =>
+                  handleClickOpen(card._id)}>Grant Access</Button>
             </box>
-           
+            <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Are you sure you want to grant acess to this corporate trainee ?
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose()}>
+            YES
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
            
                   </CardContent>
                   <CardActions>
