@@ -76,10 +76,10 @@ app.get('/login', async (req, res) => {
 app.use('/', router);
 
 
-
+app.use('/', requireAuth, userRouter);
 app.use('/admin', requireAuth, adminRouter);
 // if you see the /, go use the userRouter
-app.use('/', requireAuth, userRouter);
+
 
 
 //if you see the /, go use the instructorRouter
