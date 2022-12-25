@@ -42,16 +42,51 @@ const helperMethods = {
 
 
 const userController = {
+    
+    async signUpError({username, email}){
+        try{
+            const usernameExists = await Account.findOne({  username });
+            const emailExists = await Account.findOne({ email });
+            console.log(username)
+            console.log(emailExists)
+            //the username and email should be unique
+           if(emailExists && usernameExists){
+           console.log(1);
+            throw new DomainError("username and email already exist.", 400);}
+           else if (usernameExists){
+            console.log(1);
+                throw new DomainError("username already exists.", 400);}
+           else if (emailExists){
+            console.log(3)
+                throw new DomainError("email already exists.", 400);}
+        //else 
+        //throw new DomainError("email already exists.", 200);
+
+        }
+        catch (error) {
+            if (error instanceof DomainError) throw error;
+            else {
+                console.log(error);
+                throw new DomainError("internal error", 500);
+            }
+        }
+    },
     async signUp({ username, firstName, lastName, email, password, gender }) {
         try {
             const salt = await bcrypt.genSalt();
             //hashes pw
             const hashedPassword = await bcrypt.hash(password, salt);
             //generates new user, with the hashed pw
-            const usernameExists = await Account.findOne({ '$or': [{ username }, { email }] });
+           // const usernameExists = await Account.findOne({ '$or': [{ username }] });
+            //const emailExists = await Account.findOne({ '$or': [{ email }] });
+
             //the username and email should be unique
-            if (usernameExists)
-                throw new DomainError("username and/or email already exists.", 400);
+        //    if(emailExists && usernameExists)
+        //     throw new DomainError("username and email already exist.", 400);
+        //    else if (usernameExists)
+        //         throw new DomainError("username already exists.", 400);
+        //    else if (emailExists)
+        //         throw new DomainError("email already exists.", 400);
 
             const user = await Account.create({
                 username,
@@ -60,7 +95,9 @@ const userController = {
                 email,
                 password: hashedPassword,
                 gender,
-                type: 'INDIVIDUAL_TRAINEE'
+                type: 'INDIVIDUAL_TRAINEE',
+                companyPolicy:true
+
             });
             return user;
 
