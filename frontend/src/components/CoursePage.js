@@ -409,9 +409,11 @@ const CoursePage = () => {
                                             This course is on sale for {course.discountDuration} days!
                                         </Typography>
                                         <Typography variant="subtitle1">
-
-                                            <Text style={{ textDecorationLine: 'line-through' }}>{price}</Text>
-                                            {afterdiscount}  {currency}
+                                        from
+                                            <Text style={{ textDecorationLine: 'line-through' }}>  {price}     </Text>
+                                           
+                                              <Text>   to {afterdiscount}  {currency} </Text>
+                                              
                                         </Typography>
                                     </div>
                                 }
