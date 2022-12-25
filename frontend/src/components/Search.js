@@ -50,7 +50,9 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ReactPlayer from 'react-player/youtube'
 import { useEffect } from 'react';
 import TraineeNav from '../nav/TraineeNav';
+import InstructorNav from '../nav/InstructorNav'
 const traineeNav = {};
+
 export  var searchtemp = null;
 function setSearchtemp (x){
     searchtemp =x
@@ -385,7 +387,7 @@ const theme = useTheme();
     }
   }, [searchResult])
 
-
+console.log(searchResult.userType)
 
   return (
    
@@ -394,14 +396,25 @@ const theme = useTheme();
 
        
         <CssBaseline />
-        {searchResult.userType == 'Guest' && 
+
+        { searchResult.userType == 'GUEST' && 
           <TraineeNav post={traineeNav}/>}
-          
+
+        { searchResult.userType == 'CORPORATE_TRAINEE' && 
+          <TraineeNav post={traineeNav}/>}
+
+        { searchResult.userType == 'INDIVIDUAL_TRAINEE' && 
+          <TraineeNav post={traineeNav}/>}
+
+        { searchResult.userType == 'INSTRUCTOR' && 
+          <InstructorNav post={traineeNav}/>}
+
+
  {/* box dh bta3 el body bta3t el page */}
         {
                         !ready &&
                         <Box
-                        sx={{ml:'44%' , mt: 5}}
+                        sx={{ml:'50%' , mt: 5}}
                         component="main"
                             display="flex"
                             justifyContent="center"
@@ -525,16 +538,16 @@ const theme = useTheme();
          
           
         </MenuItem>
-        <Divider sx={{ my: 0.5 }} />
-        <MenuItem  disableRipple>
-
+        { searchResult.userType != 'GUEST' && <Divider sx={{ my: 0.5 }} />}
+        { searchResult.userType != 'GUEST' &&  <MenuItem  disableRipple>
+        
         <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1bh-content"
           id="panel1bh-header"
         >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+         <Typography sx={{ width: '33%', flexShrink: 0 }}>
           Price
           </Typography>
         </AccordionSummary>
@@ -604,7 +617,7 @@ const theme = useTheme();
                 
         </AccordionDetails>
       </Accordion>
-         </MenuItem>
+         </MenuItem>}
       </StyledMenu>
 
      
@@ -703,9 +716,9 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
             total hours : {course.totalHours}
             </Typography>
             
-            <Typography variant="h6" color="inherit"style={{width:'210px'}} >
+            { searchResult.userType != 'GUEST' &&  <Typography variant="h6" color="inherit"style={{width:'210px'}} >
             price : {course.price}  {searchResult.currency}
-            </Typography>
+            </Typography>}
 
             <Typography variant="h6" color="inherit"style={{width:'210'}} >
             subject : {course.subject} 

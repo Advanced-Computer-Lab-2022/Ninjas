@@ -169,7 +169,7 @@ const handleKeypress = e => {
 if (e.key === 'Enter') {
   console.log('renteeer')
  // handleSearch(e)
-  window.location.href=`temp?userId=${user._id}&search=${e.target.value}`
+  window.location.href=`/temp?userId=${user._id}&search=${e.target.value}`
 }
 };
 
