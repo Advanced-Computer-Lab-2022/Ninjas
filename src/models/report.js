@@ -24,7 +24,7 @@ const reportSchema = new Schema({
 
     progress:  {
         type:String,
-        enum: ['RESOLVED', 'PENDING'],
+        enum: ['RESOLVED', 'PENDING','INITIAL'],
         default:'PENDING',
         required: true
        
@@ -40,7 +40,11 @@ const reportSchema = new Schema({
         type: Schema.Types.ObjectId,
         required: false,
     },
+    followUp:{
+        type : Boolean,
+        default:false,
 
+    }
 
 })
 

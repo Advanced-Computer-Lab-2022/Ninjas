@@ -26,7 +26,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import StarIcon from '@mui/icons-material/Star';
 import axios from 'axios';
-
+import { searchtemp } from '../components/Search';
 
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
@@ -133,7 +133,22 @@ const logout = async () => {
 const viewRatings = async () => {
   window.location.href='/Ratings';
 }
-
+const [user,setUser] = React.useState(async () => {
+  await axios.get('http://localhost:8000/userBySession')
+  .then(res => setUser(res.data))
+  .catch(err => {
+    if (err.response.status === 401) //you didn't login
+    window.location.href='/';
+  })
+})
+const handleKeypress = e => {
+  //it triggers by pressing the enter key
+if (e.key === 'Enter') {
+  console.log('renteeer')
+ // handleSearch(e)
+  window.location.href=`/temp?userId=${user._id}&search=${e.target.value}`
+}
+};
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex'  }}>
@@ -166,13 +181,17 @@ const viewRatings = async () => {
             >
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-            <Search>
+            <Search  >
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+             defaultValue = {searchtemp}
+              //onChange={(e) => setSearch(e.target.value)}
+              onKeyPress={handleKeypress}
+              
             />
           </Search>
           &nbsp;&nbsp;

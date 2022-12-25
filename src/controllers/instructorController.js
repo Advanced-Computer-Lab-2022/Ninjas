@@ -806,7 +806,11 @@ try {
                 }
 
             }
-            await Account.updateOne({_id:userId}, {wallet: myMoney});
+           // await Account.updateOne({_id:userId}, {wallet: myMoney});
+           //I guess we should have a new schema of instructor with owedMoney or even a field in account called
+           //owed money other than wallet as difference is wallet money i can use now but owed is money i should
+           //get but have not got it yet...We need this field so that when admin refunds money to student it is
+           //subtracted from owed money of corresponding instructor  
             return myMoney;
         }
         catch(err){

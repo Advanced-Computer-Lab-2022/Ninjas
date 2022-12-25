@@ -13,6 +13,7 @@ const path = require("path");
 const RefundRequest = require("../models/refundRequest");
 const Report = require("../models/report");
 const RequestAccess = require("../models/requestAccess");
+const util = require('util');
 require('dotenv').config()
 
 const maxAge = 3 * 24 * 60 * 60;
@@ -145,37 +146,62 @@ const userController = {
 
         try {
             // lw 7d msh mwgod hytl3 null ?? for next sprints
+         
+          
+            var user = null;
+            ///el a7san check eno he is not loged in 3shan lw admin hyd5l
+            if (userId == 'null') userId = null;
             console.log(userId)
-            const user = await Account.findOne({ _id: userId }, { type: 1, country: 1 }).catch(() => {
+            if (userId){
+             user = await Account.findOne({ _id: userId }, { type: 1, country: 1 }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
-            console.log(user)
+            console.log('/////////////')
             //snipped can be moved to controller
             if (user.type == 'ADMIN' || !user.type) {
                 throw new DomainError("Unauthorized user", 401);
             }
-
+        }
 
             let courses;
-            if (subject == "" &&
-                rating == "" && title == '' &&
+
+           // console.log('qq'+subject+'qq')
+            // if (title == 'null' ){
+            //     console.log('trueee')
+            // }
+
+            if (subject == 'null' &&
+                rating == 'null' && title == 'null' &&
                 instructor == '') {
+
                 courses = await Course.find()
             } else {
-
+                console.log (subject)
                 let queryArray = [];
-                if (subject != "") { queryArray.push({ subject: { '$regex': "" + subject, '$options': 'i' } }) }
-                if (rating != "") { queryArray.push({ rating: rating }) }
-                if (title != '') { queryArray.push({ title: { '$regex': "" + title, '$options': 'i' } }) }
-                if (instructor != '') {
-                    queryArray.push({
+                if (subject != "null") { queryArray.push({ subject: { '$regex': '.*' + subject + '.*', '$options': 'i' } }) }
+                if (rating != "null") { queryArray.push({'$and':[{ rating: { 
+                    '$gt':  (rating-1)
+                } }, { rating: { 
+                    '$lte': (rating)
+                } }]}) }
+                if (title != 'null') {
+                    
+                    queryArray.push(
+
+                       { '$or': [  
+                        { subject: { '$regex': '.*' +  title + '.*', '$options': 'i' } },
+                    { title: { '$regex': '.*' +  title + '.*', '$options': 'i' } },
+                
+                    {
                         instructors: {
                             $elemMatch: {
-                                '$or': [{ firstName: { '$regex': "" + instructor, '$options': 'i' } },
-                                { lastName: { '$regex': "" + instructor, '$options': 'i' } }]
+                                '$or': [{ firstName: { '$regex':'.*' +  title + '.*', '$options': 'i' } },
+                                { lastName: { '$regex': '.*' +  title + '.*', '$options': 'i' } }]
                             }
                         }
-                    })
+                    }
+                ]}
+                )
                 }
 
 
@@ -184,20 +210,36 @@ const userController = {
                 });
             }
 
-            let details = countryPriceDetails.get(user.country);
+
+            let details;
+                if (user)
+            {details = countryPriceDetails.get(user.country);}
+            else{
+             details = countryPriceDetails.get('United States');
+            }
+            var courses2 =[] ;
+
+            console.log(minPrice)
             for (var i = 0; i < courses.length; i++) {
                 // price = price x factor x discount
-                courses[i].price = courses[i].price * details.factor * ((100 - details.discount) / 100);
-                if (minPrice != "null" && courses[i].price < minPrice) {
-                    courses.splice(i, 1);
+                courses[i].price = courses[i].price * details.factor * ((100 - courses[i].discount) / 100);
+                
+                if (!(minPrice != 'null' && courses[i].price < minPrice)) {
+                    if (!(maxPrice != 'null' && courses[i].price > maxPrice)) { //momkn mykonsh feh
+                    //courses.splice(i, 1);
+                    courses2.push(courses[i])
+                    }
+                    
                 }
-                if (maxPrice != "null" && courses[i].price > maxPrice) {
-                    courses.splice(i, 1);
-                }
+                // if (!(maxPrice != 'null' && courses[i].price > maxPrice)) {
+                //     //courses.splice(i, 1);
+                // }
             }
-            return { courses, currency: details.currency };
+            
+            return { courses: courses2, currency: details.currency , userType: user? user.type : 'GUEST'};
         }
         catch (err) {
+            console.log(err);
             if (err instanceof DomainError) { throw err; }
             else {
                 console.log(err)
@@ -303,7 +345,7 @@ const userController = {
                 throw new DomainError("Unauthorized user.", 401);
 
             //fetch the course
-            const course = await Course.findOne({ _id: courseId }).catch(() => {
+            let course = await Course.findOne({ _id: courseId }).catch(() => {
                 throw new DomainError("Wrong courseId", 400)
             });
 
@@ -313,6 +355,7 @@ const userController = {
 
             //create the rating object
             const newReview = await Rating.create({
+                id: user._id.toString(),
                 firstName: user.firstName,
                 lastName: user.lastName,
                 rating,
@@ -320,9 +363,13 @@ const userController = {
             });
 
             //update the course rating number
-            const updatedCourseRating = helperMethods.updateRatingValue({ reviewsArray: course.reviews, newRating: rating });
-            console.log(updatedCourseRating);
+            const reviewsArray = course.reviews.filter(rev => rev.id!==(user._id.toString()))
+            const updatedCourseRating = helperMethods.updateRatingValue({
+                reviewsArray, newRating: rating });
 
+            //if this user already rated the course, delete their rating. we want the data to be up to date -- bonus requirement
+            // i didn't pull and push in the same update statement as this would result in a conflict
+            await Course.updateOne({ _id: courseId}, { $pull: { "reviews": { id: user._id.toString() } }})
             //push the rating into the course reviews array and update the rating field
             await Course.updateOne(
                 { _id: courseId },
@@ -798,16 +845,16 @@ async ReportCourse( userId,courseId, problem ) {
         throw new DomainError("Unauthorized user", 401);
     }
 
-  if (await Report.findOne({userId,courseId, problem })){
+  if (await Report.findOne({ '$and':[{accountId: userId},{courseId}, {problem}] })){
     throw new DomainError("you already reported", 401);
   }
 
-   const report = await Report.create( {userId,courseId, problem });
+   const report = await Report.create( {accountId: userId,courseId, problem });
    return "Done";
 }
 catch(err){
-
-    if (error instanceof DomainError) throw error;
+console.log(err)
+    if (err instanceof DomainError) throw err;
     else
         throw new DomainError("internal error", 500);
 }
@@ -817,14 +864,15 @@ catch(err){
 async ViewMyReports( userId ) {
     
    try{
-      const reports = await Report.find( {userId}).catch(() => {
+      const reports = await Report.find( {accountId: userId}).catch((err) => {
+        console.log(err);
         throw new DomainError("no reports", 400)
     });
       return reports;
    }
    catch(err){
    
-       if (error instanceof DomainError) throw error;
+       if (err instanceof DomainError) throw err;
        else
            throw new DomainError("internal error", 500);
    }
@@ -832,17 +880,21 @@ async ViewMyReports( userId ) {
 
 
    
-async ViewFolllowUp( userId , courseId , problem ) {
+async folllowUp( userId , courseId , problem ) {
     
     try{
-       const reports = await Report.findOne( {userId, courseId , problem}).catch(() => {
+       const reports = await Report.updateOne( {'$and':[{accountId:userId}, {courseId} ,{ problem}]}, {followUp : true}).catch(() => {
          throw new DomainError("no reports", 400)
      });
-       return reports;
+     console.log(reports);
+     if (reports.modifiedCount>0)
+       return 'Done';
+       else 
+       return 'a follow up was done before';
     }
     catch(err){
     
-        if (error instanceof DomainError) throw error;
+        if (err instanceof DomainError) throw err;
         else
             throw new DomainError("internal error", 500);
     }

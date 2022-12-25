@@ -27,8 +27,12 @@ import DownloadIcon from '@mui/icons-material/Download';
 import axios from 'axios';
 import { useState } from 'react';
 import { useEffect } from 'react';
+import csCertificate from '../csCertificate.pdf';
+import englishCertificate from '../englishCertificate.pdf';
+import mathCertificate from '../mathCertificate.pdf';
+import generalCertificate from '../generalCertificate.pdf';
 import { Path } from '@react-pdf/renderer';
-
+import { searchtemp } from '../components/Search';
 
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
@@ -122,6 +126,7 @@ const mdTheme = createTheme();
   const [open, setOpen] = React.useState(false);
   const toggleDrawer = () => {
     setOpen(!open);
+    setShow(false);
   };
 
 const [ready, setReady] = useState(false);
@@ -136,7 +141,9 @@ const [user,setUser] = useState(async () => {
 })
 useEffect(() => {
   if (user._id)
-      setReady(true);
+
+      { console.log(user)
+        setReady(true);}
 }, [user])
 
 //to show the certificates when clicked
@@ -155,6 +162,21 @@ const logout = async () => {
 const viewCourse = async () => {
   window.location.href='/MyCourse';
 }
+
+const [search, setSearch] = React.useState( null);
+// const handleSearch = (event) => {
+//   setSearch(event.target.value)
+  
+// };
+
+const handleKeypress = e => {
+  //it triggers by pressing the enter key
+if (e.key === 'Enter') {
+  console.log('renteeer')
+ // handleSearch(e)
+  window.location.href=`/temp?userId=${user._id}&search=${e.target.value}`
+}
+};
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -188,13 +210,17 @@ const viewCourse = async () => {
             >
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-            <Search>
+            <Search  >
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
             <StyledInputBase
               placeholder="Search…"
               inputProps={{ 'aria-label': 'search' }}
+             defaultValue = {searchtemp}
+              //onChange={(e) => setSearch(e.target.value)}
+              onKeyPress={handleKeypress}
+              
             />
           </Search>
           &nbsp;&nbsp;
@@ -234,8 +260,7 @@ const viewCourse = async () => {
           </ListItemIcon>
           <ListItemText primary='My Courses'/>
           </ListItemButton>
-
-          <ListItemButton onClick={() => setShow(!show)}>
+          <ListItemButton onClick={() => open? setShow(!show) : null}>
           {/*maps on the user certificates to display them*/}
           <ListItemIcon>
           <WorkspacePremiumIcon sx={{color:'black' }} />
@@ -249,9 +274,29 @@ const viewCourse = async () => {
               sx={{ backgroundColor:'#eeeeee'}}
             >
               {certificate}
-              <a href={`${certificate}`} download>
+
+              { certificate === 'englishCertificate.pdf' &&
+              <a href = {englishCertificate} download>
               <DownloadIcon sx={{ ml:5, mt:0.5 }}/>
               </a>
+              }
+              { certificate === 'csCertificate.pdf' &&
+              <a href = {csCertificate} download>
+              <DownloadIcon sx={{ ml:5, mt:0.5 }}/>
+              </a>
+              }
+              { certificate === 'mathCertificate.pdf' &&
+              <a href = {mathCertificate} download>
+              <DownloadIcon sx={{ ml:5, mt:0.5 }}/>
+              </a>
+              }
+              {
+                certificate === 'generalCertificate.pdf' &&
+                <a href = {generalCertificate} download>
+                <DownloadIcon sx={{ ml:5, mt:0.5 }}/>
+              </a>
+              }
+
             </ListItemButton>
           ))}
 

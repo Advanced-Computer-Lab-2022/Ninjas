@@ -1,6 +1,10 @@
 
 import * as React from 'react';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Radio, RadioGroup,FormControlLabel } from '@mui/material' ;
+import { createTheme, ThemeProvider, styled,alpha } from '@mui/material/styles';
+import MenuIcon from '@mui/icons-material/Menu';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -21,12 +25,10 @@ import ReactPlayer from 'react-player/youtube';
 import PersonIcon from '@mui/icons-material/Person';
 import { Text } from '@react-pdf/renderer';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
-import InstructorNav from './InstructorNav';
-import TraineeNav from './TraineeNav';
-
-
+import TraineeNav from '../nav/TraineeNav';
+import InstructorNav from '../nav/InstructorNav';
 const instructorNav = {};
-
+const traineeNav = {};
 function LinearProgressWithLabel(props) {
     return (
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -42,14 +44,50 @@ function LinearProgressWithLabel(props) {
     );
 }
 
+const StyledMenu = styled((props) => (
+    <Menu
+      elevation={0}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'right',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'right',
+      }}
+      {...props}
+    />
+  ))(({ theme }) => ({
+    '& .MuiPaper-root': {
+      borderRadius: 6,
+      marginTop: theme.spacing(1),
+      minWidth: 180,
+      color:
+        theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+      boxShadow:
+        'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+      '& .MuiMenu-list': {
+        padding: '4px 0',
+      },
+      '& .MuiMenuItem-root': {
+        '& .MuiSvgIcon-root': {
+          fontSize: 18,
+          color: theme.palette.text.secondary,
+          marginRight: theme.spacing(1.5),
+        },
+        '&:active': {
+          backgroundColor: alpha(
+            theme.palette.primary.main,
+            theme.palette.action.selectedOpacity,
+          ),
+        },
+      },
+    },
+  }));
+
 const CoursePage = () => {
 
     const mdTheme = createTheme();
-
-    const [open, setOpen] = React.useState(false);
-    const toggleDrawer = () => {
-        setOpen(!open);
-    };
 
     //for the course rating
     const [openRateCourse, setOpenRateCourse] = React.useState(false);
@@ -71,7 +109,7 @@ const CoursePage = () => {
     const [openPopup, setOpenPopup] = useState(false);
     const handleClosePopup = () => {
         setOpenPopup(false);
-        window.location.href = `/course/${courseId}`;
+        window.location.reload();
     };
     const submitRating = async () => {
         const response = await axios.post(
@@ -92,6 +130,7 @@ const CoursePage = () => {
     const handleinstClose = () => {
         setOpenRateInstructor(false);
     };
+    
     //we can use the same rating and text variables in this case
     const submitInstructorRating = async () => {
         const response = await axios.put(`http://localhost:8000/rateInstructor?userId=${user._id}&instructorId=${course.instructors[0]._id}&ratingNumber=${rating}&ratingText=${text}`)
@@ -138,7 +177,7 @@ const CoursePage = () => {
     const [ready, setReady] = useState(false);
     const [afterdiscount, setAfterDiscount] = useState(0);
     const [registered, setRegistered] = useState(false);
-    //if the user is a registered student or an instructor that teaches the coures, return true
+    //if the user is a registered student or an instructor that teaches the course, return true
     const isRegistered = () => {
         if (user.type == 'INSTRUCTOR')
             return course.instructors.map(instructor => instructor._id).includes(user._id);
@@ -166,15 +205,29 @@ const CoursePage = () => {
             .catch((error) => console.log(error.response.data.message));
 
         if (response.status == 200) //just refresh the page
-            window.location.href = `/course/${courseId}`;
+            window.location.reload();
     }
 
+
+    async function reportCourse () {
+        
+          await axios.post(`http://localhost:8000/reportCourse?userId=${user._id}&courseId=${course._id}&problem=${problem}`)
+              .then(res => {
+               alert ('Your Report has been submitted')
+              })
+              .catch((error) => { alert(error.response.data.message)})
+              //console.log(Search)
+             // const c = searchResult.currency
+            
+              
+        }
     //when an enrolled user wants a refund
     const [requested, setRequested] = useState(false);
     const [openRefundPopup, setORP] = useState(false);
+    const [problem, setProblem] = useState(null);
     const handleCloseRefundPopup = () => {
         setORP(false);
-        window.location.href=`/course/${course._id}`
+        window.location.reload();
     }
     const requestedTheRefund = async () => {
         const response = await axios.get(`http://localhost:8000/requestedTheRefund?userId=${user._id}&courseId=${course._id}`)
@@ -195,9 +248,45 @@ const CoursePage = () => {
             setORP(true);
         }
     }
-    
 
 
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const open2 = Boolean(anchorEl);
+  
+    const handleClick = (event) => {
+        //console.log(event)
+        setAnchorEl(event.currentTarget);
+        
+      };
+      const handleClose2 = (event) => {
+        //console.log(event)
+         setAnchorEl(null);
+       };
+      
+       const handleProblem = (event) => {
+        if (problem == event.target.value){
+            setProblem(null);
+            
+             
+          }
+          else
+          {
+            setProblem(event.target.value);
+
+        }
+       
+        
+      };
+      const handleDone = (event) => {
+        
+        if (problem){
+            
+            reportCourse();
+        } else {
+                 alert('please specify the problem')
+        
+       }
+      };
     useEffect(() => {
         if (course._id && user._id) {
             //result of the backend request is ready
@@ -236,7 +325,7 @@ const CoursePage = () => {
                     <InstructorNav post={instructorNav} />
                 }
                 {user.type !== 'INSTRUCTOR' &&
-                    <TraineeNav post={instructorNav} />
+                    <TraineeNav post={traineeNav} />
                 }
                 <Box
                     component="main"
@@ -362,17 +451,7 @@ const CoursePage = () => {
                                         Want to enroll? Sign up now!
                                     </Button>
                                 }
-                                {["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE", "INSTRUCTOR"].includes(user.type) &&
-                                    <Typography sx={{ ml: 132, mb: 1 }}> Something seems wrong?
-                                        <Button variant="contained" size="small"
-                                            sx={{ ml: 1, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                            onClick={() => window.location.href = '/signUp'}
-                                        >
-                                            Report a problem
-                                        </Button>
-
-                                    </Typography>
-                                }
+                               
                             </Box>
                             <Divider />
 
@@ -456,7 +535,7 @@ const CoursePage = () => {
                                                     () => window.location.href = `/solveExercise?userId=${user._id}&userType=${user.type}&courseId=${course._id}&exerciseId=${exercise._id}&subtitleId=${subtitle._id}`
                                                     : null}
                                             >
-                                                <MenuBookIcon color='#03045E' /> {exercise.title}
+                                                <MenuBookIcon color='#03045E' /> Exercise: {exercise.title}
                                             </Typography>
                                         ))}
                                         {
@@ -491,11 +570,20 @@ const CoursePage = () => {
                                     p: 1, border: 2, borderColor: '#00B4D8'
                                 }}>
                                 <Typography color="#03045E" sx={{ width: 155, fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}> Course reviews </Typography>
-                                {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) && registered &&
+                                {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) && registered
+                                && course.reviews.filter(r => r.id===user._id.toString()).length===0 &&
                                     <Button sx={{ ml: 140, mt: -5, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                         onClick={handleClickOpen}
                                     >
-                                        Rate this course
+                                    Rate this course
+                                    </Button>
+                                }
+                                {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) && registered
+                                && course.reviews.filter(r => r.id===user._id.toString()).length>0 &&
+                                    <Button sx={{ ml: 140, mt: -5, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                        onClick={handleClickOpen}
+                                    >
+                                    Update my rating
                                     </Button>
                                 }
                                 {
@@ -513,6 +601,72 @@ const CoursePage = () => {
                                 <Button></Button>
                             </Box>
 
+                           {["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE", "INSTRUCTOR"].includes(user.type) &&
+                                   
+                                    
+     <Button variant="contained" size="small"
+       sx={{ mb: 0.5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+   aria-controls={open2 ? 'demo-customized-menu' : undefined}
+       aria-haspopup="true"
+   aria-expanded={open2 ? 'true' : undefined}
+      disableElevation
+      onClick={handleClick}
+                              >
+            Report a problem
+             </Button>
+
+                            }
+<StyledMenu
+id="demo-customized-menu"
+MenuListProps={{
+  'aria-labelledby': 'demo-customized-button',
+}}
+anchorEl={anchorEl}
+open={open2}
+onClose={handleClose2}
+
+>
+    
+    
+  
+
+<Typography >
+            Report a problem
+          </Typography>
+<Divider/>
+          <Typography 
+          >
+                      <RadioGroup
+                        //aria-labelledby="demo-radio-buttons-group-label"
+                       // name="controlled-radio-buttons-group"
+                        onChange={ handleProblem}
+                        onClick={handleProblem}
+                    >
+                        <FormControlLabel value={ 'technical'} control={<Radio />} label={ 'technical'} checked={problem == 'technical' } />
+                        <FormControlLabel value={'financial'} control={<Radio />} label={'financial'} checked={problem == 'financial' } />
+                        <FormControlLabel value={'other'} control={<Radio />} label={'other'} checked={problem == 'other' } />
+                       
+
+                    </RadioGroup>
+          </Typography>
+
+          <Typography >
+          <Button variant="contained" size="small"
+       sx={{ mb: 0.5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+      disableElevation
+      onClick={handleDone}
+                              >
+            Done
+             </Button>
+
+          </Typography>
+
+
+    
+    
+     </StyledMenu>
+               
+                           
                             {/*RATE THE COURSE POPUP DIALOGUE*/}
                             <Dialog onClose={handleClose} open={openRateCourse}
                                 sx={{

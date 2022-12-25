@@ -4,6 +4,7 @@ import axios from "axios";
 import { FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Slider ,Rating,CircularProgress} from "@mui/material";
 import { styled, createTheme, ThemeProvider , alpha} from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
+import ReactStars from "react-rating-stars-component";
 import MuiDrawer from '@mui/material/Drawer';
 import Box from '@mui/material/Box';
 import MuiAppBar from '@mui/material/AppBar';
@@ -22,6 +23,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import logo from '../logo Ninjas.jpeg' ;
 import previewPic from '../coursesSearch2.jpg';
+import noResult from '../no results.png';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import Button from '@mui/material/Button';
@@ -47,8 +49,15 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ReactPlayer from 'react-player/youtube'
 import { useEffect } from 'react';
+import TraineeNav from '../nav/TraineeNav';
+import InstructorNav from '../nav/InstructorNav'
+const traineeNav = {};
 
-
+export  var searchtemp = null;
+function setSearchtemp (x){
+    searchtemp =x
+    
+}
 function valuetext(value) {
   return value;
 }
@@ -193,7 +202,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const [ready, setReady] = React.useState(false);
 const params = new URLSearchParams(window.location.search);
 const userId = params.get('userId');
-const searchBox = params.get('search'); //search el mktob fl text box
+const [search, setSearch] = React.useState( params.get('search'));
+setSearchtemp(search);
+//setSearch( params.get('search')); //search el mktob fl text box
 
 
 
@@ -208,7 +219,6 @@ const [anchorEl, setAnchorEl] = React.useState(null);
   const [openSubject, setOpenSubject] = React.useState(false);
   const [openRating, setOpenRating] = React.useState(false);
   const [openPrice, setOpenPrice] = React.useState(false);
-   const [search, setSearch] = React.useState(null);
    const [subject, setSubject] = React.useState(null);
    const [rating, setRating] = React.useState(null);
    const [expanded, setExpanded] = React.useState(false);
@@ -231,6 +241,7 @@ const [anchorEl, setAnchorEl] = React.useState(null);
   };
   
   const handleRating = (event) => {
+    console.log(event.target.value)
     if (rating == event.target.value){
       setRating(null)
        
@@ -244,18 +255,22 @@ const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleSearch = (event) => {
     setSearch(event.target.value)
+    setSearchtemp(event.target.value);
     
   };
 
 
   const handleMinV = (event) => {
-    setMintemp((minOn)? event.target.value : null)
+    if ((minOn)){
+    setMintemp( event.target.value)}
     setMinV(event.target.value)
     
   };
 
   const handleMaxV = (event) => {
-    setMaxtemp((maxOn)? event.target.value : null)
+
+    if ((maxOn)){
+    setMaxtemp( event.target.value)}
     setMaxV(event.target.value)
     
   };
@@ -314,7 +329,13 @@ const [anchorEl, setAnchorEl] = React.useState(null);
     console.log(event)
     setAnchorEl(null);
   };
-
+  const handleKeypress = e => {
+    //it triggers by pressing the enter key
+  if (e.key === 'Enter') {
+    console.log('renteeer')
+    handleSearch(e)
+  }
+};
  
 const mdTheme = createTheme();
 const theme = useTheme();
@@ -327,9 +348,11 @@ const theme = useTheme();
   async function getResult () {
     console.log('funccccc')
    
-      await axios.get(`http://localhost:8000/search?userId=${userId}&subject=${subject}&minPrice=${mintemp}&maxPrice=${maxtemp}&rating=${rating}&title=${searchBox}&instructor=`)
+      await axios.get(`http://localhost:8000/search?userId=${userId}&subject=${subject}&minPrice=${mintemp}&maxPrice=${maxtemp}&rating=${rating}&title=${search}&instructor=`)
           .then(res => setSearchResult(res.data.data))
-          .catch((error) => alert(error.response.data.message))
+          .catch((error) => {   if (error.response.status === 401) //you didn't login
+          window.location.href='/';
+            else alert(error.response.data.message)})
           //console.log(Search)
          // const c = searchResult.currency
         
@@ -347,12 +370,10 @@ const theme = useTheme();
 
   useEffect(() => 
   {
-
-    console.log(mintemp)
-    console.log(maxtemp)
+    setReady(false);
    getResult ();
    }
-  ,[subject,MinV,MaxV,minOn,maxOn]) 
+  ,[subject,minOn,maxOn,mintemp,maxtemp,rating,search]) 
   
   useEffect(() => {
   
@@ -366,97 +387,34 @@ const theme = useTheme();
     }
   }, [searchResult])
 
+console.log(searchResult.userType)
+
   return (
    
     <ThemeProvider theme={mdTheme} >
       <Box sx={{ display: 'flex'   }}>
+
+       
         <CssBaseline />
-        <AppBar position="absolute" open={open}>
-          <Toolbar 
-            sx={{
-              pr: '24px', // keep right padding when drawer closed
-              bgcolor: '#03045E'
-            }}
-          >
-            <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton >
-            <Typography
-              component="h1"
-              variant="h6"
-              bgcolor= '#03045E'
-              noWrap
-              sx={{ flexGrow: 1 }}
-            >
-              <img  style={{ width: 150, height: 60 }} src={logo} alt="Courses Planet" />
-            </Typography >
-           
 
-{/* lw ms7t mn el search htb3t null wala l2 */}
-            <Search  >
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-             defaultValue = {search}
-              //onChange={(e) => setSearch(e.target.value)}
-              onBlur={handleSearch}
-            />
-          </Search>
+        { searchResult.userType == 'GUEST' && 
+          <TraineeNav post={traineeNav}/>}
 
-          &nbsp;&nbsp;&nbsp;
-          <box>
+        { searchResult.userType == 'CORPORATE_TRAINEE' && 
+          <TraineeNav post={traineeNav}/>}
 
-          <Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}>Sign In</Button>
-          </box>
-          &nbsp;&nbsp;&nbsp;
-          <box>
-          <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }}>Sign Up</Button>
-          </box>
-            {/* <IconButton color="inherit">
-              <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon  />
-              </Badge>
-            </IconButton> */}
-          </Toolbar>
-        </AppBar>
-        <Drawer variant="permanent" open={open}>
-          <Toolbar
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              px: [1],
-            }}
-          >
-            <IconButton onClick={toggleDrawer}>
-              <ChevronLeftIcon />
-            </IconButton>
-          </Toolbar>
-          
-          <Divider />
-          <List component="nav">
+        { searchResult.userType == 'INDIVIDUAL_TRAINEE' && 
+          <TraineeNav post={traineeNav}/>}
+
+        { searchResult.userType == 'INSTRUCTOR' && 
+          <InstructorNav post={traineeNav}/>}
 
 
- 
-    </List>
-        </Drawer>
  {/* box dh bta3 el body bta3t el page */}
         {
                         !ready &&
                         <Box
-                        sx={{ml:'44%' , mt: 5}}
+                        sx={{ml:'50%' , mt: 5}}
                         component="main"
                             display="flex"
                             justifyContent="center"
@@ -469,8 +427,9 @@ const theme = useTheme();
 
                     }
                     
+                   
                     
-                     {  ready &&
+                     {  ready && 
        
         <Box
           component="main"
@@ -568,7 +527,9 @@ const theme = useTheme();
           
           <Rating
                                         name="simple-controlled"
+                                     
                                         value = {rating}
+                                        //precision={0.005}
                                         onChange={handleRating}
                                     />
                 
@@ -577,16 +538,16 @@ const theme = useTheme();
          
           
         </MenuItem>
-        <Divider sx={{ my: 0.5 }} />
-        <MenuItem  disableRipple>
-
+        { searchResult.userType != 'CORPORATE_TRAINEE' && <Divider sx={{ my: 0.5 }} />}
+        { searchResult.userType != 'CORPORATE_TRAINEE' &&  <MenuItem  disableRipple>
+        
         <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="panel1bh-content"
           id="panel1bh-header"
         >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+         <Typography sx={{ width: '33%', flexShrink: 0 }}>
           Price
           </Typography>
         </AccordionSummary>
@@ -656,7 +617,7 @@ const theme = useTheme();
                 
         </AccordionDetails>
       </Accordion>
-         </MenuItem>
+         </MenuItem>}
       </StyledMenu>
 
      
@@ -676,9 +637,27 @@ const theme = useTheme();
             
 {/* trial   hyt3ml hna for loop */}
 
-{searchResult && searchResult.courses.map((course) => (
+{
+                        ready && searchResult.courses.length == 0 &&
+                        <Box
+                        sx={{ml:'33%' , mt:-7}}
+                        component="main"
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight="100vh"
+                        >
+                          
+                          <img  style={{ width: 380, height: 300 }} src={noResult} alt="no results" />
+                        </Box>
 
-<Card  sx={{ display: 'flex' ,   backgroundColor: '#CAF0F8' }} style={{width:"48%", height:"200px"}} >
+                    }
+
+{searchResult && searchResult.courses.length != 0 && searchResult.courses.map((course) => (
+
+<Card  sx={{ display: 'flex' ,'&:hover': {    backgroundColor: '#90E0EF',
+ },   backgroundColor: '#CAF0F8' }} style={{width:"48%", height:"250px"}} 
+onClick={()=>{window.location.href=`course/${course._id}`}} >
 {(!course.videoLink) &&
  <CardMedia
  allow="autoPlay"
@@ -723,28 +702,35 @@ const theme = useTheme();
             }}
           >
            
-            <Typography  component="h5" variant="h5" color="inherit" style={{width:'200px'}} >
+            <Typography  component="h5" variant="h5" color="inherit" style={{width:'210px'}} >
               {course.title}
             
             </Typography>
             <Rating
                                   readOnly={true}
                                         value = {course.rating}
+                                        precision={0.1}
                                     />
 
-            <Typography variant="h6" color="inherit" >
+            <Typography variant="h6" color="inherit" style={{width:'210px'}}>
             total hours : {course.totalHours}
             </Typography>
             
-            <Typography variant="h6" color="inherit" >
-            price : {course.price}
+            { searchResult.userType != 'CORPORATE_TRAINEE' &&  <Typography variant="h6" color="inherit"style={{width:'210px'}} >
+            price : {course.price}  {searchResult.currency}
+            </Typography>}
+
+            <Typography variant="h6" color="inherit"style={{width:'210'}} >
+            subject : {course.subject} 
             </Typography>
 
-             <Link variant="subtitle1" //onClick={window.location.href=`course/id=${course._id}` }
-             >   {/*href view course   hselo w a5ly el card bttdas */}
-              Lets explore
-            </Link>
-
+{/*el link msh byban fy 7agat*/}
+            {/* <Typography >
+             <Link variant="subtitle1" onClick={()=>{window.location.href=`course/${course._id}` }}
+            >   {/*href view course   hselo w a5ly el card bttdas */}
+              {/* Lets explore */}
+            {/*</Link>
+            </Typography> */}
             
           </Box>
         </Grid>

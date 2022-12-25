@@ -76,6 +76,11 @@ const coursesSchema = new Schema({
     numberOfRegistered: {
         type: Number,
         default: 0
+    },
+    promoted: {
+        type: String,
+        enum: ['Promoted', 'Not Promoted'],
+        required: false
     }
 })
 
