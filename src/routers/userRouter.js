@@ -523,6 +523,50 @@ userRouter.get('/checkRequestedAccess', async (req,res) => {
     }
 })
 
+userRouter.post('/reportCourse', async (req, res) => {
+    try {
+        const { courseId, userId , problem } = req.query
+        const reported = await userController.ReportCourse( userId,courseId,problem);
+        res.status(200).json({message:'Done'})
+    }
+    catch (err) {
+      // console.log(err);
+        if (err instanceof DomainError) {
+            res.status(err.code).json({ message: err.message })
+        } else {
+            res.status(500).json({ err });
+        }
+    }
+})
+
+
+userRouter.post('/followUp', async (req, res) => {
+    try {
+        const { courseId, userId , problem} = req.query
+        const reported = await userController.folllowUp( userId,courseId,problem);
+        res.status(200).json({message:reported})
+    }
+    catch (err) {
+      // console.log(err);
+        if (err instanceof DomainError) {
+            res.status(err.code).json({ message: err.message })
+        } else {
+            res.status(500).json({ err });
+        }
+    }
+})
+
+userRouter.get('/viewMyReports', async (req,res) => {
+    try {
+        const { userId } = req.query;
+        const result = await userController.ViewMyReports( userId );
+
+        res.status(200).json(result);
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
+
 userRouter.get('/requestedTheRefund', async (req,res) => {
     try {
         const { userId, courseId } = req.query;

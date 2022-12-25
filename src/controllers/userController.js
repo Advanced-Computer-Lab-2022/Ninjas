@@ -808,16 +808,16 @@ async ReportCourse( userId,courseId, problem ) {
         throw new DomainError("Unauthorized user", 401);
     }
 
-  if (await Report.findOne({userId,courseId, problem })){
+  if (await Report.findOne({ '$and':[{accountId: userId},{courseId}, {problem}] })){
     throw new DomainError("you already reported", 401);
   }
 
-   const report = await Report.create( {userId,courseId, problem });
+   const report = await Report.create( {accountId: userId,courseId, problem });
    return "Done";
 }
 catch(err){
-
-    if (error instanceof DomainError) throw error;
+console.log(err)
+    if (err instanceof DomainError) throw err;
     else
         throw new DomainError("internal error", 500);
 }
@@ -827,14 +827,15 @@ catch(err){
 async ViewMyReports( userId ) {
     
    try{
-      const reports = await Report.find( {userId}).catch(() => {
+      const reports = await Report.find( {accountId: userId}).catch((err) => {
+        console.log(err);
         throw new DomainError("no reports", 400)
     });
       return reports;
    }
    catch(err){
    
-       if (error instanceof DomainError) throw error;
+       if (err instanceof DomainError) throw err;
        else
            throw new DomainError("internal error", 500);
    }
@@ -842,17 +843,21 @@ async ViewMyReports( userId ) {
 
 
    
-async ViewFolllowUp( userId , courseId , problem ) {
+async folllowUp( userId , courseId , problem ) {
     
     try{
-       const reports = await Report.findOne( {userId, courseId , problem}).catch(() => {
+       const reports = await Report.updateOne( {'$and':[{accountId:userId}, {courseId} ,{ problem}]}, {followUp : true}).catch(() => {
          throw new DomainError("no reports", 400)
      });
-       return reports;
+     console.log(reports);
+     if (reports.modifiedCount>0)
+       return 'Done';
+       else 
+       return 'a follow up was done before';
     }
     catch(err){
     
-        if (error instanceof DomainError) throw error;
+        if (err instanceof DomainError) throw err;
         else
             throw new DomainError("internal error", 500);
     }
