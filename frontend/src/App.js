@@ -33,6 +33,12 @@ import Home from './nav/Home';
 import TermsGuest from './nav/InstructorTerms';
 import InstructorHome from './nav/InstructorHome';
 import TraineeHome from './nav/TraineeHome';
+import Admin from './components/Admin';
+import AdminViewReports from './components/AdminViewReports';
+import AdminAccessCourse from './components/AdminAccessCourse';
+import AdminSetPromo from './components/AdminSetPromo';
+import AdminAddUser from './components/AdminAddUser';
+import AdminRefundRequests from './components/AdminRefundRequests';
 import CreateExercise from './nav/CreateExercise';
 import CoursePage from './components/CoursePage';
 import Settings from './nav/Settings';
@@ -55,6 +61,20 @@ function App() {
         <Route path='/home' element= {<Home/>} >
         </Route>
         <Route path='/changePassword' element= {<ChangePassword/>} >
+        </Route>
+        <Route path='/admin' element= {<Admin/>} >
+        </Route>
+        <Route path='/AdminViewReports' element= {<AdminViewReports/>} >
+        </Route>
+        <Route path='/AdminAccessCourse' element= {<AdminAccessCourse/>} >
+        </Route>
+        <Route path='/AdminAddUser' element= {<AdminAddUser/>} >
+        </Route>
+        <Route path='/AdminSetPromo' element= {<AdminSetPromo/>} >
+        </Route>
+        
+        
+        <Route path='/AdminRefundRequests' element= {<AdminRefundRequests/>} >
         </Route>
         <Route path='/viewVideo' element= {<ViewVideo/>} >
         </Route>
