@@ -601,7 +601,7 @@ const CoursePage = () => {
                                 <Button></Button>
                             </Box>
 
-                           {["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE", "INSTRUCTOR","GUEST"].includes(user.type) &&
+                           {["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE", "INSTRUCTOR"].includes(user.type) &&
                                    
                                     
      <Button variant="contained" size="small"
