@@ -13,7 +13,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
-import { Alert } from '@mui/material';
+import { Alert, AlertTitle } from '@mui/material';
 import { useState } from 'react';
 
 function Copyright(props) {
@@ -102,9 +102,11 @@ const Login = () => {
           }}
         >
           {errMsg != '' &&
-            <Alert variant="filled" severity="error">
-              {errMsg}
-            </Alert>
+          <Alert severity="error">
+          <AlertTitle>Error</AlertTitle>
+          <strong>{errMsg}</strong>
+        </Alert>
+
           }
 
           <Avatar sx={{ m: 1, bgcolor: '#00B4D8' }}>

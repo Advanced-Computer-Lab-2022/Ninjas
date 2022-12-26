@@ -148,6 +148,7 @@ useEffect(() => {
 
 //to show the certificates when clicked
 const[show,setShow]= useState(false);
+const[showAmount,setShowAmount]= useState(false);
 
 //logout button function
 const logout = async () => {
@@ -156,6 +157,10 @@ const logout = async () => {
   
   if(response.status===200)
   window.location.href='/';
+}
+
+const viewCourse = async () => {
+  window.location.href='/MyCourse';
 }
 
 const [search, setSearch] = React.useState( null);
@@ -249,7 +254,7 @@ if (e.key === 'Enter') {
           
           <Divider />
           <List component="nav">
-          <ListItemButton>
+          <ListItemButton onClick={viewCourse}>
             <ListItemIcon>
           <MenuBookIcon sx={{color:'black' }} />
           </ListItemIcon>
@@ -257,7 +262,7 @@ if (e.key === 'Enter') {
           </ListItemButton>
           <ListItemButton onClick={() => open? setShow(!show) : null}>
           {/*maps on the user certificates to display them*/}
-            <ListItemIcon>
+          <ListItemIcon>
           <WorkspacePremiumIcon sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='My Certificates'/>
@@ -295,18 +300,32 @@ if (e.key === 'Enter') {
             </ListItemButton>
           ))}
 
-          <ListItemButton>
+{ user.type==='INDIVIDUAL_TRAINEE' &&
+<div>
+ <ListItemButton onClick={() => setShowAmount(!showAmount)}>
             <ListItemIcon>
+            
           <Wallet sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='Wallet'/>
           </ListItemButton>
+          {showAmount &&
+            <ListItemButton
+              sx={{ backgroundColor:'#eeeeee'}}
+            >
+              Account balance: {user.wallet}
+            </ListItemButton>
+          } 
+</div>
+}  
+
           <ListItemButton>
             <ListItemIcon>
           <SettingsIcon sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='Settings'/>
           </ListItemButton>
+          
           <ListItemButton>
             <ListItemIcon>
           <ReportIcon sx={{color:'black' }} />

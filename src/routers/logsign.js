@@ -1,8 +1,23 @@
 const express = require("express");
-var { sess } = require("../app");
+//var { sess } = require("../app");
 const userController = require("../controllers/userController");
 const router = new express.Router();
 
+router.get('/signUpError', async (req, res) => {
+    try {
+
+        const { username, email } = req.query;
+        console.log(email)
+        await userController.signUpError(
+            { username, email }
+        );
+
+        res.status(200).json();
+
+    } catch (error) {
+        res.status(error.code).json({ message: error.message});
+    }
+})
 
 router.post('/signUp', async (req, res) => {
     try {
@@ -19,6 +34,25 @@ router.post('/signUp', async (req, res) => {
         res.status(error.code).json({ message: error.message});
     }
 })
+
+
+
+// router.post('/acceptPolicy',async(req,res) => {
+//     try{
+//         const session = sessionDetails.getSession(req.session.id);
+//         const userId = session.userId
+// await userController.acceptPolicy({ userId})
+
+//         res.status(200).json("Thank you for accepting");
+//     }
+//     catch(err){
+//         if (err instanceof DomainError) {
+//             res.status(err.code).send(err.message)
+//         } else {
+//             res.status(500).send({ err });
+//         }
+//     }
+// })
 router.post('/forgotPassword', async (req, res) => {
     //if we will use react frontend, we will only need the username or the userId.
     //assuming that the user clicks "forgot my password" then we ask them for their username,

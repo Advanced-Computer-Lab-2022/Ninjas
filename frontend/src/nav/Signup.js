@@ -21,12 +21,6 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormLabel from '@mui/material/FormLabel';
 //import MenuItem from '@mui/material/MenuItem';
-import EditIcon from '@mui/icons-material/Edit';
-import Divider from '@mui/material/Divider';
-import ArchiveIcon from '@mui/icons-material/Archive';
-import FileCopyIcon from '@mui/icons-material/FileCopy';
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Menu from '@mui/material/Menu';
 import { styled, alpha } from '@mui/material/styles';
 import PropTypes from 'prop-types';
@@ -122,17 +116,13 @@ const StyledMenu = styled((props) => (
 const theme = createTheme();
 
 export default function Signup() {
-  // username, firstName, lastName, email, password, gender
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
   const [gender, setGender] = useState('');
   const [username, setUsername] = useState('');
-
   const [open, setOpen] = React.useState(false);
-  
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -172,13 +162,16 @@ export default function Signup() {
 
 
   //handling errors in fields
-  const [firstNameErr, setFirstNameErr] = useState(false);
-  const [lastNameErr, setLastNameErr] = useState(false);
-  const [emailErr, setEmailErr] = useState(false);
-  const [passwordErr, setPasswordErr] = useState(false);
-  const [confirmErr, setConfirmErr] = useState(false);
-  const [genderErr, setGenderErr] = useState(false);
-  const [usernameErr, setUsernameErr] = useState(false);
+  const[inital,setInital]=useState(true);
+  const [firstNameErr, setFirstNameErr] = useState();
+  const [lastNameErr, setLastNameErr] = useState();
+  const [emailErr, setEmailErr] = useState();
+  const [passwordErr, setPasswordErr] = useState();
+  const [confirmErr, setConfirmErr] = useState();
+  const [genderErr, setGenderErr] = useState();
+  const [usernameErr, setUsernameErr] = useState();
+  const[confirm,setConfirm]=useState('');
+  const[responseErr, setresErr] = useState('');
 
   const falsify = () => {
     setFirstNameErr(true);
@@ -188,6 +181,7 @@ export default function Signup() {
     setConfirmErr(true);
     setGenderErr(true);
     setUsernameErr(true);
+    console.log("in in")
   }
 
   const allCorrect = () => {
@@ -196,75 +190,130 @@ export default function Signup() {
     return !bool;
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit =  async (event)  => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
 
     //set the values to false, in case something was corrected
-    falsify();
-
+    //falsify();
+    
     //before proceeding we have to make sure that the data is correct
     if (data.get('firstName').trim().length < 2)
       setFirstNameErr(true);
+    else
+      setFirstNameErr(false);
 
     if (data.get('lastName').trim().length < 2)
       setLastNameErr(true);
+      else
+      setLastNameErr(false);
 
     if (!validateEmail(data.get('email')))
       setEmailErr(true);
+      else
+      setEmailErr(false);
 
     if (data.get('username').trim().length < 6)
       setUsernameErr(true);
+      else
+      setUsernameErr(false);
 
     if (data.get('password').trim().length < 6)
       setPasswordErr(true);
+      else
+      setPasswordErr(false);
 
-    if (!data.get('password') === data.get('confirmpassword') || data.get('confirmpassword').trim().length < 6) //passwords do not match
+    if (!(data.get('password') === data.get('confirmpassword')) || data.get('confirmpassword').trim().length < 6) //passwords do not match
       setConfirmErr(true);
+      else
+      setConfirmErr(false);
+
 
     if (!data.get('maleButton') && !data.get('femaleButton')) //they did not choose their gender
       setGenderErr(true);
-
+      else
+      setGenderErr(false);
+      
+    if(firstNameErr==false && lastNameErr==false && emailErr==false && passwordErr==false && confirmErr==false && genderErr==false &&
+      usernameErr==false && responseErr==''){
+        console.log("in")
+        setInital(false)
+    }
+    if(inital==false){
+      handleClickOpen();
+    }
     //if all the inputs are valid, open the contract dialogue
-    let errorsExist= false;
-    errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
+    //let errorsExist= false;
+    //errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
     //setError(!errorsExist);
-    console.log(errorsExist)
-    if (errorsExist)
-    console.log(true);
-    else
-    handleClickOpen();
+   // console.log(errorsExist)
+    //if (errorsExist)
+    //console.log(true);
+    //else
+   // handleClickOpen();
   };
 
-  const[responseErr, setresErr] = useState('');
+  
+
+  const change2 = async () => {
+    //window.location.href = `/`
+    //remember to handle close
+   console.log(username)
+    const response = await axios.get(`http://localhost:8000/signUpError?username=${username}&email=${email}`
+    
+    ).
+
+      catch((error) => setresErr(error.response.data.message))
+  
+    console.log(response.data)
+
+    if (response.status === 200) {
+        handleClickOpen();
+    }
+
+    //let errorsExist= false;
+    //errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
+    //setError(!errorsExist);
+    //console.log(errorsExist)
+    //if (errorsExist)
+    //console.log(true);
+    //else
+    //handleClickOpen();
+
+  }
   const change = async () => {
     //window.location.href = `/`
     //remember to handle close
+   
     const response = await axios.post(`http://localhost:8000/signUp/`, {
       username: username,
       firstName: firstName,
       lastName: lastName,
       email: email,
       password: password,
-      gender: gender
+      gender: gender,
+    
     }).
 
       catch((error) => setresErr(error.response.data.message))
-
+  
     console.log(response.data)
+
     if (response.status === 200) {
         window.location.href = `/`
     }
-    let errorsExist= false;
-    errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
+
+    //let errorsExist= false;
+    //errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
     //setError(!errorsExist);
-    console.log(errorsExist)
-    if (errorsExist)
-    console.log(true);
-    else
-    handleClickOpen();
+    //console.log(errorsExist)
+    //if (errorsExist)
+    //console.log(true);
+    //else
+    //handleClickOpen();
 
   }
+  
 
 
   return (
@@ -305,6 +354,7 @@ export default function Signup() {
                     id="firstName"
                     label="First Name"
                     autoFocus
+                    onChange={(event) => { handleChangeFirstName(event) }}
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>
@@ -404,7 +454,8 @@ export default function Signup() {
               <Button type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E', mt: 3, mb: 2 }}>
+                sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E', mt: 3, mb: 2 }}
+                onClick={change2}>
                 Sign Up
               </Button>
 

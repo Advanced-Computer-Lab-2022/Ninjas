@@ -103,4 +103,8 @@ const ViewAllCourses =() => {
 
  );}
 
+
+
+
 export default ViewAllCourses;
+//export default ViewAllCourses2;

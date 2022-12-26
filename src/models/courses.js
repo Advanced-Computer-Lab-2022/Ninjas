@@ -56,9 +56,8 @@ const coursesSchema = new Schema({
     },
     
     discountDuration:{
-        type: Number,
-        default:0,
-        //min: 1
+        type: Date,
+        required: false
     },
     videoLink:{
         type:String,
@@ -71,10 +70,12 @@ const coursesSchema = new Schema({
     },
     certificate: {
         type: String,
+        default: 'generalCertificate.pdf'
     },
-    numberOfRegistered: {
-        type: Number,
-        default: 0
+    promoted: {
+        type: String,
+        enum: ['Promoted', 'Not Promoted'],
+        required: false
     }
 })
 
