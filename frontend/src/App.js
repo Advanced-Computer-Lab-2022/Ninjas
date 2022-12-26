@@ -28,7 +28,7 @@ import ResetPasswordPage from './components/ResetPassword';
 import MostPopular from './components/MostPopular';
 import Temp from './components/Search';
 import Payment from './nav/PaymentForm';
-import Checkout from './nav/Checkout';
+import Checkout2 from './nav/Checkout2';
 import Home from './nav/Home';
 import TermsGuest from './nav/InstructorTerms';
 import InstructorHome from './nav/InstructorHome';
@@ -42,7 +42,11 @@ import AdminRefundRequests from './components/AdminRefundRequests';
 import CreateExercise from './nav/CreateExercise';
 import CoursePage from './components/CoursePage';
 import Settings2 from './nav/Settings2';
+import Settings from './nav/Settings';
+import TraineeCourse from './nav/TraineeCourse';
 import Ratings from './nav/Ratings';
+import MyReports from './nav/MyReports';
+
 
 
 
@@ -59,7 +63,10 @@ function App() {
       <Route path='/tHome' element= {<TraineeHome/>} > </Route>
       <Route path='/exercise' element= {<CreateExercise/>} > </Route>
       <Route path='/settings' element= {<Settings2/>} > </Route>
+      <Route path='/settingsT' element= {<Settings/>} > </Route>
       <Route path='/ratings' element={<Ratings/>}></Route>
+      <Route path='/enrolled' element={<TraineeCourse/>}></Route>
+      <Route path='/myReports' element={<MyReports/>}></Route>
         <Route path='/home' element= {<Home/>} >
         </Route>
         <Route path='/changePassword' element= {<ChangePassword/>} >
@@ -123,7 +130,7 @@ function App() {
         <Route path="/payment"
         element={<Payment/>}/>
         <Route path="/checkout"
-        element={<Checkout/>}/>
+        element={<Checkout2/>}/>
         <Route path="/solveExercise" element={<SolveExercise/>}/>
       <Route path="/resetPassword/:id" element={<ResetPasswordPage/>}/>
       <Route path="/mostPopularCourses" element={<MostPopular/>}/>

@@ -4,6 +4,18 @@ import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 
 export default function PaymentForm() {
+  const [name, setName] = React.useState('');
+  const [number, setNumber] = React.useState('');
+  const [exDate, setExDate] = React.useState('');
+  const [cvv, setCVV] = React.useState('');
+  const handleChangeName= (event) => {
+    setName(event.target.value)}
+  const handleChangeNumber = (event) => {
+      setNumber(event.target.value)}
+  const handleChangeExDate = (event) => {
+      setExDate(event.target.value)}
+  const handleChangeCVV = (event) => {
+        setCVV(event.target.value)}
   return (
     <React.Fragment>
       <Typography variant="h6" gutterBottom>
@@ -12,6 +24,7 @@ export default function PaymentForm() {
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <TextField
+            onChange={(event)=>{handleChangeName(event)}}
             required
             id="cardName"
             label="Name on card"
@@ -22,6 +35,7 @@ export default function PaymentForm() {
         </Grid>
         <Grid item xs={12} md={6}>
           <TextField
+          onChange={(event)=>{handleChangeNumber(event)}}
             required
             id="cardNumber"
             label="Card number"
@@ -32,6 +46,7 @@ export default function PaymentForm() {
         </Grid>
         <Grid item xs={12} md={6}>
           <TextField
+          onChange={(event)=>{handleChangeExDate(event)}}
             required
             id="expDate"
             label="Expiry date"
@@ -42,6 +57,7 @@ export default function PaymentForm() {
         </Grid>
         <Grid item xs={12} md={6}>
           <TextField
+          onChange={(event)=>{handleChangeCVV(event)}}
             required
             id="cvv"
             label="CVV"

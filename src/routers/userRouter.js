@@ -558,7 +558,8 @@ userRouter.post('/followUp', async (req, res) => {
 
 userRouter.get('/viewMyReports', async (req,res) => {
     try {
-        const { userId } = req.query;
+        const session = sessionDetails.getSession(req.session.id);
+        const { userId } = session;
         const result = await userController.ViewMyReports( userId );
 
         res.status(200).json(result);
