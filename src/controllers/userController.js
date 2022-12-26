@@ -222,6 +222,9 @@ const userController = {
             console.log(minPrice)
             for (var i = 0; i < courses.length; i++) {
                 // price = price x factor x discount
+                if (courses[i].discountDuration && Date.now() > courses[i].discountDuration) { 
+                    courses[i].discount=0;
+                }
                 courses[i].price = courses[i].price * details.factor * ((100 - courses[i].discount) / 100);
                 
                 if (!(minPrice != 'null' && courses[i].price < minPrice)) {

@@ -408,9 +408,11 @@ const CoursePage = () => {
                                             This course is on sale until {new Date(course.discountDuration).toLocaleDateString()} !
                                         </Typography>
                                         <Typography variant="subtitle1">
-
-                                            <Text style={{ textDecorationLine: 'line-through' }}>{price} {currency}</Text> <br></br>
-                                            {afterdiscount}  {currency}
+                                        from
+                                            <Text style={{ textDecorationLine: 'line-through' }}>  {price}     </Text>
+                                           
+                                              <Text>   to {afterdiscount}  {currency} </Text>
+                                              
                                         </Typography>
                                     </div>
                                 }
