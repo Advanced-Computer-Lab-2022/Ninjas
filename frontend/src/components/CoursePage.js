@@ -525,7 +525,7 @@ const CoursePage = () => {
                                                     backgroundColor: '#CAF0F8',
                                                 },
                                             }}
-                                            onClick={registered ? () => window.location.href = `/viewVideo` : null}
+                                            onClick={registered ? () => window.location.href = `/viewVideo?subtitleId=${subtitle._id}&courseId=${courseId}` : null}
                                         >
                                             <PlayCircleIcon color='#03045E' /> {subtitle.videoTitles.title}: {subtitle.videoTitles.description}
                                         </Typography>
