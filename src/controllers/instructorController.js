@@ -534,35 +534,10 @@ const instructorController = {
 
                 questionArray=[]
                 await newExercise.save()
-                const s=await Subtitle.findOne({_id:subtitleId})
-                 await Subtitle.updateOne({_id:subtitleId}, {$push: { exercises: newExercise }})
-    //            await Course.findOneandUpdate({_id:courseId2 , "subtitles._id":subtitleId2},{$set:{
-    //             "subtitles.$.text":"sub1"
-    // }})
-
-    // await Course.updateOne(
-    //     { _id: courseId2, 'subtitles._id': subtitleId2 },
-    //     {
-    //       $set: {
-        
-    //         'subtitles.$.text': 'updated name', 
-
-    //       }
-    //     },
-    //    );
-                
-
-
-
-                // for(var i=0;i<c.subtitles.length;i++){
-                //     console.log("i",c.subtitles[i]._id)
-                //     if(c.subtitles[i]._id==subtitleId2)
-                //     console.log("int")
-                //     c.subtitles[i]=s
-                // }
-                // console.log("After loop")
-
-                
+                //inside the course object, find the subtitle, and push into the exercise array
+                await Course.updateOne({ _id: courseId, "subtitles._id": subtitleId }, {
+                    $push: { "subtitles.$.exercises" : newExercise }
+                });
             }
 
 

@@ -181,7 +181,18 @@ const SolveExercise = () => {
                                     view the correct answers </Button>
                                     <br></br>
                                     <br></br>
-                                    <Typography variant='paragraph'>Click anywhere to go back to course page</Typography>
+                                    <Typography 
+                                    sx={{
+                                                    alignItems: 'center',
+                                                    '&:hover': {
+                                                        backgroundColor: '#CAF0F8',
+                                                    },
+                                                    width : '85%'
+                                                }}
+                                                onClick={
+                                                    () => window.location.href = `/course/${courseId}`
+                                                    }
+                                                    variant='paragraph'>Click here to go back to course page</Typography>
                                 </Alert>
                             </Backdrop>
                             }

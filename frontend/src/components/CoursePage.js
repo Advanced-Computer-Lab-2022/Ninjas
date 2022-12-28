@@ -470,7 +470,7 @@ const CoursePage = () => {
                                 <Typography variant="subtitle1"> Current number of enrolled students: {course.students.length} </Typography>
                                 {/*dealing with the course price*/}
 
-                                {!["CORPORATE_TRAINEE", "ADMIN", "INSTRUCTOR"].includes(user.type) &&
+                                {!["CORPORATE_TRAINEE", "ADMIN"].includes(user.type) &&
                                     course.discount > 0 &&
                                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                                         <Typography variant="subtitle1">
@@ -485,7 +485,7 @@ const CoursePage = () => {
                                         </Typography>
                                     </div>
                                 }
-                                {!["CORPORATE_TRAINEE", "ADMIN", "INSTRUCTOR"].includes(user.type) && course.discount === 0 &&
+                                {!["CORPORATE_TRAINEE", "ADMIN"].includes(user.type) && course.discount === 0 &&
                                     <Typography variant="subtitle1">
                                         This course currently costs {price} {currency}
                                     </Typography>
@@ -498,7 +498,14 @@ const CoursePage = () => {
                                         REGISTER NOW!
                                     </Button>
                                 }
-
+                                {
+                                    user.type === "INSTRUCTOR" && registered &&
+                                    <Button size='large' variant="contained"
+                                        sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                        onClick={() => window.location.href = '#'}>
+                                        Add discount
+                                    </Button>
+                                }
                                 {user.type === "CORPORATE_TRAINEE" && !registered && !reqAccess &&
                                     <Button
                                         sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
@@ -587,7 +594,7 @@ const CoursePage = () => {
                                                     backgroundColor: '#CAF0F8',
                                                 },
                                             }}
-                                            onClick={registered ? () => window.location.href = `/viewVideo` : null}
+                                            onClick={registered ? () => window.location.href = `/viewVideo?subtitleId=${subtitle._id}&courseId=${courseId}` : null}
                                         >
                                             <PlayCircleIcon color='#03045E' /> {subtitle.videoTitles.title}: {subtitle.videoTitles.description}
                                         </Typography>
