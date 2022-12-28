@@ -725,12 +725,6 @@ if (e.key === 'Enter') {
           </ListItemIcon>
           <ListItemText primary='Report'/>
           </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon>
-          <HelpIcon sx={{color:'black' }} />
-          </ListItemIcon>
-          <ListItemText primary='Help'/>
-          </ListItemButton>
           </List>
 
         </Drawer>

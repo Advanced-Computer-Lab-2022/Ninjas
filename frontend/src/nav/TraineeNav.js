@@ -254,12 +254,17 @@ if (e.key === 'Enter') {
           
           <Divider />
           <List component="nav">
+
+          { user.type !== "GUEST" &&
           <ListItemButton onClick={viewCourse}>
             <ListItemIcon>
           <MenuBookIcon sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='My Courses'/>
           </ListItemButton>
+          }
+
+          {user.type !== "GUEST" &&
           <ListItemButton onClick={() => open? setShow(!show) : null}>
           {/*maps on the user certificates to display them*/}
           <ListItemIcon>
@@ -267,6 +272,7 @@ if (e.key === 'Enter') {
           </ListItemIcon>
           <ListItemText primary='My Certificates'/>
           </ListItemButton>
+          }
           {ready && show && user.certificates.map((certificate) => (
             <ListItemButton
               key={certificate}
@@ -326,18 +332,14 @@ if (e.key === 'Enter') {
           <ListItemText primary='Settings'/>
           </ListItemButton>
           
+          { user.type !== "GUEST" &&
           <ListItemButton onClick={()=>{window.location.href='/myReports'}}>
             <ListItemIcon>
           <ReportIcon sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='Report'/>
           </ListItemButton>
-          <ListItemButton>
-            <ListItemIcon>
-          <HelpIcon sx={{color:'black' }} />
-          </ListItemIcon>
-          <ListItemText primary='Help'/>
-          </ListItemButton>
+          }
           </List>
 
         </Drawer>
