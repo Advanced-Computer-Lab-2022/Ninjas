@@ -14,6 +14,8 @@ const RefundRequest = require("../models/refundRequest");
 const Report = require("../models/report");
 const RequestAccess = require("../models/requestAccess");
 const util = require('util');
+const { sessionDetails } = require("../middleware/authMiddleware");
+const session = sessionDetails.getSession();
 require('dotenv').config()
 
 const maxAge = 3 * 24 * 60 * 60;
@@ -150,11 +152,11 @@ const userController = {
           
             var user = null;
             ///el a7san check eno he is not loged in 3shan lw admin hyd5l
-            if (userId == 'null') userId = null;
+            if (userId == 'null'  ) userId = null;
             console.log(userId)
             if (userId){
              user = await Account.findOne({ _id: userId }, { type: 1, country: 1 }).catch(() => {
-                throw new DomainError("Wrong Id", 400)
+                throw new DomainError("ops! something wrong happend please refresh", 400)
             });
             console.log('/////////////')
             //snipped can be moved to controller
@@ -504,8 +506,10 @@ const userController = {
     },
 
 
-    async viewCorrectAnswers(exersiseId, subtitleId, courseId) { //3yza ala2y try2a a7san
+    async viewCorrectAnswers(exersiseId, subtitleId, courseId,userId) { //3yza ala2y try2a a7san
         try {
+            
+
             const exersise = await Course.findOne({
                 '$and': [
                     { _id: courseId },
@@ -513,6 +517,16 @@ const userController = {
                     { subtitles: { $elemMatch: { _id: subtitleId } } }
                 ]
             }, { "subtitles": 1 })
+
+
+
+            const updateO =      await UserExercise.updateOne({
+                '$and': [
+                    { accountId: userId },
+                    { exercises: { $elemMatch: { _id: exersiseId } } }
+                ]
+            }, { viewedAnswers: true})
+          
 
             if (exersise) {
                 for (var i = 0; i < exersise.subtitles.length; i++) {
@@ -525,6 +539,11 @@ const userController = {
                     }
                 }
             }
+
+      
+            //h8yr l true solved
+
+          
             throw new DomainError('not found exersise', 400)
 
         } catch (err) {

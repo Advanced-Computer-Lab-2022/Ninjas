@@ -43,6 +43,7 @@ import CreateExercise from './nav/CreateExercise';
 import CoursePage from './components/CoursePage';
 import Settings2 from './nav/Settings2';
 import Ratings from './nav/Ratings';
+import ViewCorrectAnswer from './components/viewTheCorrectAnswers';
 
 
 
@@ -51,6 +52,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
       <Routes>
+      <Route path='/viewCorrectAnswers' element={<ViewCorrectAnswer/>}></Route>
       <Route path='/' element={<Login/>}></Route>
       <Route path='/signup' element={<Signup/>}></Route>
       <Route path='/temp' element= {<Temp/>} > </Route>
@@ -81,8 +83,6 @@ function App() {
         <Route path='/viewVideo' element= {<ViewVideo/>} >
         </Route>
         <Route path='/rateInstructor' element= {<RateInstructor/>} >
-        </Route>
-        <Route path='/viewCorrectAnswers' element= {<CorrectAnswer/>} >
         </Route>
         <Route path='/viewExerciseGrade' element= {<ViewExerciseGrade/>} >
         </Route>
