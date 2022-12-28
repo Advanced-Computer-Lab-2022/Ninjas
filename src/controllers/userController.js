@@ -678,6 +678,7 @@ const userController = {
             if(theUser.type == 'INDIVIDUAL TRAINEE'){
                 if(coursePrice == thisCourse.price){
                     await Course.updateOne({_id: courseId}, {$push: { students: userId}});
+                   await Course.updateOne({_id:courseId} ,{ $push: { students: userId }})
 
                 }
                 // if(theUser.wallet > 0 && theUser.wallet>=thisCourse.price){
@@ -698,6 +699,7 @@ const userController = {
     },
 
     async payForCourse2(userId, courseId, cardNo, country){ //name & postal code
+        //sheeeeeelyyy el countryy
          //from credit card
          var cardForm = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
          
@@ -709,7 +711,7 @@ const userController = {
                 throw new DomainError("Wrong Id", 400)
             });;
             if(theUser.type == 'INDIVIDUAL TRAINEE' && cardNo.value.match(cardForm) && theUser.country == country){
-                return
+                await Course.updateOne({_id:courseId} ,{ $push: { students: userId }})
                 //what to return
             }
           //  return myCourses;
