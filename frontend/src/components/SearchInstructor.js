@@ -54,10 +54,7 @@ import InstructorNav from '../nav/InstructorNav'
 const traineeNav = {};
 
 export  var searchtemp = null;
-function setSearchtemp (x){
-    searchtemp =x
-    
-}
+
 function valuetext(value) {
   return value;
 }
@@ -149,7 +146,7 @@ const Search = styled('div')(({ theme }) => ({
   }));
 
 const drawerWidth = 240;
-const Temp = () => {
+const SearchInstructor = () => {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
@@ -202,8 +199,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const [ready, setReady] = React.useState(false);
 const params = new URLSearchParams(window.location.search);
 const userId = params.get('userId');
-const [search, setSearch] = React.useState( params.get('search'));
-setSearchtemp(search);
+const username = params.get('username');
+const [search, setSearch] = React.useState('');
+
 //setSearch( params.get('search')); //search el mktob fl text box
 
 
@@ -219,16 +217,17 @@ const [anchorEl, setAnchorEl] = React.useState(null);
   const [openSubject, setOpenSubject] = React.useState(false);
   const [openRating, setOpenRating] = React.useState(false);
   const [openPrice, setOpenPrice] = React.useState(false);
-   const [subject, setSubject] = React.useState(null);
+   const [subject, setSubject] = React.useState('');
    const [rating, setRating] = React.useState(null);
    const [expanded, setExpanded] = React.useState(false);
    const [minOn, setMinOn] = React.useState(false);
    const [maxOn, setMaxOn] = React.useState(false);
-   const [MinV, setMinV] = React.useState(null);
-   const [MaxV, setMaxV] = React.useState(null);
+   const [MinV, setMinV] = React.useState(0);
+   const [MaxV, setMaxV] = React.useState(99999999999);
    const [result, setResult] = React.useState([]);
-   const [maxtemp, setMaxtemp] = React.useState(null);
-   const [mintemp, setMintemp] = React.useState(null);
+   const [maxtemp, setMaxtemp] = React.useState('');
+   const [mintemp, setMintemp] = React.useState('');
+   
 
 
    const handleChange = (panel) => (event, isExpanded) => {
@@ -255,7 +254,7 @@ const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleSearch = (event) => {
     setSearch(event.target.value)
-    setSearchtemp(event.target.value);
+   // setSearchtemp(event.target.value);
     
   };
 
@@ -345,13 +344,13 @@ const theme = useTheme();
   };
 
   
+  
   async function getResult () {
     console.log('funccccc')
    
-      await axios.get(`http://localhost:8000/search?userId=${userId}&subject=${subject}&minPrice=${mintemp}&maxPrice=${maxtemp}&rating=${rating}&title=${search}&instructor=`)
-          .then(res => setSearchResult(res.data.data))
-          .catch((error) => {  
-            if (error.response.status === 401) //you didn't login
+      await axios.get(`http://localhost:8000/SearchInst?search=${search}`)
+          .then(res => setSearchResult(res.data))
+          .catch((error) => {   if (error.response.status === 401) //you didn't login
           window.location.href='/';
             else alert(error.response.data.message)})
           //console.log(Search)
@@ -359,6 +358,21 @@ const theme = useTheme();
         
           
     }
+
+
+    async function getResultFilter () {
+        console.log('funccccc')
+       
+          await axios.get(`http://localhost:8000/filter?subject=${subject}&minPrice=${mintemp}&maxPrice=${maxtemp}&search=${search}`)
+              .then(res => setSearchResult(res.data))
+              .catch((error) => {   if (error.response.status === 401) //you didn't login
+              window.location.href='/';
+                else alert(error.response.data.message)})
+              //console.log(Search)
+             // const c = searchResult.currency
+            
+              
+        }
 
 
   const [searchResult, setSearchResult] = React.useState(getResult)
@@ -374,7 +388,14 @@ const theme = useTheme();
     setReady(false);
    getResult ();
    }
-  ,[subject,minOn,maxOn,mintemp,maxtemp,rating,search]) 
+  ,[search]) 
+
+  useEffect(() => 
+  {
+    setReady(false);
+   getResultFilter ();  /********************/
+   }
+  ,[subject,minOn,maxOn,mintemp,maxtemp]) 
   
   useEffect(() => {
   
@@ -388,29 +409,14 @@ const theme = useTheme();
     }
   }, [searchResult])
 
-console.log(searchResult.userType)
+//console.log(searchResult.userType)
 
   return (
    
     <ThemeProvider theme={mdTheme} >
       <Box sx={{ display: 'flex'   }}>
-
-       
         <CssBaseline />
-
-        { searchResult.userType == 'GUEST' && 
-          <TraineeNav post={traineeNav}/>}
-
-        { searchResult.userType == 'CORPORATE_TRAINEE' && 
-          <TraineeNav post={traineeNav}/>}
-
-        { searchResult.userType == 'INDIVIDUAL_TRAINEE' && 
-          <TraineeNav post={traineeNav}/>}
-
-        { searchResult.userType == 'INSTRUCTOR' && 
-          <InstructorNav post={traineeNav}/>}
-
-
+          <InstructorNav post={traineeNav}/>
  {/* box dh bta3 el body bta3t el page */}
         {
                         !ready &&
@@ -428,8 +434,6 @@ console.log(searchResult.userType)
 
                     }
                     
-                   
-                    
                      {  ready && 
        
         <Box
@@ -443,8 +447,6 @@ console.log(searchResult.userType)
           
         >
           <Toolbar />
-
-          
 
           <Toolbar>
           <Container maxWidth="lg" sx={{ mt: 0, mb: 0 ,mr: 0 , ml: 0 }}  >
@@ -469,6 +471,19 @@ console.log(searchResult.userType)
       <ListItemText primary="Filter " />
     </Button>
 
+    <Search  >
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+             defaultValue = {search}
+              //onChange={(e) => setSearch(e.target.value)}
+              onKeyPress={handleKeypress}
+              
+            />
+          </Search>
 
     
     <StyledMenu
@@ -511,33 +526,7 @@ console.log(searchResult.userType)
         </AccordionDetails>
       </Accordion>
 
-        </MenuItem>
-        <Divider sx={{ my: 0.5 }} />
-        <MenuItem  disableRipple>
-        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
-        >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
-          Rating
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          
-          <Rating
-                                        name="simple-controlled"
-                                     
-                                        value = {rating}
-                                        //precision={0.005}
-                                        onChange={handleRating}
-                                    />
-                
-        </AccordionDetails>
-      </Accordion>
-         
-          
+        
         </MenuItem>
         { searchResult.userType != 'CORPORATE_TRAINEE' && <Divider sx={{ my: 0.5 }} />}
         { searchResult.userType != 'CORPORATE_TRAINEE' &&  <MenuItem  disableRipple>
@@ -664,7 +653,7 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
  allow="autoPlay"
  controls={true}
          component="img"
-      sx={{ width: '51.5%' }}
+      sx={{ width: 280 }}
     
       // //style={{ width: 150, height: 200 }}
          src={previewPic}
@@ -721,7 +710,7 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
             price : {course.price}  {searchResult.currency}
             </Typography>}
 
-            <Typography variant="h6" color="inherit"style={{width:'210px'}} >
+            <Typography variant="h6" color="inherit"style={{width:'210'}} >
             subject : {course.subject} 
             </Typography>
 
@@ -760,5 +749,5 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
 
 
 } 
-export default Temp;
+export default SearchInstructor;
 

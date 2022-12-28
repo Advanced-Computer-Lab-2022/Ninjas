@@ -8,7 +8,7 @@ const { Exercise } = require("../models/exercise");
 const { question, questionSchema } = require("../models/question");
 const { Account } = require("../models/account");
 const { sessionDetails } = require("../middleware/authMiddleware");
-
+const session = sessionDetails.getSession();
 userRouter.post('/logout', (req, res) => {
     console.log(req.session.id);
     const session = sessionDetails.getSession(req.session.id);
@@ -26,11 +26,14 @@ userRouter.post('/logout', (req, res) => {
 userRouter.get('/search', async (req, res) => {
     try {
          const {
-             userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours
+             subject, minPrice, maxPrice, rating, title, instructor, totalHours
          } = req.query;
        // console.log(req.query.userId)
        // console.log(JSON.parse(req.query))
-
+      // if (!userId){
+        const session = sessionDetails.getSession(req.session.id);
+     userId  = session.userId;
+      // }
         const searchResults = await
             userController.getSearchResult({ userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours });
      //console.log(searchResults);                                                                        
@@ -273,9 +276,11 @@ userRouter.get('/viewExerciseGrade', async (req, res) => {
 
 userRouter.get('/viewCorrectAnswers', async (req, res) => {
     try {
-
+        const session = sessionDetails.getSession(req.session.id);
+            const userId = session.userId;
         const { exersiseId, subtitleId, courseId } = req.query
-        const exersise = await userController.viewCorrectAnswers(exersiseId, subtitleId, courseId)
+        console.log(courseId);
+        const exersise = await userController.viewCorrectAnswers(exersiseId, subtitleId, courseId,userId)
         res.status(200).json(exersise)
 
 
@@ -333,12 +338,13 @@ userRouter.get('/viewEnrolledCourses', async (req, res) => {
     }
 })
 
-userRouter.post('/payForCourse', async (req, res) => {
+userRouter.put('/payForCourse', async (req, res) => {
     try {
 
-        const userId = req.body.userId
-        const courseId = req.body.courseId
-        await userController.payForCourse(userId, courseId)
+        const userId = req.body.userId;
+        const courseId = req.body.courseId;
+        const coursePrice = req.body.coursePrice;
+        await userController.payForCourse({userId, courseId, coursePrice})
         res.status(200).json("You have paid successfully");
     }
     catch (err) {

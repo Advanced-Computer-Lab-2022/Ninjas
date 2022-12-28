@@ -193,11 +193,22 @@ instructorRouter.get('/createCo', async (req, res) => {
 
 instructorRouter.get('/SearchInst', async (req, res) => {
   try {
-    const username = req.query.username;
+    console.log('in');
+    const session = sessionDetails.getSession(req.session.id);
+    const userId = session.userId;
+    const username = session.username;
     const search = req.query.search;
-    const userId = req.query.userId;
+    
+    console.log("Hi");
+    console.log(search);
+    console.log(username);
+    console.log("Hiiiiiiiiiiii");
+
+    console.log(userId);
+
 
     const { type } = await Account.findOne({ _id: userId }, { type: 1 });
+    console.log(userId);
     if (type != 'INSTRUCTOR') {
       throw new DomainError("unauthorized user: not an instructor", 401);
     }
@@ -205,39 +216,24 @@ instructorRouter.get('/SearchInst', async (req, res) => {
 
     const SearchResults = await
       instructorController.getSearchResult({ username, search, userId });
-    res.write('<h1>Search results</h1> <hr>')
-    let currentString = "";
-    let viewButtonString;
-    for (var i = 0; i < SearchResults.final.length; i++) {
-      viewButtonString = "";
-      currentString = '<p> Course title: ' + SearchResults.final[i].title + '<br>' +
-        'Total hours: ' + SearchResults.final[i].totalHours + '<br>' +
-        'Rating: ' + SearchResults.final[i].rating + '<br>' +
-        'Price: ' + SearchResults.final[i].price + " " + SearchResults.currency + '<br>' +
-        'Summary: ' + SearchResults.final[i].summary + '<br>' +
-        '</p> <hr>';
-      viewButtonString += "<button onclick=\"alert(\'Course Details: \\nSubtitles: \\n"
+      console.log(SearchResults)
 
-      for (var j = 0; j < SearchResults.final[i].subtitles.length; j++) {
-        viewButtonString += "Subtitle " + (j + 1) + ": " + SearchResults.final[i].subtitles[j].text + ", total hours: " + SearchResults.final[i].subtitles[j].hours +
-          ", Video Title: " + SearchResults.final[i].subtitles[j].videoTitles.title + "\\n"
-      }
-
-      viewButtonString += "Exercises: \\n"
-      for (var k = 0; k < SearchResults.final[i].exercises.length; k++) {
-        viewButtonString += "Exercise " + (k + 1) + ": " + SearchResults.final[i].exercises[k].title + "\\n"
-      }
-
-      viewButtonString += "\')\">View details</button>";
-      currentString += viewButtonString + '<hr>';
-      res.write(currentString);
-    }
-    res.status(200).send();
+      console.log(userId);
+      console.log(SearchResults)
+    
+    res.status(200).json(SearchResults);
   }
   catch (err) {
+    console.log("Hiiiiiiiiiiii");
+
     if (err instanceof DomainError) {
       res.status(err.code).json({ code: err.code, message: err.message })
     } else {
+
+      //console.log(userId);
+      //console.log(username);
+    //  console.log();
+
       res.status(500).json({ code: 401, message: "Username or id incorrect" });
     }
   }
@@ -246,49 +242,29 @@ instructorRouter.get('/SearchInst', async (req, res) => {
 
 instructorRouter.get('/filter', async (req, res) => {
   try {
-    const username = req.query.username;
+    const session = sessionDetails.getSession(req.session.id);
+    const userId = session.userId;
+    const username = session.username;
     const subject = req.query.subject;
-    const userId = req.query.userId;
     const minPrice = req.query.minPrice;
     const maxPrice = req.query.maxPrice;
-
+    const search = req.query.search;
     const { type } = await Account.findOne({ _id: userId }, { type: 1 });
     if (type != 'INSTRUCTOR') {
       throw new DomainError("unauthorized user: not an instructor", 401);
     }
-
+    // console.log("hhhhh");
+    // console.log(search);
+    // console.log(subject);
+    // console.log(minPrice);
+    // console.log(maxPrice);
+    // console.log("hhhhhmmmmm");
 
     const FilterResult = await
-      instructorController.getFilterResult({ username, userId, subject, minPrice, maxPrice });
-    res.write('<h1>Filter results</h1> <hr>')
-    let currentString = " ";
-    let viewButtonString;
-    for (var i = 0; i < FilterResult.final2.length; i++) {
-      viewButtonString = "";
-      currentString = '<p> Course title: ' + FilterResult.final2[i].title + '<br>' +
-        'Total hours: ' + FilterResult.final2[i].totalHours + '<br>' +
-        'Rating: ' + FilterResult.final2[i].rating + '<br>' +
-        'Price: ' + FilterResult.final2[i].price + " " + FilterResult.currency + '<br>' +
-        'Summary: ' + FilterResult.final2[i].summary + '<br>' +
-        '</p> <hr>';
-      viewButtonString += "<button onclick=\"alert(\'Course Details: \\nSubtitles: \\n"
+      instructorController.getFilterResult({ username, userId, subject, minPrice, maxPrice,search });
+    //console.log(FilterResult);
 
-      for (var j = 0; j < FilterResult.final2[i].subtitles.length; j++) {
-        viewButtonString += "Subtitle " + (j + 1) + ": " + FilterResult.final2[i].subtitles[j].text + ", total hours: " + FilterResult.final2[i].subtitles[j].hours +
-          ", Video Title: " + FilterResult.final2[i].subtitles[j].videoTitles.title + "\\n"
-      }
-
-      viewButtonString += "Exercises: \\n"
-      for (var k = 0; k < FilterResult.final2[i].exercises.length; k++) {
-        viewButtonString += "Exercise " + (k + 1) + ": " + FilterResult.final2[i].exercises[k].title + "\\n"
-      }
-
-      viewButtonString += "\')\">View details</button>";
-      currentString += viewButtonString + '<hr>';
-      res.write(currentString);
-    }
-
-    res.status(200).send();
+    res.status(200).json(FilterResult);
   }
 
   catch (err) {

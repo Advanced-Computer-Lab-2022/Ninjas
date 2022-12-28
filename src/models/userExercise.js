@@ -21,6 +21,10 @@ const userExerciseSchema = new Schema({
         min: 0,
         max: 100
     },
+    viewedAnswers:{
+        type: Boolean,
+        default: false,
+    }
 
 })
 
