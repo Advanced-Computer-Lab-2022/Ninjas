@@ -310,12 +310,14 @@ instructorRouter.post('/createcourse', async (req, res) => {
 
 instructorRouter.put('/changePassword',async(req,res) => {
   try{
-  const userId = req.body.userId;
-  const oldPassword = req.body.oldPassword;
+  const session = sessionDetails.getSession(req.session.id);
+  const userId = session.userId;
+  const oldPassword= req.body.oldPassword;
   const newPassword = req.body.newPassword;
     await instructorController.changePassword({ userId, oldPassword, newPassword });
     res.status(200).json("Update Succesfully");}
     catch (err) {
+      console.log(err);
       if (err instanceof DomainError) {
         res.status(err.code).json({ code: err.code, message: err.message })
       } else {
@@ -326,10 +328,11 @@ instructorRouter.put('/changePassword',async(req,res) => {
 
 instructorRouter.put('/editEmail', async (req, res) => {
   try {
-    const userId = req.body.userId;
-    const oldEmail = req.body.oldEmail;
+    const session = sessionDetails.getSession(req.session.id);
+    const userId = session.userId
     const newEmail = req.body.newEmail;
-    await instructorController.editEmail({ userId, oldEmail, newEmail });
+    console.log(newEmail);
+    await instructorController.editEmail({ userId,newEmail });
     res.status(200).json("Update Succesfully");
   }
   catch (err) {
@@ -344,7 +347,8 @@ instructorRouter.put('/editEmail', async (req, res) => {
 
 instructorRouter.put('/editBiography', async (req, res) => {
   try {
-    const userId = req.body.userId;
+    const session = sessionDetails.getSession(req.session.id);
+    const userId = session.userId;
     const newText = req.body.newText;
     await instructorController.editBiography({ userId, newText });
     res.status(200).json("Update Succesfully");

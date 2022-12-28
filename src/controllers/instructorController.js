@@ -8,6 +8,7 @@ const DomainError = require("../error/domainError");
 const { Video } = require('../models/video');
 const { Exercise } = require('../models/exercise');
 const { question } = require('../models/question');
+const bcrypt = require('bcrypt')
 var subtitlesArray = [subtitleSchema];
 var Totalhrs = 0;
 let questionArray = [];
@@ -52,23 +53,31 @@ const instructorController = {
         userId, oldPassword, newPassword
     }) {
         try {
-
+            const salt = await bcrypt.genSalt();
+            //hashes pw
+            const hashedPassword = await bcrypt.hash(newPassword, salt);
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
+            console.log(user.password)
             if(newPassword.length<6){
                 throw new DomainError("Password Length must be atleast 6", 400);
             }
-            if(newPassword==user.password){
-                throw new DomainError("Cant't change new password to old password", 400);
+            console.log("inn");
+            console.log(user);
+            const correct2=await bcrypt.compare(newPassword, user.password);
+            console.log(correct2);
+            if(correct2){
+                 throw new DomainError("Cant't change new password to old password", 400);
+             }
+            const correct=await bcrypt.compare(oldPassword,user.password);
+            console.log(correct);
+            if(correct){
+                await Account.updateOne({_id:userId}, {password: hashedPassword})
             }
-            if(user.password == oldPassword){
-                
-                await Account.updateOne({_id:userId}, {password: newPassword})
-            }
-            else{
-                throw new DomainError("Old Password is incorrect, try again", 400);
-            }
+            if(!correct) {             
+            throw new DomainError("Old Password is incorrect, try again", 400);}
+            
 
 
 
@@ -84,12 +93,12 @@ const instructorController = {
 
     async editEmail({
 
-        userId, oldEmail, newEmail
+        userId, newEmail
     }) {
         try {
-            if(userId=="" || oldEmail=="" || newEmail==""){
-                throw new DomainError("All fields must be filled", 400)
-            }
+            // if(userId=="" || oldEmail=="" || newEmail==""){
+            //     throw new DomainError("All fields must be filled", 400)
+            // }
             const x = validateEmail(newEmail);
             if(!x) {
                 throw new DomainError("Wrong email format", 400)
@@ -99,8 +108,7 @@ const instructorController = {
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
-            console.log(oldEmail);
-            if (user.email == oldEmail) {
+
 
 
             let o = await Account.findOne({email: newEmail});
@@ -119,7 +127,7 @@ const instructorController = {
 
                 }
 
-            }
+            
 
 
 
@@ -137,9 +145,9 @@ const instructorController = {
         userId, newText
     }) {
         try {
-            if(userId=="" || newText==""){
-                throw new DomainError("All fields must be filled", 400)
-            }
+            // if(userId=="" || newText==""){
+            //     throw new DomainError("All fields must be filled", 400)
+            // }
             
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
@@ -148,6 +156,7 @@ const instructorController = {
                 throw new DomainError("Biography must be at least 20 characters", 400)
             }
             else{
+                console.log('update');
             await Account.updateOne({_id: userId}, {biography: newText});}
 
 
@@ -506,6 +515,7 @@ const instructorController = {
             throw new DomainError("Wrong Id", 400)
         });
         try {
+            
             const newQuestion = new question({
                 questionText: title,
                 mcqs: [mcq1, mcq2, mcq3, mcq4],
@@ -528,21 +538,23 @@ const instructorController = {
 
     
         try { 
-            courseId2=courseId.split(" ")
-            subtitle=courseId2[1].split("=")
-            subtitleId2=subtitle[1].toString()
-            const c=await Course.findOne({_id:courseId2[0].toString()})
-           
+            console.log(courseId)
+            console.log(subtitleId)
+           // courseId2=courseId.split(" ")
+           // subtitle=courseId2[1].split("=")
+           // subtitleId2=subtitle[1].toString()
+            const c=await Course.findOne({_id:courseId})
+           console.log(c);
                 const newExercise = new Exercise({
                     title: title,
-                    subtitleId:subtitleId2,
+                    subtitleId:subtitleId,
                     questions: questionArray
                 })
 
                 questionArray=[]
                 await newExercise.save()
-                const s=await Subtitle.findOne({_id:subtitleId2})
-                 await Subtitle.updateOne({_id:subtitleId2}, {$push: { exercises: newExercise }})
+                const s=await Subtitle.findOne({_id:subtitleId})
+                 await Subtitle.updateOne({_id:subtitleId}, {$push: { exercises: newExercise }})
     //            await Course.findOneandUpdate({_id:courseId2 , "subtitles._id":subtitleId2},{$set:{
     //             "subtitles.$.text":"sub1"
     // }})
@@ -710,6 +722,7 @@ try {
     async addQuestion2({ questionText, mcq1,mcq2,mcq3,mcq4, correctAnswer, totalCredit}) {
 
          try {
+            console.log(questionText,mcq1,mcq2,mcq3,mcq4,correctAnswer,totalCredit);
             const newQuestion = new question({
              questionText: questionText,
              mcqs:[mcq1,mcq2,mcq3,mcq4],

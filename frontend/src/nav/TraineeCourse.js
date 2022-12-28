@@ -1,64 +1,26 @@
 import * as React from 'react';
-import { styled, createTheme, ThemeProvider , alpha} from '@mui/material/styles';
+import { createTheme, ThemeProvider} from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import MainFeaturedPost from './MainFeaturedPost';
-import FeaturedPost from './FeaturedPost';
-import InstructorNav from './InstructorNav';
-import { useEffect,useState } from 'react';
-import axios from "axios";
-import previewPic from '../coursesSearch2.jpg';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
-import CardMedia from '@mui/material/CardMedia';
-import ReactPlayer from 'react-player/youtube';
-import {Rating} from '@mui/material';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import home from '../home3.jpeg' ;
-const instructorNav = {};
+import Container from '@mui/material/Container';
+import Grid from '@mui/material/Grid';
+import TraineeNav from './TraineeNav';
+import { useEffect,useState } from 'react';
+import axios from "axios";
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import ReactPlayer from 'react-player/youtube';
+import {Rating} from '@mui/material';
 
-const mainFeaturedPost = {
-    title: 'Title of a longer featured blog post',
-    description:
-      "Multiple lines of text that form the lede, informing new readers quickly and efficiently about what's most interesting in this post's contents.",
-    image: 'https://source.unsplash.com/random',
-    imageText: 'main image description',
-    linkText: 'Continue reading…',
-  };
+const traineeNav = {};
 
-  const featuredPosts = [
-    {
-      title: 'Featured post',
-      date: 'Nov 12',
-      description:
-        'This is a wider card with supporting text below as a natural lead-in to additional content.',
-      image: 'https://source.unsplash.com/random',
-      imageLabel: 'Image Text',
-    },
-    {
-      title: 'Post title',
-      date: 'Nov 11',
-      description:
-        'This is a wider card with supporting text below as a natural lead-in to additional content.',
-      image: 'https://source.unsplash.com/random',
-      imageLabel: 'Image Text',
-    },
-  ];
 
-  
-  const drawerWidth = 240;
   const Temp = () => {
-  
-  const mdTheme = createTheme();
-  
-    const [open, setOpen] = React.useState(false);
-    const toggleDrawer = () => {
-      setOpen(!open);
-    };
+ 
     const [course,setCourse] = useState(async () => {
-      await axios.get('http://localhost:8000/mostPopularCourses')
+      await axios.get('http://localhost:8000/viewEnrolledCourses')
       .then(res => setCourse(res.data))
       .catch(err => {
         if (err.response.status === 401) //you didn't login
@@ -72,16 +34,19 @@ const mainFeaturedPost = {
             setReady(true);
         }
     }, [course]);
+
+  
+  const mdTheme = createTheme();
+   
+    
   
     return (
       <ThemeProvider theme={mdTheme}>
         <Box sx={{ display: 'flex'  }}>
         
           <CssBaseline />
-
-          <InstructorNav post={instructorNav}/>
-         
-         
+          <TraineeNav post={traineeNav}/>
+          
           <Box
             component="main"
             sx={{
@@ -97,9 +62,11 @@ const mainFeaturedPost = {
                       
 
         <main>
-          <MainFeaturedPost post={mainFeaturedPost} />
-          {/* start of card popular */}
-             <Toolbar >
+        <Typography component="h1" variant="h4" align="left" sx={{mt:11,ml:3}}>
+            My Courses
+          </Typography>
+          <Toolbar sx={{mt:2}}>
+          
           <Grid container spacing={2} sx={{ ml: 1 , mt:0.5 , mb:2}} style={{ gap: 20 }}>
 
 
@@ -113,18 +80,16 @@ const mainFeaturedPost = {
  },   backgroundColor: 'white' }} style={{width:"48%", height:"200px"}} 
 onClick={()=>{window.location.href=`course/${course._id}`}} >
 
- <CardMedia
- allow="autoPlay"
- controls={true}
-         component="img"
-      sx={{ width: 250 }}
-    
-      // //style={{ width: 150, height: 200 }}
-         src={home}
-        alt="Preview"
-      > 
-
-  </CardMedia> 
+{(course.videoLink) &&
+ <ReactPlayer url={course.videoLink}
+                        controls={true}
+                         alt="preview"
+                        allow='autoplay'
+                         width= '280px'
+                         height = 'relative' 
+                        /> 
+}  
+ 
 {/*if video hntl30 else hntl3 sora*/}
 
     
@@ -180,9 +145,21 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
                     
     </Grid>
     </Toolbar>
-      {/* end of card popular */}
         </main>
       
+            <Toolbar />
+            <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
+              <Grid container spacing={3}>
+               
+              </Grid>
+            </Container>
+  
+  
+  
+           
+        
+  
+  
     
           </Box>
         </Box>

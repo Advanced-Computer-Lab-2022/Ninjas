@@ -370,17 +370,17 @@ const CoursePage = () => {
                                 }}
                             >
                                 <Typography component="h1" variant="h3" color="inherit" gutterBottom>
-                                    {course.subject}
+                                    Subject: {course.subject}
                                 </Typography>
                                 <Typography variant="h5" color="inherit" paragraph>
-                                    {course.title}
+                                    Title: {course.title}
                                 </Typography>
-                                <Typography variant="subtitle1" sx={{ ml: 3 }}>
+                                <Typography variant="subtitle1">
                                     Taught by {course.instructors[0].firstName} {course.instructors[0].lastName}
                                     <br></br>
                                     {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) &&
-                                        <Button variant="contained"
-                                            sx={{ ml: -3, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                        <Button variant="contained" size="small"
+                                            sx={{align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                             onClick={openInstRate}>
                                             Rate this instructor
                                         </Button>
@@ -398,24 +398,25 @@ const CoursePage = () => {
                                 <Typography variant="subtitle1">{course.summary}</Typography>
                                 <Typography variant="subtitle1"> Current course rating: <Rating defaultValue={course.rating} precision={0.1} readOnly /></Typography>
                                 <Typography variant="subtitle1"> The total hours of the course: {course.totalHours} </Typography>
-                                <Typography variant="subtitle1"> Current number of enrolled students: {course.numberOfRegistered} </Typography>
+                                <Typography variant="subtitle1"> Current number of enrolled students: {course.students.length} </Typography>
                                 {/*dealing with the course price*/}
 
                                 {!["CORPORATE_TRAINEE", "ADMIN", "INSTRUCTOR"].includes(user.type) &&
-                                    !registered &&
                                     course.discount > 0 &&
                                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                                         <Typography variant="subtitle1">
-                                            This course is on sale for {course.discountDuration} days!
+                                            This course is on sale until {new Date(course.discountDuration).toLocaleDateString()} !
                                         </Typography>
                                         <Typography variant="subtitle1">
-
-                                            <Text style={{ textDecorationLine: 'line-through' }}>{price}</Text>
-                                            {afterdiscount}  {currency}
+                                        from
+                                            <Text style={{ textDecorationLine: 'line-through' }}>  {price}     </Text>
+                                           
+                                              <Text>   to {afterdiscount}  {currency} </Text>
+                                              
                                         </Typography>
                                     </div>
                                 }
-                                {!["CORPORATE_TRAINEE", "ADMIN", "INSTRUCTOR"].includes(user.type) && course.discount === 0 && !registered &&
+                                {!["CORPORATE_TRAINEE", "ADMIN", "INSTRUCTOR"].includes(user.type) && course.discount === 0 &&
                                     <Typography variant="subtitle1">
                                         This course currently costs {price} {currency}
                                     </Typography>
@@ -501,8 +502,7 @@ const CoursePage = () => {
                                 course.subtitles.map((subtitle) => (
                                     <Box
                                         sx={{
-                                            mb: 2,
-                                            mr: 15,
+                                            mb: 2, mr:1,
                                             p: 1, border: '3px dashed grey',
                                             borderColor: '#00B4D8'
                                         }}>
@@ -542,6 +542,8 @@ const CoursePage = () => {
                                             user.type == 'INSTRUCTOR' && registered &&
                                             <Button
                                                 sx={{ mt: 1, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                                onClick={() => 
+                                                    window.location.href=`/exercise?courseId=${course._id}&&subtitleId=${subtitle._id}`}
                                             >
                                                 Add another exercise
                                             </Button>
@@ -566,13 +568,13 @@ const CoursePage = () => {
                             <Box
                                 sx={{
                                     mb: 2,
-                                    mr: 10,
+                                    mr: 1,
                                     p: 1, border: 2, borderColor: '#00B4D8'
                                 }}>
                                 <Typography color="#03045E" sx={{ width: 155, fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}> Course reviews </Typography>
                                 {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) && registered
                                 && course.reviews.filter(r => r.id===user._id.toString()).length===0 &&
-                                    <Button sx={{ ml: 140, mt: -5, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                    <Button sx={{ ml: 150, mt: -5, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                         onClick={handleClickOpen}
                                     >
                                     Rate this course
@@ -580,7 +582,7 @@ const CoursePage = () => {
                                 }
                                 {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) && registered
                                 && course.reviews.filter(r => r.id===user._id.toString()).length>0 &&
-                                    <Button sx={{ ml: 140, mt: -5, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                    <Button sx={{ ml: 150, mt: -5, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                         onClick={handleClickOpen}
                                     >
                                     Update my rating
