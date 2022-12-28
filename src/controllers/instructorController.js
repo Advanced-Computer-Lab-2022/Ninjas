@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const { Account } = require("../models/account");
+const { Account, accountSchema } = require("../models/account");
 const { Course, countryPriceDetails } = require("../models/courses");
 const  InstructorToCourses  = require("../models/InstructorToCourses");
 const { exerciseSchema } = require('../models/exercise');
@@ -356,6 +356,7 @@ const instructorController = {
                 // for (var i = 0; i < final.length; i++) {
                 //     final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
                 // }
+                console.log(final);
                 return { courses: final, currency: details.currency, userType: 'INSTRUCTOR' };
             }
             if(subject !== "" && minPrice == "" && maxPrice == ""){
@@ -449,59 +450,39 @@ const instructorController = {
     },
 
 
-    async createcourse({ instructorId, subject, title, price, summary, totalHours ,link }) {
-        const thisInstructor = await Account.findOne({ _id: instructorId }).catch(() => {
-            throw new DomainError("Wrong Id", 400)
-        });
+    async createcourse({subject, price, totalHours, summary, title, instructorId ,videoLink }) {
+       
         try {
-            //Totalhrs = 0;
-            // const subtitlesArray = [];
-            // const exArray = [];
-            // const myArray = subtitles.split(",");
-            // const myArrayEx = exercises.split(",");
-            // for (var i = 0; i < myArray.length; i++) {
-            //     var v = new Video({
-            //         title: myArray[i].split(":")[2].split(";")[0].toString(),
-            //         link: myArray[i].split(":")[2].split(";")[1].toString(),
-            //         description: myArray[i].split(":")[2].split(";")[2].toString(),
+            const thisInstructor = await Account.findOne({ _id: instructorId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+            let i = [];
+            var res = videoLink.split("=");
+            var embeddedUrl = "https://www.youtube.com/embed/"+res[1];
 
-
-            //     })
-            //     var s = new Subtitle({
-            //         text: myArray[i].split(":")[0].toString(),
-            //         hours: parseInt(myArray[i].split(":")[1]),
-            //         videoTitles: v
-            //     })
-
-            //     //s.save();
-            //     subtitlesArray.push(s);
-            // }
-
-            // for (var j = 0; j < myArrayEx.length; j++) {
-            //     var e = new Exercise({
-            //         title: myArrayEx[j].toString()
-            //     })
-            //     exArray.push(e);
-
-            // }
-
+           
+            console.log("helllooo");
+            console.log(thisInstructor);
 
             const Newcourse = new Course({
                 subject: subject,
                 price: price,
-                //subtitles: subtitlesArray, ///should it be empty array as exercises --1....
+                totalHours: totalHours,
                 summary: summary,
                 title: title,
-                totalHours: totalHours,
-               // totalHours: await this.calculateHours(subtitlesArray),  ///--1 if so how total hours will be calculated....
-               // exercises: exArray,
-                instructors: [thisInstructor],
-                link: link
+                videoLink: embeddedUrl
             })
+            Newcourse.instructors.push(thisInstructor)
+            // console.log(Newcourse);
+            // console.log("hiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii");
+            // console.log(Newcourse);
 
-            Newcourse.save();
+        Newcourse.save();
+        return Newcourse;
         } catch (err) {
-            if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+            if (err._message && err._message == 'Course validation failed') { 
+                console.log(err);
+                throw new DomainError('validation Error', 400); }
             throw new DomainError('error internally', 500);
 
 

@@ -278,11 +278,11 @@ instructorRouter.get('/filter', async (req, res) => {
 })
 
 
-instructorRouter.post('/createcourse', async (req, res) => {
+instructorRouter.put('/createcourse', async (req, res) => {
   try {
     const session = sessionDetails.getSession(req.session.id);
     const instructorId = session.userId;
-    const { subject, title, price, summary, subtitles, exercises } = req.body;
+    const { subject, price, totalHours, summary, title, videoLink } = req.body;
     console.log(instructorId);
 
     const { type } = await Account.findOne({ _id: instructorId }, { type: 1 });
@@ -290,14 +290,12 @@ instructorRouter.post('/createcourse', async (req, res) => {
       throw new DomainError("unauthorized user: not an instructor", 401);
     }
 
-
-
     const CreateResults = await
-      instructorController.createcourse({ instructorId, subject, title, price, summary, subtitles, exercises });
-    //CreateResults.save();
-    res.write('<h1> course created successfully</h1>');
-    res.status(200).send();
+      instructorController.createcourse({ subject, price, totalHours, summary, title, instructorId , videoLink });
 
+     if (!CreateResults)
+      res.status(500).send("notCreated");
+    else res.status(200).json(CreateResults);
   }
   catch (err) {
     if (err instanceof DomainError) {
