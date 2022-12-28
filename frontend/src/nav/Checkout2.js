@@ -89,6 +89,13 @@ export default function Checkout() {
             Checkout
           </Typography>
           <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+              </Stepper>
+          <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
             {activeStep===0?(<React.Fragment>
      
       <Grid container spacing={3}>
@@ -171,7 +178,7 @@ export default function Checkout() {
       <Grid container spacing={2}>
         <Grid item xs={12} sm={6}>
           <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
-            Shipping
+          
           </Typography>
           <Typography gutterBottom>John Smith</Typography>
           {/* <Typography gutterBottom>{addresses.join(', ')}</Typography> */}
