@@ -35,7 +35,7 @@ const coursesSchema = new Schema({
     },
     instructors: {
         type: [accountSchema],
-        required: true
+        default: []
 
     },
     subtitles: {
