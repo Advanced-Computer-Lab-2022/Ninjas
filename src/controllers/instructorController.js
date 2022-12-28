@@ -8,6 +8,7 @@ const DomainError = require("../error/domainError");
 const { Video } = require('../models/video');
 const { Exercise } = require('../models/exercise');
 const { question } = require('../models/question');
+const bcrypt = require('bcrypt')
 var subtitlesArray = [subtitleSchema];
 var Totalhrs = 0;
 let questionArray = [];
@@ -52,23 +53,31 @@ const instructorController = {
         userId, oldPassword, newPassword
     }) {
         try {
-
+            const salt = await bcrypt.genSalt();
+            //hashes pw
+            const hashedPassword = await bcrypt.hash(newPassword, salt);
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
+            console.log(user.password)
             if(newPassword.length<6){
                 throw new DomainError("Password Length must be atleast 6", 400);
             }
-            if(newPassword==user.password){
-                throw new DomainError("Cant't change new password to old password", 400);
+            console.log("inn");
+            console.log(user);
+            const correct2=await bcrypt.compare(newPassword, user.password);
+            console.log(correct2);
+            if(correct2){
+                 throw new DomainError("Cant't change new password to old password", 400);
+             }
+            const correct=await bcrypt.compare(oldPassword,user.password);
+            console.log(correct);
+            if(correct){
+                await Account.updateOne({_id:userId}, {password: hashedPassword})
             }
-            if(user.password == oldPassword){
-                
-                await Account.updateOne({_id:userId}, {password: newPassword})
-            }
-            else{
-                throw new DomainError("Old Password is incorrect, try again", 400);
-            }
+            if(!correct) {             
+            throw new DomainError("Old Password is incorrect, try again", 400);}
+            
 
 
 
@@ -84,12 +93,12 @@ const instructorController = {
 
     async editEmail({
 
-        userId, oldEmail, newEmail
+        userId, newEmail
     }) {
         try {
-            if(userId=="" || oldEmail=="" || newEmail==""){
-                throw new DomainError("All fields must be filled", 400)
-            }
+            // if(userId=="" || oldEmail=="" || newEmail==""){
+            //     throw new DomainError("All fields must be filled", 400)
+            // }
             const x = validateEmail(newEmail);
             if(!x) {
                 throw new DomainError("Wrong email format", 400)
@@ -99,8 +108,7 @@ const instructorController = {
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
-            console.log(oldEmail);
-            if (user.email == oldEmail) {
+
 
 
             let o = await Account.findOne({email: newEmail});
@@ -119,7 +127,7 @@ const instructorController = {
 
                 }
 
-            }
+            
 
 
 
@@ -137,9 +145,9 @@ const instructorController = {
         userId, newText
     }) {
         try {
-            if(userId=="" || newText==""){
-                throw new DomainError("All fields must be filled", 400)
-            }
+            // if(userId=="" || newText==""){
+            //     throw new DomainError("All fields must be filled", 400)
+            // }
             
             const user = await Account.findOne({ _id: userId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
@@ -148,6 +156,7 @@ const instructorController = {
                 throw new DomainError("Biography must be at least 20 characters", 400)
             }
             else{
+                console.log('update');
             await Account.updateOne({_id: userId}, {biography: newText});}
 
 
@@ -229,7 +238,6 @@ const instructorController = {
 
         try {
             const final = [];
-
             const result3 = []
             const courses = await Course.find({
 
@@ -244,14 +252,13 @@ const instructorController = {
                 }
 
             }
-
-
             const user = await Account.findOne({ _id: userId }, { country: 1 }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });;
 
             for (var i = 0; i < result3.length; i++) {
-                if (result3[i].subject.toString().includes(search) || result3[i].title.toString().includes(search)) {
+                if (result3[i].subject.toString().toLowerCase().includes(search.toString().toLowerCase()) || 
+                result3[i].title.toString().toLowerCase().includes(search.toString().toLowerCase())) {
 
                     final.push(result3[i]);
 
@@ -260,18 +267,16 @@ const instructorController = {
 
                     for (var j = 0; j < result3[i].instructors.length; j++) {
 
-                        if (result3[i].instructors[j].firstName.toString().includes(search) ||
-                            result3[i].instructors[j].lastName.toString().includes(search) ||
-                            result3[i].instructors[j].username.toString().includes(search)
+                        if (result3[i].instructors[j].firstName.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+                            result3[i].instructors[j].lastName.toString().toLowerCase().includes(search.toString().toLowerCase()) ||
+                            result3[i].instructors[j].username.toString().toLowerCase().includes(search.toString().toLowerCase())
                         ) {
-                            final.push(result3[i])
-
+                            final.push(result3[i]);
                         }
 
                     }
 
                 }
-
 
             }
             let details = countryPriceDetails.get(user.country);
@@ -279,7 +284,8 @@ const instructorController = {
                 // price = price x factor x discount
                 final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
             }
-            return { final, currency: details.currency };
+          
+            return { courses: final, currency: details.currency, userType: 'INSTRUCTOR' };
         }
         catch (err) {
             throw new DomainError('error internally', 500);
@@ -287,80 +293,127 @@ const instructorController = {
 
 
     },
+
+
     async getFilterResult({
 
-        username, userId, subject, minPrice, maxPrice
+        username, userId, subject, minPrice, maxPrice, search
     }) {
 
         try {
-            const final = [];
-            const final2 = [];
-
-            const result3 = []
-            const courses = await Course.find({
-
-            })
-
-            for (var i = 0; i < courses.length; i++) {
-                for (var j = 0; j < courses[i].instructors.length; j++) {
-                    if (courses[i].instructors[j].username && courses[i].instructors[j].username == username) {
-                        result3.push(courses[i]);
-                        break;
-                    }
-
-                }
-
-            }
-
-
+            let final = [];
+            const courses = (await this.getSearchResult({username, search, userId})).courses;
+            console.log(courses);
             const user = await Account.findOne({ _id: userId }, { country: 1 }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });;
-
-            let details = countryPriceDetails.get(user.country);
-            for (var i = 0; i < result3.length; i++) {
-                // price = price x factor x discount
-                result3[i].price = result3[i].price * details.factor * ((100 - details.discount) / 100);
+            
+            if(subject == "" && minPrice == "" && maxPrice == ""){
+                let details = countryPriceDetails.get(user.country);
+           
+                // for (var i = 0; i < courses.length; i++) {
+                //     courses[i].price = courses[i].price * details.factor * ((100 - details.discount) / 100);
+                // }
+                return { courses: courses, currency: details.currency, userType: 'INSTRUCTOR' };
+            }
+            if(subject == "" && minPrice == "" && maxPrice !== ""){
+                final = [];
+                let details = countryPriceDetails.get(user.country);
+                // for (var i = 0; i < courses.length; i++) {
+                //     courses[i].price = courses[i].price * details.factor * ((100 - details.discount) / 100);
+                // }
+                for(var i=0; i< courses.length; i++){
+                    if(courses[i].price <= maxPrice)
+                       final.push(courses[i]);
+                }
+                return { courses: final, currency: details.currency, userType: 'INSTRUCTOR' };
+            }
+            if(subject == "" && minPrice !== "" && maxPrice == ""){
+                final = [];
+                let details = countryPriceDetails.get(user.country);
+                // for (var i = 0; i < courses.length; i++) {
+                //     courses[i].price = courses[i].price * details.factor * ((100 - details.discount) / 100);
+                // }
+                for(var i=0; i< courses.length; i++){
+                    if(courses[i].price >= minPrice)
+                      final.push(courses[i]);
+                }
+                // let details = countryPriceDetails.get(user.country);
+           
+                // // for (var i = 0; i < final.length; i++) {
+                // //     final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
+                // }
+                return { courses: final, currency: details.currency, userType: 'INSTRUCTOR' };
+            }
+            if(subject == "" && minPrice !== "" && maxPrice !== ""){
+                final = [];
+                for(var i=0; i< courses.length; i++){
+                    if(courses[i].price >= minPrice && courses[i].price <= maxPrice)
+                        final.push(courses[i]);
+                }
+                let details = countryPriceDetails.get(user.country);
+           
+                // for (var i = 0; i < final.length; i++) {
+                //     final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
+                // }
+                return { courses: final, currency: details.currency, userType: 'INSTRUCTOR' };
+            }
+            if(subject !== "" && minPrice == "" && maxPrice == ""){
+                final = [];
+                for(var i=0; i< courses.length; i++){
+                    if(courses[i].subject.toString().toLowerCase() == subject.toString().toLowerCase())
+                        final.push(courses[i]);
+                }
+                let details = countryPriceDetails.get(user.country);
+           
+                // for (var i = 0; i < final.length; i++) {
+                //     final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
+                // }
+                return { courses: final, currency: details.currency, userType: 'INSTRUCTOR' };
+            }
+            if(subject !== "" && minPrice == "" && maxPrice !== ""){
+                final = [];
+                for(var i=0; i< courses.length; i++){
+                    if(courses[i].subject.toString().toLowerCase() == subject.toString().toLowerCase() 
+                    && courses[i].price <= maxPrice)
+                        final.push(courses[i]);
+                }
+                let details = countryPriceDetails.get(user.country);
+           
+                // for (var i = 0; i < final.length; i++) {
+                //     final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
+                // }
+                return { courses: final, currency: details.currency, userType: 'INSTRUCTOR' };
+            }
+            if(subject !== "" && minPrice !== "" && maxPrice == ""){
+                final = [];
+                for(var i=0; i< courses.length; i++){
+                    if(courses[i].subject.toString().toLowerCase() == subject.toString().toLowerCase() 
+                    && courses[i].price >= minPrice)
+                        final.push(courses[i]);
+                }
+                let details = countryPriceDetails.get(user.country);
+           
+                // for (var i = 0; i < final.length; i++) {
+                //     final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
+                // }
+                return { courses: final, currency: details.currency, userType: 'INSTRUCTOR' };
+            }
+            if(subject !== "" && minPrice !== "" && maxPrice !== ""){
+                final = [];                
+                for(var i=0; i< courses.length; i++){
+                    if(courses[i].subject.toString().toLowerCase() == subject.toString().toLowerCase() 
+                    && courses[i].price >= minPrice && courses[i].price <= maxPrice)
+                        final.push(courses[i]);
+                }
+                let details = countryPriceDetails.get(user.country);
+           
+                // for (var i = 0; i < final.length; i++) {
+                //     final[i].price = final[i].price * details.factor * ((100 - details.discount) / 100);
+                // }
+                return { courses: final, currency: details.currency, userType: 'INSTRUCTOR' };
             }
 
-            for (var i = 0; i < result3.length; i++) {
-                if (result3[i].subject.toString().toLowerCase().includes(subject.toLowerCase())) {
-                    final.push(result3[i]);
-
-                }
-                else if (subject == "") { final.push(result3[i]); }
-            }
-
-
-            for (j = 0; j < final.length; j++) {
-                if (maxPrice != "" && minPrice == "") {
-                    if (final[j].price <= parseInt(maxPrice)) {
-                        final2.push(final[j]);
-                    }
-                }
-                if (minPrice != "" && maxPrice == "") {
-
-                    if (final[j].price >= parseInt(minPrice)) {
-                        final2.push(final[j]);
-                    }
-                }
-                if (minPrice != "" && minPrice != "") {
-                    if (final[j].price >= parseInt(minPrice) && final[j].price <= parseInt(maxPrice)) {
-                        final2.push(final[j]);
-                    }
-                }
-
-                if (minPrice == "" && maxPrice == "") {
-                    final2.push(final[j]);
-                }
-            }
-
-
-
-
-
-
-            return { final2, currency: details.currency };
         }
         catch (err) {
             throw new DomainError('error internally', 500);
@@ -396,52 +449,52 @@ const instructorController = {
     },
 
 
-    async createcourse({ instructorId, subject, title, price, summary, subtitles, exercises, link }) {
+    async createcourse({ instructorId, subject, title, price, summary, totalHours ,link }) {
         const thisInstructor = await Account.findOne({ _id: instructorId }).catch(() => {
             throw new DomainError("Wrong Id", 400)
         });
         try {
-            Totalhrs = 0;
-            const subtitlesArray = [];
-            const exArray = [];
-            const myArray = subtitles.split(",");
-            const myArrayEx = exercises.split(",");
-            for (var i = 0; i < myArray.length; i++) {
-                var v = new Video({
-                    title: myArray[i].split(":")[2].split(";")[0].toString(),
-                    link: myArray[i].split(":")[2].split(";")[1].toString(),
-                    description: myArray[i].split(":")[2].split(";")[2].toString(),
+            //Totalhrs = 0;
+            // const subtitlesArray = [];
+            // const exArray = [];
+            // const myArray = subtitles.split(",");
+            // const myArrayEx = exercises.split(",");
+            // for (var i = 0; i < myArray.length; i++) {
+            //     var v = new Video({
+            //         title: myArray[i].split(":")[2].split(";")[0].toString(),
+            //         link: myArray[i].split(":")[2].split(";")[1].toString(),
+            //         description: myArray[i].split(":")[2].split(";")[2].toString(),
 
 
-                })
-                var s = new Subtitle({
-                    text: myArray[i].split(":")[0].toString(),
-                    hours: parseInt(myArray[i].split(":")[1]),
-                    videoTitles: v
-                })
+            //     })
+            //     var s = new Subtitle({
+            //         text: myArray[i].split(":")[0].toString(),
+            //         hours: parseInt(myArray[i].split(":")[1]),
+            //         videoTitles: v
+            //     })
 
-                //s.save();
-                subtitlesArray.push(s);
-            }
+            //     //s.save();
+            //     subtitlesArray.push(s);
+            // }
 
-            for (var j = 0; j < myArrayEx.length; j++) {
-                var e = new Exercise({
-                    title: myArrayEx[j].toString()
-                })
-                exArray.push(e);
+            // for (var j = 0; j < myArrayEx.length; j++) {
+            //     var e = new Exercise({
+            //         title: myArrayEx[j].toString()
+            //     })
+            //     exArray.push(e);
 
-            }
+            // }
 
 
             const Newcourse = new Course({
                 subject: subject,
                 price: price,
-                subtitles: subtitlesArray, ///should it be empty array as exercises --1....
+                //subtitles: subtitlesArray, ///should it be empty array as exercises --1....
                 summary: summary,
                 title: title,
-                totalHours: 10,
-                totalHours: await this.calculateHours(subtitlesArray),  ///--1 if so how total hours will be calculated....
-                exercises: exArray,
+                totalHours: totalHours,
+               // totalHours: await this.calculateHours(subtitlesArray),  ///--1 if so how total hours will be calculated....
+               // exercises: exArray,
                 instructors: [thisInstructor],
                 link: link
             })
@@ -462,6 +515,7 @@ const instructorController = {
             throw new DomainError("Wrong Id", 400)
         });
         try {
+            
             const newQuestion = new question({
                 questionText: title,
                 mcqs: [mcq1, mcq2, mcq3, mcq4],
@@ -484,21 +538,23 @@ const instructorController = {
 
     
         try { 
-            courseId2=courseId.split(" ")
-            subtitle=courseId2[1].split("=")
-            subtitleId2=subtitle[1].toString()
-            const c=await Course.findOne({_id:courseId2[0].toString()})
-           
+            console.log(courseId)
+            console.log(subtitleId)
+           // courseId2=courseId.split(" ")
+           // subtitle=courseId2[1].split("=")
+           // subtitleId2=subtitle[1].toString()
+            const c=await Course.findOne({_id:courseId})
+           console.log(c);
                 const newExercise = new Exercise({
                     title: title,
-                    subtitleId:subtitleId2,
+                    subtitleId:subtitleId,
                     questions: questionArray
                 })
 
                 questionArray=[]
                 await newExercise.save()
-                const s=await Subtitle.findOne({_id:subtitleId2})
-                 await Subtitle.updateOne({_id:subtitleId2}, {$push: { exercises: newExercise }})
+                const s=await Subtitle.findOne({_id:subtitleId})
+                 await Subtitle.updateOne({_id:subtitleId}, {$push: { exercises: newExercise }})
     //            await Course.findOneandUpdate({_id:courseId2 , "subtitles._id":subtitleId2},{$set:{
     //             "subtitles.$.text":"sub1"
     // }})
@@ -666,6 +722,7 @@ try {
     async addQuestion2({ questionText, mcq1,mcq2,mcq3,mcq4, correctAnswer, totalCredit}) {
 
          try {
+            console.log(questionText,mcq1,mcq2,mcq3,mcq4,correctAnswer,totalCredit);
             const newQuestion = new question({
              questionText: questionText,
              mcqs:[mcq1,mcq2,mcq3,mcq4],

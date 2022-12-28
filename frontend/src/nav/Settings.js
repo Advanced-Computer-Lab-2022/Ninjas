@@ -1,117 +1,207 @@
-import {Button,Typography,TextField} from "@mui/material";
+import * as React from 'react';
+import PropTypes from 'prop-types';
+import Button from '@mui/material/Button';
+import { styled } from '@mui/material/styles';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Typography from '@mui/material/Typography';
 import axios from "axios";
 import {useState,useEffect} from "react";
-import InstructorNav from './InstructorNav';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
+import { CircularProgress} from '@mui/material';
 import Box from '@mui/material/Box';
-import { Container } from "@mui/system";
+import Avatar from '@mui/material/Avatar';
+import Stack from '@mui/material/Stack';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import CreateIcon from '@mui/icons-material/Create'; //instructor
 import InputAdornment from '@mui/material/InputAdornment';
-import PlayCircleIcon from '@mui/icons-material/PlayCircle';
-import { Alert, AlertTitle, Backdrop, CircularProgress} from '@mui/material';
-import FormControl from '@mui/material/FormControl';
-import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Grid from '@mui/material/Grid';
-import * as React from 'react';
+import SettingsIcon from '@mui/icons-material/Settings'; //alll users
+import { ListItemIcon, ListItemText } from '@mui/material';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import {TextField} from "@mui/material";
 
-const instructorNav = {};
-
-const theme = createTheme();
-
-const ChangePassword =() => {
-    const[oldPassword,setOldPassword]=useState('');
-    const[newPassword,setNewPassword]=useState('');
-    const[newText,setNewText]=useState('');
-    const[newEmail,setNewEmail]=useState('');
-    const[wait,setWait]=useState(false);
-    const [user,setUser] = useState(async () => {
-      await axios.get('http://localhost:8000/userBySession')
-      .then(res => setUser(res.data))
-      setWait(true)
-      .catch(err => {
-        if (err.response.status === 401) //you didn't login
-        window.location.href='/';
-      })
-    })
-    const [ready, setReady] = useState(false);
-    useEffect(() => {
-        if (user._id) {
-            setReady(true);
-        }
-    }, [user])
-
-    const handleChangeNewEmail = (event) => {
-        setNewEmail(event.target.value);
+function stringToColor(string) {
+    let hash = 0;
+    let i;
+  
+    /* eslint-disable no-bitwise */
+    for (i = 0; i < string.length; i += 1) {
+      hash = string.charCodeAt(i) + ((hash << 5) - hash);
     }
-    const handleChangeNewText = (event) => {
-        setNewText(event.target.value);
+  
+    let color = '#';
+  
+    for (i = 0; i < 3; i += 1) {
+      const value = (hash >> (i * 8)) & 0xff;
+      color += `00${value.toString(16)}`.slice(-2);
     }
-    const handleChangeOldPassword = (event) => {
-        setOldPassword(event.target.value);
-    }
-    const handleChangeNewPassword = (event) => {
-        setNewPassword(event.target.value);
-    }
-   
+    /* eslint-enable no-bitwise */
+  
+    return color;
+  }
+function stringAvatar(name) {
+    return {
+      sx: {
+        bgcolor: stringToColor(name),
+      },
+      children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
+    };
+  }
 
-     const change = async ()=>{
-        const response=await axios.put(`http://localhost:8000/changePassword/`,{
-        oldPassword:oldPassword,
-        newPassword:newPassword}).
-        catch( (error) => alert(error.response.data.message))
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
 
-
-        console.log(response.data)
-        if(response.status===200){
-            alert(response.data)
-        }}
-        const [showPassword, setShowPassword] = React.useState(false);
-        const [editEmail, setEditEmail] = React.useState(false);
-        const [editPassword, setEditPassword] = React.useState(false);
-        const [editCountry, setEditCountry] = React.useState(false);
-        const [editBiography,setEditBiography] = React.useState(false);
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleEditEmail = () => setEditEmail((show) => !show);
-  const handleEditPassword = () => setEditPassword((show) => !show);
-  const handleEditCountry = () => setEditCountry((show) => !show);
-  const handleEditBiography= () => setEditBiography((show) => !show);
+function BootstrapDialogTitle(props) {
+  const { children, onClose, ...other } = props;
   
 
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+
+      
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+}
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired,
+};
+
+export default function CustomizedDialogs() {
+  const [open, setOpen] = React.useState(false);
+  
+  const[wait,setWait]=useState(false);
+  const [passwordSettings, setPasswordSettings] = useState(false);
+  const [countrySettings, setCountrySettings] = useState(false);
+
+
+const handlePassword = (event) => {
+    setPasswordSettings(true);
+    setCountrySettings(false);
+   
+};
+const handleCountry = (event) => {
+    setCountrySettings(true);
+    setPasswordSettings(false);
+   
+};
+
+  const [user,setUser] = useState(async () => {
+    await axios.get('http://localhost:8000/userBySession')
+    .then(res => setUser(res.data))
+    setWait(true)
+    .catch(err => {
+      if (err.response.status === 401) //you didn't login
+      window.location.href='/';
+    })
+  })
+
+  const[oldPassword,setOldPassword]=useState('');
+  const[newPassword,setNewPassword]=useState('');
+  const [ready, setReady] = useState(false);
+  useEffect(() => {
+      if (user._id) {
+          setReady(true);
+
+          
+      }
+  }, [user])
+  const handleClickBack = () => {
+
+    setPasswordSettings(false);
+    setCountrySettings(false);
+    setOpen(true);
+  };
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+  const handleClose = () => {
+    setPasswordSettings(false);
+    setCountrySettings(false);
+    setOpen(false);};
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
   };
-        
+  const [showPassword, setShowPassword] = React.useState(false);
+
+  const [editPassword, setEditPassword] = React.useState(false);
+  const [confrimPassword, setConfirmPassword] = React.useState(false);
+  const [editCountry, setEditCountry] = React.useState(false);
+
+
+const handleClickShowPassword = () => setShowPassword((show) => !show);
+const handleEditPassword = () => setEditPassword((show) => !show);
+const handleEditCountry = () => setEditCountry((show) => !show);
+
+
+const handleChangeOldPassowrd = (event) => {
+    setOldPassword(event.target.value)}
+
+const handleChangeNewPassword = (event) => {
+      setNewPassword(event.target.value)}
+  const handleChangeConfirmPassword = (event) => {
+        setConfirmPassword(event.target.value)}
+
+
+    const change3 = async ()=>{
+      const response=await axios.put(`http://localhost:8000/changePassword/`,{
+      oldPassword:oldPassword,
+      newPassword:newPassword}).
+      catch( (error) => alert(error.response.data.message))
+
+
+      console.log(response.data)
+      if(response.status===200){
+          alert(response.data)
+      }}
+
+
+
+  return (
+
 
     
-     
-     return (
-      <ThemeProvider theme={theme}>
-      <CssBaseline />
-        <Box sx={{ display: 'flex'  }}>
-        
-          <CssBaseline />
-          <InstructorNav post={instructorNav}/>
-          
-          <Box
-            component="main"
-            sx={{
-              backgroundColor: (theme) =>
-                theme.palette.mode === 'light'
-                  ? theme.palette.grey[100]
-                  : theme.palette.grey[900],
-              flexGrow: 1,
-              height: '100vh',
-              overflow: 'auto',
-            }}
-          >
-            {
+    <Box
+      component="main"
+      sx={{
+        backgroundColor: (theme) =>
+          theme.palette.mode === 'light'
+            ? theme.palette.grey[100]
+            : theme.palette.grey[900],
+        flexGrow: 1,
+        height: '100vh',
+        overflow: 'auto',
+       
+      }}
+    >
+         {
                         !ready &&
                         <Box
                             display="flex"
@@ -123,174 +213,173 @@ const ChangePassword =() => {
                         </Box>
 
                     }
-  {ready &&
-
-<Container component="main"  sx={{ mt: 10 }}>
-<Box component="form"  sx={{ mt: 3 }}>
-              <Grid container spacing={2}>
-<Grid item xs={12} sm={6}>
-                  <TextField
-                    autoComplete="given-name"
-                    name="firstName"
-                    required
-                    fullWidth
-                    id="firstName"
-                    label="First Name"
-                    disabled={true} 
-                    defaultValue={user.firstName} 
-                    autoFocus
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    required
-                    fullWidth
-                    id="lastName"
-                    label="Last Name"
-                    name="lastName"
-                    disabled={true} 
-                    defaultValue={user.lastName} 
-                    autoComplete="family-name"
-                  />
-                </Grid>
-        </Grid>
-
-        <Grid container spacing={3} mt={1}>
-<Grid item xs={12} sm={6}>
-                  <TextField
-                    autoComplete="given-name"
-                    name="username"
-                    required
-                    fullWidth
-                    id="username"
-                    label="Username"
-                    disabled={true} 
-                    defaultValue={user.username} 
-                    autoFocus
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                <OutlinedInput
-            label="Biography"
-            disabled={!editPassword} 
-
-            type='password'
-            defaultValue={user.password}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton 
-                 
-                  aria-label="toggle password visibility"
-                  onClick={handleEditPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <CreateIcon /> : <CreateIcon />}
-                </IconButton>
-              </InputAdornment>
-            }
-
-          />
-                </Grid>
-        </Grid>
-
-        <Grid container spacing={3} mt={1}>
-<Grid item xs={12} sm={6}>
-<OutlinedInput
-            label="Biography"
-            disabled={!editEmail} 
-            type= {editEmail} 
-            defaultValue={user.email}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton 
-                 
-                  aria-label="toggle password visibility"
-                  onClick={handleEditEmail}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <CreateIcon /> : <CreateIcon />}
-                </IconButton>
-              </InputAdornment>
-            }
-
-          />
-
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                <OutlinedInput
-            label="Biography"
-            disabled={!editCountry} 
-            type= {editCountry} 
-            defaultValue={user.country}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton 
-                 
-                  aria-label="toggle password visibility"
-                  onClick={handleEditCountry}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <CreateIcon /> : <CreateIcon />}
-                </IconButton>
-              </InputAdornment>
-            }
-
-          />
-                </Grid>
-        </Grid>
+{ready && 
+    <div>
+      <Button variant="outlined" onClick={handleClickOpen}>
+        Open dialog
+      </Button>
+      <BootstrapDialog
+     PaperProps={{
+        sx: {
+          
+          height : '380px',
+          width :'470px'
+        }
+      }}
+      fullWidth='true'
+      //maxWidth='sm' 
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
         
-        <Grid container spacing={3} mt={1}>
-<Grid item width={"200%"} xs={12} sm={6}>
-<OutlinedInput
-            label="Biography"
-            disabled={!editBiography} 
-            type= {editBiography} 
-            defaultValue={user.biography}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton 
-                 
-                  aria-label="toggle password visibility"
-                  onClick={handleEditBiography}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <CreateIcon /> : <CreateIcon />}
-                </IconButton>
-              </InputAdornment>
-            }
-
-          />
-                </Grid>
-                </Grid>
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+      
         
-        </Box>
+         
+        </BootstrapDialogTitle>
 
- 
+{!passwordSettings &&  !countrySettings  && open &&
+
+        <div>
+            <ListItemIcon>
+          <SettingsIcon sx={{color:'#757575' }} />
+          <ListItemText primary='Account Settings' sx={{color:'black' }}/>
+          </ListItemIcon>
+        <Grid
+        alignItems="center"
+        justify="center">
+        <Stack direction="row" spacing={2} ml={25}>
+      <Avatar
+        sx={{ bgcolor: '#03045E', width: 56, height: 56,ml:'5%'  }}
+        alt={user.firstName}
+        src="/broken-image.jpg"
+      />
+
+    </Stack>
+    &nbsp;
+        <Typography ml='45%'>
+        {user.firstName} {user.lastName}
+    </Typography>
+    &nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;
+    <ButtonGroup
+        orientation="vertical"
+        aria-label="vertical outlined button group"
+        sx={{ width: '80%' , ml:3 }}
+      >
+
+    <Button key="two" sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E', borderRadius:0,border:"1px solid" }} onClick={()=> {handlePassword()}}>Password</Button>
+    <Button key="three" sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E', borderRadius:0,border:"1px solid" }}  onClick={()=> {handleCountry()}}>Country</Button>
+
+      </ButtonGroup>
+      </Grid>
+      </div>}
 
 
 
+      {passwordSettings && open &&
+
+      <div>
+        <IconButton
+      aria-label="close"
+      onClick={handleClickBack}
+      sx={{
+        position: 'absolute',
+        right: 425,
+        top: 8,
+        color: (theme) => theme.palette.grey[500],
+          }}
+        >
+ <ArrowBackIosIcon/>
+ </IconButton>
+
+        <Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
+            Password
+        </Typography>
+        <TextField
+        onChange={(event)=>{handleChangeOldPassowrd(event)}}
+          type='password'
+          sx={{mt:2 , ml:5}}
+          label="Old Password"
+          id="old Passowrd"
+          defaultValue=""
+        />
+         <TextField
+          onChange={(event)=>{handleChangeNewPassword(event)}}
+         type='password'
+         sx={{mt:1, ml:5}}
+          label="New Passowrd"
+          id="old Passowrd"
+          defaultValue=""
+        />
+        <TextField
+         onChange={(event)=>{handleChangeConfirmPassword(event)}}
+        type='password'
+        sx={{ mt:1,ml:5}}
+          label="Confrim New Passowrd"
+          id="old Passowrd"
+          defaultValue=""
+        />
+    
+   
+
+           <DialogActions>
+          <Button sx={{mt:8 , ml:5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E'}} autoFocus onClick={()=> {change3()}}>
+            Save changes
+          </Button>
+        </DialogActions>
+      </div> }
 
 
 
+{countrySettings && open &&
 
-
- 
- <Button color="primary" variant="contained" onClick={()=> {change()}}>
-  Save All
- </Button> 
-     
-</Container>}
-      </Box>
-      </Box>
-    </ThemeProvider>
-
-     );
-
-
+<div>
+<IconButton
+      aria-label="close"
+      onClick={handleClickBack}
+      sx={{
+        position: 'absolute',
+        right: 425,
+        top: 8,
+        color: (theme) => theme.palette.grey[500],
+          }}
+        >
+ <ArrowBackIosIcon/>
+ </IconButton>
+<Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
+            Country
+        </Typography>
+<OutlinedInput
+ sx={{mt:2 , ml:5}}
+    label="Password"
+    defaultValue={user.country}
+    endAdornment={
+      <InputAdornment position="end">
+        <IconButton 
+         
+          aria-label="toggle password visibility"
+          onMouseDown={handleMouseDownPassword}
+          edge="end"
+        >
+          {showPassword ? <CreateIcon /> : <CreateIcon />}
+        </IconButton>
+      </InputAdornment>
     }
 
-export default ChangePassword;
+  />
+   <DialogActions>
+          <Button sx={{mt:25 , ml:5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E'}} autoFocus onClick={handleClose}>
+            Save changes
+          </Button>
+        </DialogActions>
+</div> }
+
+          
+      </BootstrapDialog>
+      </div>}
+    
+    </Box>
+  );
+}

@@ -1,20 +1,15 @@
 import * as React from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
-import MenuItem from '@mui/material/Container';
 import FormControl from '@mui/material/Container';
-import InputLabel from '@mui/material/Container';
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Radio from '@mui/material/Radio';
@@ -162,7 +157,7 @@ export default function Signup() {
 
 
   //handling errors in fields
-  const[inital,setInital]=useState(true);
+  const[inital,setInital]=useState(false);
   const [firstNameErr, setFirstNameErr] = useState();
   const [lastNameErr, setLastNameErr] = useState();
   const [emailErr, setEmailErr] = useState();
@@ -235,13 +230,15 @@ export default function Signup() {
       setGenderErr(false);
       
     if(firstNameErr==false && lastNameErr==false && emailErr==false && passwordErr==false && confirmErr==false && genderErr==false &&
-      usernameErr==false && responseErr==''){
+      usernameErr==false ){
         console.log("in")
-        setInital(false)
+        setInital(true)
     }
-    if(inital==false){
-      handleClickOpen();
+    if(inital==true){
+      //handleClickOpen();
     }
+
+
     //if all the inputs are valid, open the contract dialogue
     //let errorsExist= false;
     //errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
@@ -253,7 +250,7 @@ export default function Signup() {
    // handleClickOpen();
   };
 
-  
+
 
   const change2 = async () => {
     //window.location.href = `/`

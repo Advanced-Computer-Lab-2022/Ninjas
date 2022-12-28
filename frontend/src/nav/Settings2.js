@@ -10,7 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
 import axios from "axios";
 import {useState,useEffect} from "react";
-import { Alert, AlertTitle, Backdrop, CircularProgress} from '@mui/material';
+import { CircularProgress} from '@mui/material';
 import Box from '@mui/material/Box';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
@@ -19,6 +19,10 @@ import CreateIcon from '@mui/icons-material/Create'; //instructor
 import InputAdornment from '@mui/material/InputAdornment';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import Grid from '@mui/material/Grid';
+import SettingsIcon from '@mui/icons-material/Settings'; //alll users
+import { ListItemIcon, ListItemText } from '@mui/material';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import {TextField} from "@mui/material";
 
 function stringToColor(string) {
     let hash = 0;
@@ -63,6 +67,8 @@ function BootstrapDialogTitle(props) {
 
   return (
     <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+
+      
       {children}
       {onClose ? (
         <IconButton
@@ -132,14 +138,28 @@ const handleBiography = (event) => {
       window.location.href='/';
     })
   })
-
+  const[newEmail,setNewEmail]=useState(user.email);
+  const[biography,setBiography]=useState(user.biography);
+  const[oldPassword,setOldPassword]=useState('');
+  const[newPassword,setNewPassword]=useState('');
+  const[confirmPassword,setConfirmPassword]=useState('');
   const [ready, setReady] = useState(false);
   useEffect(() => {
       if (user._id) {
           setReady(true);
+          setNewEmail(user.email);
+          setBiography(user.biography);
+
+          
       }
   }, [user])
-
+  const handleClickBack = () => {
+    setBiographySettings(false);
+    setEmailSettings(false);
+    setPasswordSettings(false);
+    setCountrySettings(false);
+    setOpen(true);
+  };
   const handleClickOpen = () => {
     setOpen(true);
   };
@@ -164,6 +184,54 @@ const handleEditEmail = () => setEditEmail((show) => !show);
 const handleEditPassword = () => setEditPassword((show) => !show);
 const handleEditCountry = () => setEditCountry((show) => !show);
 const handleEditBiography= () => setEditBiography((show) => !show);
+
+
+const handleChangeEmail = (event) => {
+  setNewEmail(event.target.value)}
+
+const handleChangeBiography = (event) => {
+    setBiography(event.target.value)}
+
+const handleChangeOldPassowrd = (event) => {
+    setOldPassword(event.target.value)}
+
+const handleChangeNewPassword = (event) => {
+      setNewPassword(event.target.value)}
+      const handleChangeConfirmPassword = (event) => {
+        setConfirmPassword(event.target.value)}
+
+const change = async ()=>{
+  const response=await axios.put(`http://localhost:8000/editEmail/`,{
+  newEmail:newEmail})
+  .catch( (error) => alert(error.response.data.message))
+  console.log(response.data)
+  if(response.status===200){
+      alert(response.data)
+  }}
+
+  const change2 = async ()=>{
+    const response=await axios.put(`http://localhost:8000/editBiography/`,{
+    newText:biography}).
+    catch( (error) => alert(error.response.data.message))
+
+
+    console.log(response.data)
+    if(response.status===200){
+        alert(response.data)
+    }}
+
+    const change3 = async ()=>{
+      const response=await axios.put(`http://localhost:8000/changePassword/`,{
+      oldPassword:oldPassword,
+      newPassword:newPassword}).
+      catch( (error) => alert(error.response.data.message))
+
+
+      console.log(response.data)
+      if(response.status===200){
+          alert(response.data)
+      }}
+
 
 
   return (
@@ -214,13 +282,20 @@ const handleEditBiography= () => setEditBiography((show) => !show);
         aria-labelledby="customized-dialog-title"
         open={open}
       >
+        
         <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-          Account Settings 
+      
+        
+         
         </BootstrapDialogTitle>
 
 {!emailSettings && !passwordSettings && !biographySettings && !countrySettings  && open &&
 
         <div>
+            <ListItemIcon>
+          <SettingsIcon sx={{color:'#757575' }} />
+          <ListItemText primary='Account Settings' sx={{color:'black' }}/>
+          </ListItemIcon>
         <Grid
         alignItems="center"
         justify="center">
@@ -254,13 +329,27 @@ const handleEditBiography= () => setEditBiography((show) => !show);
 
  {emailSettings && open &&
       <div>
-        <Typography>
+        <IconButton
+      aria-label="close"
+      onClick={handleClickBack}
+      sx={{
+        position: 'absolute',
+        right: 425,
+        top: 8,
+        color: (theme) => theme.palette.grey[500],
+          }}
+        >
+ <ArrowBackIosIcon/>
+ </IconButton>
+        <Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
             Email
         </Typography>
-        <OutlinedInput
+        <OutlinedInput 
+            onChange={(event)=>{handleChangeEmail(event)}}
+            sx={{mt:2 , ml:5}}
             label="Email"
             type= {editEmail} 
-            defaultValue={user.email}
+            defaultValue={newEmail}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton 
@@ -276,7 +365,7 @@ const handleEditBiography= () => setEditBiography((show) => !show);
 
           />
          <DialogActions>
-          <Button autoFocus onClick={handleClose}>
+          <Button sx={{mt:25 , ml:5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E'}} autoFocus onClick={()=> {change()}}>
             Save Changes
           </Button>
         </DialogActions>
@@ -285,29 +374,51 @@ const handleEditBiography= () => setEditBiography((show) => !show);
       {passwordSettings && open &&
 
       <div>
-        <Typography>
+        <IconButton
+      aria-label="close"
+      onClick={handleClickBack}
+      sx={{
+        position: 'absolute',
+        right: 425,
+        top: 8,
+        color: (theme) => theme.palette.grey[500],
+          }}
+        >
+ <ArrowBackIosIcon/>
+ </IconButton>
+
+        <Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
             Password
         </Typography>
-        <OutlinedInput
-            label="Password"
-            type='password'
-            defaultValue={user.password}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton 
-                 
-                  aria-label="toggle password visibility"
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <CreateIcon /> : <CreateIcon />}
-                </IconButton>
-              </InputAdornment>
-            }
+        <TextField
+        onChange={(event)=>{handleChangeOldPassowrd(event)}}
+          type='password'
+          sx={{mt:2 , ml:5}}
+          label="Old Password"
+          id="old Passowrd"
+          defaultValue=""
+        />
+         <TextField
+          onChange={(event)=>{handleChangeNewPassword(event)}}
+         type='password'
+         sx={{mt:1, ml:5}}
+          label="New Passowrd"
+          id="old Passowrd"
+          defaultValue=""
+        />
+        <TextField
+         onChange={(event)=>{handleChangeConfirmPassword(event)}}
+        type='password'
+        sx={{ mt:1,ml:5}}
+          label="Confrim New Passowrd"
+          id="old Passowrd"
+          defaultValue=""
+        />
+    
+   
 
-          />
            <DialogActions>
-          <Button autoFocus onClick={handleClose}>
+          <Button sx={{mt:8 , ml:5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E'}} autoFocus onClick={()=> {change3()}}>
             Save changes
           </Button>
         </DialogActions>
@@ -318,10 +429,23 @@ const handleEditBiography= () => setEditBiography((show) => !show);
 {countrySettings && open &&
 
 <div>
-<Typography>
+<IconButton
+      aria-label="close"
+      onClick={handleClickBack}
+      sx={{
+        position: 'absolute',
+        right: 425,
+        top: 8,
+        color: (theme) => theme.palette.grey[500],
+          }}
+        >
+ <ArrowBackIosIcon/>
+ </IconButton>
+<Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
             Country
         </Typography>
 <OutlinedInput
+ sx={{mt:2 , ml:5}}
     label="Password"
     defaultValue={user.country}
     endAdornment={
@@ -339,7 +463,7 @@ const handleEditBiography= () => setEditBiography((show) => !show);
 
   />
    <DialogActions>
-          <Button autoFocus onClick={handleClose}>
+          <Button sx={{mt:25 , ml:5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E'}} autoFocus onClick={handleClose}>
             Save changes
           </Button>
         </DialogActions>
@@ -348,12 +472,26 @@ const handleEditBiography= () => setEditBiography((show) => !show);
 
 
 <div>
-<Typography>
+<IconButton
+      aria-label="close"
+      onClick={handleClickBack}
+      sx={{
+        position: 'absolute',
+        right: 425,
+        top: 8,
+        color: (theme) => theme.palette.grey[500],
+          }}
+        >
+ <ArrowBackIosIcon/>
+ </IconButton>
+<Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
             Biography
         </Typography>
         <OutlinedInput
+         onChange={(event)=>{handleChangeBiography(event)}}
+         sx={{mt:2 , ml:5}}
             label="Password"
-            defaultValue={user.biography}
+            defaultValue={biography}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton 
@@ -369,7 +507,7 @@ const handleEditBiography= () => setEditBiography((show) => !show);
 
           />
            <DialogActions>
-          <Button autoFocus onClick={handleClose}>
+          <Button sx={{mt:25 , ml:5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E'}} autoFocus onClick={()=> {change2()}}>
             Save changes
           </Button>
         </DialogActions>

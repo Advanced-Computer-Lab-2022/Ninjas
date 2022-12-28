@@ -58,7 +58,7 @@ const SolveExercise = () => {
     const [openPopup, setOpenPopup] = useState(false);
     const handleClose = () => {
         setOpenPopup(false);
-        window.location.href=`/course/${courseId}`;
+        // window.location.href=`/course/${courseId}`;
     };
 
     return (

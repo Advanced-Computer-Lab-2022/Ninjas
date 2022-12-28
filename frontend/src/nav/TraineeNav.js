@@ -19,7 +19,7 @@ import SettingsIcon from '@mui/icons-material/Settings'; //alll users
 import HelpIcon from '@mui/icons-material/Help'; //all users
 import ReportIcon from '@mui/icons-material/Report'; //all users
 import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium'; //certificates trainess
-import { ListItemButton, ListItemIcon, ListItemText, MenuItem, Select } from '@mui/material';
+import { ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import Wallet from '@mui/icons-material/Wallet';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -160,7 +160,7 @@ const logout = async () => {
 }
 
 const viewCourse = async () => {
-  window.location.href='/MyCourse';
+  window.location.href='/enrolled';
 }
 
 const [search, setSearch] = React.useState( null);
@@ -319,14 +319,14 @@ if (e.key === 'Enter') {
 </div>
 }  
 
-          <ListItemButton>
+          <ListItemButton onClick={()=>{window.location.href='/settingsT'}}>
             <ListItemIcon>
           <SettingsIcon sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='Settings'/>
           </ListItemButton>
           
-          <ListItemButton>
+          <ListItemButton onClick={()=>{window.location.href='/myReports'}}>
             <ListItemIcon>
           <ReportIcon sx={{color:'black' }} />
           </ListItemIcon>

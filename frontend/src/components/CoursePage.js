@@ -208,19 +208,86 @@ const CoursePage = () => {
             window.location.reload();
     }
 
-
+    const [reportMessage,setReportMessage]= useState(null);
+    const [openRM,setOpenRM]= useState(false);
+    const [openGrade,setOpenGrade]= useState(false);
+    const [grade,setGrade]= useState(null);
+    const [exerciseId,setExerciseId]= useState(null);
+    const [severity,setSeverity]= useState('info');
+    const [flagG,setFlagG]= useState(null);
     async function reportCourse () {
         
           await axios.post(`http://localhost:8000/reportCourse?userId=${user._id}&courseId=${course._id}&problem=${problem}`)
               .then(res => {
-               alert ('Your Report has been submitted')
+                setSeverity('success')
+                setReportMessage('Your Report has been submitted')
+                setOpenRM(true)
+              // alert ('Your Report has been submitted')
               })
-              .catch((error) => { alert(error.response.data.message)})
+              .catch((error) => { 
+                setSeverity('info')
+                setReportMessage(error.response.data.message)
+                setOpenRM(true)
+                //alert(error.response.data.message)
+            })
               //console.log(Search)
              // const c = searchResult.currency
             
               
         }
+
+
+        async function handleGrade () {
+        
+            await axios.get(`http://localhost:8000/viewExerciseGrade?exersiseId=${exerciseId}&userId=${user._id}`)
+                .then(response => {
+                    if (response.data && response.data.solved){
+                        setGrade ( "You got "+ response.data.userGrade + " out of " + response.data.totalGrade)
+                        setOpenGrade(true)  
+                    }
+                  
+                  
+                  if (response.data && !response.data.solved){
+          
+                    setGrade( "You still did not solve the exercise")
+                    setOpenGrade(true)  
+                    
+                   
+          
+                  }
+                 // setGrade(response.data)
+                  //setOpenGrade(true)  //momken a5leha useEffect
+                // alert ('Your Report has been submitted')
+                })
+                .catch((error) => { 
+                  //setSeverity('info')
+                  setReportMessage(error.response.data.message)
+                  setOpenGrade(true)  
+                  //alert(error.response.data.message)
+              })
+                //console.log(Search)
+               // const c = searchResult.currency
+              
+                
+          }
+        const handleCloseRM = () =>{
+            setOpenRM(false);
+        }
+        const handleCloseGrade = () =>{
+            setOpenGrade(false);
+            setFlagG(false);
+           // handleCloseRM();
+        }
+        useEffect(()=>
+            {
+                if (exerciseId&&flagG){
+                    handleGrade();
+                }
+
+            },[flagG]
+        )
+
+     
     //when an enrolled user wants a refund
     const [requested, setRequested] = useState(false);
     const [openRefundPopup, setORP] = useState(false);
@@ -283,7 +350,9 @@ const CoursePage = () => {
             
             reportCourse();
         } else {
-                 alert('please specify the problem')
+            setSeverity('info')
+                 setReportMessage('please specify the problem')
+                 setOpenRM(true)
         
        }
       };
@@ -531,24 +600,62 @@ const CoursePage = () => {
                                         </Typography>
 
                                         {subtitle.exercises.map((exercise) => (
+                                            <Grid container spacing={0}>
                                             <Typography
                                                 sx={{
                                                     alignItems: 'center',
                                                     '&:hover': {
                                                         backgroundColor: '#CAF0F8',
                                                     },
+                                                    width : '85%'
                                                 }}
                                                 onClick={registered ?
                                                     () => window.location.href = `/solveExercise?userId=${user._id}&userType=${user.type}&courseId=${course._id}&exerciseId=${exercise._id}&subtitleId=${subtitle._id}`
                                                     : null}
                                             >
                                                 <MenuBookIcon color='#03045E' /> Exercise: {exercise.title}
+
+                                               
                                             </Typography>
+
+                                          { registered&&  user.type != 'INSTRUCTOR' &&
+                                           <Button
+                                                sx={{ mt: 0, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                                onClick={()=>{
+                                                    setExerciseId(exercise._id);
+                                                    setFlagG(true);
+                                                }}
+                                            >
+                                                view my grade
+                                            </Button>
+}
+
+
+{/* //henaaaaa */} 
+<Backdrop
+                               
+                                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                open={openGrade}
+                                onClick={handleCloseGrade}
+                            >
+                                <Alert sx={{ width: '400px' }}  severity='info'  icon={false}  >
+                                    <AlertTitle>{grade}</AlertTitle>
+                                    Click anywhere to continue
+                                </Alert>
+                            </Backdrop>
+
+
+                                            </Grid>
+                                           
                                         ))}
+                                        { /*a5r el loop*/}
+
                                         {
                                             user.type == 'INSTRUCTOR' && registered &&
                                             <Button
                                                 sx={{ mt: 1, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                                onClick={() => 
+                                                    window.location.href=`/exercise?courseId=${course._id}&&subtitleId=${subtitle._id}`}
                                             >
                                                 Add another exercise
                                             </Button>
@@ -754,6 +861,19 @@ onClose={handleClose2}
                             >
                                 <Alert sx={{ tabSize: 'l' }} severity="success">
                                     <AlertTitle>Your refund request has been submitted.</AlertTitle>
+                                    Click anywhere to continue
+                                </Alert>
+                            </Backdrop>
+
+
+                            <Backdrop
+                               
+                                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                open={openRM}
+                                onClick={handleCloseRM}
+                            >
+                                <Alert sx={{ tabSize: 'l' }}  severity={severity} >
+                                    <AlertTitle>{reportMessage}</AlertTitle>
                                     Click anywhere to continue
                                 </Alert>
                             </Backdrop>
