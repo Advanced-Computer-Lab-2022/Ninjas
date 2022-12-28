@@ -50,6 +50,7 @@ import InstructorCreate from './components/InstructorCreate';
 import InstructorSubtitle from './components/InstructorSubtitle';
 import MyReports from './nav/MyReports';
 
+import ViewCorrectAnswer from './components/viewTheCorrectAnswers';
 
 
 
@@ -58,6 +59,7 @@ function App() {
     <div className="App">
       <BrowserRouter>
       <Routes>
+      <Route path='/viewCorrectAnswers' element={<ViewCorrectAnswer/>}></Route>
       <Route path='/searchInstructor' element={<SearchInstructor/>}></Route>
       <Route path='/InstructorCreate' element={<InstructorCreate/>}></Route>
       <Route path='/InstructorSubtitle' element={<InstructorSubtitle/>}></Route>
@@ -94,8 +96,6 @@ function App() {
         <Route path='/viewVideo' element= {<ViewVideo/>} >
         </Route>
         <Route path='/rateInstructor' element= {<RateInstructor/>} >
-        </Route>
-        <Route path='/viewCorrectAnswers' element= {<CorrectAnswer/>} >
         </Route>
         <Route path='/viewExerciseGrade' element= {<ViewExerciseGrade/>} >
         </Route>

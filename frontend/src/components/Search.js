@@ -350,7 +350,8 @@ const theme = useTheme();
    
       await axios.get(`http://localhost:8000/search?userId=${userId}&subject=${subject}&minPrice=${mintemp}&maxPrice=${maxtemp}&rating=${rating}&title=${search}&instructor=`)
           .then(res => setSearchResult(res.data.data))
-          .catch((error) => {   if (error.response.status === 401) //you didn't login
+          .catch((error) => {  
+            if (error.response.status === 401) //you didn't login
           window.location.href='/';
             else alert(error.response.data.message)})
           //console.log(Search)
@@ -663,7 +664,7 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
  allow="autoPlay"
  controls={true}
          component="img"
-      sx={{ width: 280 }}
+      sx={{ width: '51.5%' }}
     
       // //style={{ width: 150, height: 200 }}
          src={previewPic}
@@ -720,7 +721,7 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
             price : {course.price}  {searchResult.currency}
             </Typography>}
 
-            <Typography variant="h6" color="inherit"style={{width:'210'}} >
+            <Typography variant="h6" color="inherit"style={{width:'210px'}} >
             subject : {course.subject} 
             </Typography>
 
