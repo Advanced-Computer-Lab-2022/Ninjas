@@ -177,7 +177,8 @@ const mdTheme = createTheme();
   };
 
   const handleClose = async () => {
-    const response = await axios.put(`http://localhost:8000/admin/setPromotion?selectedCourses=${selects}&promotion=${promotion}`)
+    const response = await axios.put(`http://localhost:8000/admin/setPromotion`,
+    { selectedCourses: selects, promotion })
     .catch(err=>console.log(err))
 
     if (response.status === 200)

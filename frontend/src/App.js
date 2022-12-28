@@ -27,6 +27,7 @@ import Signup from './nav/Signup';
 import ResetPasswordPage from './components/ResetPassword';
 import MostPopular from './components/MostPopular';
 import Temp from './components/Search';
+import SearchInstructor from './components/SearchInstructor';
 import Payment from './nav/PaymentForm';
 import Checkout2 from './nav/Checkout2';
 import Home from './nav/Home';
@@ -45,7 +46,7 @@ import Settings2 from './nav/Settings2';
 import Settings from './nav/Settings';
 import TraineeCourse from './nav/TraineeCourse';
 import Ratings from './nav/Ratings';
-import MyReports from './nav/MyReports';
+import InstructorCreate from './components/InstructorCreate';import MyReports from './nav/MyReports';
 
 
 
@@ -55,6 +56,9 @@ function App() {
     <div className="App">
       <BrowserRouter>
       <Routes>
+      <Route path='/searchInstructor' element={<SearchInstructor/>}></Route>
+      <Route path='/InstructorCreate' element={<InstructorCreate/>}></Route>
+
       <Route path='/' element={<Login/>}></Route>
       <Route path='/signup' element={<Signup/>}></Route>
       <Route path='/temp' element= {<Temp/>} > </Route>
