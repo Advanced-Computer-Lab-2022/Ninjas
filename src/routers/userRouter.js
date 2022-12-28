@@ -338,12 +338,13 @@ userRouter.get('/viewEnrolledCourses', async (req, res) => {
     }
 })
 
-userRouter.post('/payForCourse', async (req, res) => {
+userRouter.put('/payForCourse', async (req, res) => {
     try {
 
-        const userId = req.body.userId
-        const courseId = req.body.courseId
-        await userController.payForCourse(userId, courseId)
+        const userId = req.body.userId;
+        const courseId = req.body.courseId;
+        const coursePrice = req.body.coursePrice;
+        await userController.payForCourse({userId, courseId, coursePrice})
         res.status(200).json("You have paid successfully");
     }
     catch (err) {
@@ -563,7 +564,8 @@ userRouter.post('/followUp', async (req, res) => {
 
 userRouter.get('/viewMyReports', async (req,res) => {
     try {
-        const { userId } = req.query;
+        const session = sessionDetails.getSession(req.session.id);
+        const { userId } = session;
         const result = await userController.ViewMyReports( userId );
 
         res.status(200).json(result);

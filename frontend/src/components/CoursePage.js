@@ -647,6 +647,8 @@ const CoursePage = () => {
                                             user.type == 'INSTRUCTOR' && registered &&
                                             <Button
                                                 sx={{ mt: 1, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                                onClick={() => 
+                                                    window.location.href=`/exercise?courseId=${course._id}&&subtitleId=${subtitle._id}`}
                                             >
                                                 Add another exercise
                                             </Button>

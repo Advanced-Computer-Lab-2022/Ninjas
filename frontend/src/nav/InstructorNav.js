@@ -250,13 +250,13 @@ if (e.key === 'Enter') {
           </ListItemIcon>
           <ListItemText primary='Wallet'/>
           </ListItemButton>
-          <ListItemButton>
+          <ListItemButton onClick={()=>{window.location.href='/settings'}}>
             <ListItemIcon>
           <SettingsIcon sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='Settings'/>
           </ListItemButton>
-          <ListItemButton>
+          <ListItemButton onClick={()=>{window.location.href='/myReports'}}>
             <ListItemIcon>
           <ReportIcon sx={{color:'black' }} />
           </ListItemIcon>
