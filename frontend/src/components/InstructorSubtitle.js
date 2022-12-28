@@ -178,7 +178,7 @@ const Search = styled('div')(({ theme }) => ({
   }));
 
 const drawerWidth = 240;
-const InstructorCreate = () => {
+const InstructorSubtitle = () => {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
@@ -232,7 +232,7 @@ const mdTheme = createTheme();
 
   const handleClose = async () => {
 //go to anothr page of adding subs not this page
-    window.location.href=`/InstructorSubtitle?courseId=${courseId}`;
+    window.location.href='/InstructorSubtitle';
     setOpen(false);
   };
   const handleClickOpen = async ()=>{
@@ -248,7 +248,6 @@ const mdTheme = createTheme();
     catch( (error) => alert(error.response.data.message)) 
     console.log(response.data)
     if(response.status===200){
-      setCourseId(response.data._id);
       setOpen(true);
       // alert(response.data);
     }}
@@ -260,8 +259,6 @@ const mdTheme = createTheme();
   const[video,setVideo]=useState('');
   const[summary,setSummary]=useState('');
   const[subject,setSubject]=useState('');
-  const[courseId,setCourseId]=useState('');
-
  
   const handleChangeTitle = (event) => {
     setTitle(event.target.value);
@@ -291,7 +288,6 @@ return (
       <Box sx={{ display: 'flex'   }}>
         <CssBaseline />
           <InstructorNav post={traineeNav}/>
-          
         <Box
           component="main"
           sx={{
@@ -312,21 +308,21 @@ return (
             <Copyright sx={{ pt: 4 }}  />
           </Container>
           <main>
-            <Typography variant="h4" sx={{ mt: 4, mb: 4 , ml: 7, color:'#03045E', fontWeight:'bold'}}>Create New Course</Typography>
+            <Typography variant="h4" sx={{ mt: 4, mb: 4 , ml: 7, color:'#03045E', fontWeight:'bold'}}>Add a Subtitle</Typography>
           <Grid container spacing={2}  sx={{ ml: 5 }}>
           <Grid item xs={5}>
                 <TextField
                   required
                   fullWidth
-                  name="Course Title"
-                  label="Course Title"
-                  type="Course Title"
-                  id="courseTitle"
+                  name="Subtitle Title"
+                  label="Subtitle Title"
+                  type="Subtitle Title"
+                  id="subtitleTitle"
                   autoComplete="Course Title" onChange={(event)=>{handleChangeTitle(event)}}
                 />
               </Grid>
             
-              <Grid item xs={5}>
+              {/* <Grid item xs={5}>
                 <TextField
                   required
                   fullWidth
@@ -336,16 +332,16 @@ return (
                   id="Price"
                   onChange={(event)=>{handleChangePrice(event)}}
                 />
-              </Grid>
+              </Grid> */}
         
               <Grid item xs={5}>
                 <TextField
                   required
                   fullWidth
-                  name="Total Hours"
-                  label="Total Hours"
-                  type="Total Hours"
-                  id="Total Hours"
+                  name="Subtitle Hours"
+                  label="Subtitle Hours"
+                  type="Subtitle Hours"
+                  id="Subtitle Hours"
                    onChange={(event)=>{handleChangeHours(event)}}
                 />
               </Grid>
@@ -354,14 +350,14 @@ return (
                 <TextField
                   required
                   fullWidth
-                  name="Preview Video Link"
-                  label="Preview Video Link"
-                  type="Preview Video Link"
-                  id="Preview Video Link"
+                  name="Subtitle Video Link"
+                  label="Subtitle Video Link"
+                  type="Subtitle Video Link"
+                  id="Subtitle Video Link"
                   autoComplete="preview-video" onChange={(event)=>{handleChangeVideo(event)}}
                 />
               </Grid>
-              <Grid item xs={10}>
+              {/* <Grid item xs={10}>
                 <TextField 
                   required
                   fullWidth
@@ -370,8 +366,8 @@ return (
                   name="Summary"
                   onChange={(event)=>{handleChangeSummary(event)}}
                 />
-              </Grid>
-              <Grid item xs={5} sx={{ mt : 4}}>
+              </Grid> */}
+              {/* <Grid item xs={5} sx={{ mt : 4}}>
               <FormControl >
               <FormLabel id="demo-radio-buttons-group-label" sx={{ ml:2, mb:1}}>Subject</FormLabel>
   <RadioGroup sx={{ml:2}}
@@ -385,13 +381,13 @@ return (
   
   </RadioGroup>
 </FormControl >
-</Grid>
+</Grid> */}
            
               </Grid>
              
 <box>
                 <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E', ml: 73 }} 
-                onClick={()=> {handleClickOpen()}}>Add Course</Button>
+                onClick={()=> {handleClickOpen()}}>Add Subtitle</Button>
 </box>
 <BootstrapDialog
         onClose={handleClose}
@@ -454,4 +450,4 @@ return (
           </ThemeProvider>
           )
         }
-        export default InstructorCreate;
+        export default InstructorSubtitle;

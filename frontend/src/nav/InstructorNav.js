@@ -133,6 +133,12 @@ const logout = async () => {
 const viewRatings = async () => {
   window.location.href='/Ratings';
 }
+const viewMyCourses = async () => {
+  window.location.href='/SearchInstructor';
+}
+const CreateCourses = async () => {
+  window.location.href='/InstructorCreate';
+}
 const [user,setUser] = React.useState(async () => {
   await axios.get('http://localhost:8000/userBySession')
   .then(res => setUser(res.data))
@@ -230,7 +236,7 @@ if (e.key === 'Enter') {
             <ListItemIcon>
           <MenuBookIcon sx={{color:'black' }} />
           </ListItemIcon>
-          <ListItemText primary='My Courses'/>
+          <ListItemText primary='My Courses' onClick={viewMyCourses}/>
           </ListItemButton>
           <ListItemButton onClick={viewRatings} >
             <ListItemIcon>
@@ -242,7 +248,7 @@ if (e.key === 'Enter') {
             <ListItemIcon>
           <CreateIcon sx={{color:'black' }} />
           </ListItemIcon>
-          <ListItemText primary='Create Course'/>
+          <ListItemText primary='Create Course' onClick={CreateCourses}/>
           </ListItemButton>
           <ListItemButton>
             <ListItemIcon>

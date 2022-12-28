@@ -46,7 +46,9 @@ import Settings2 from './nav/Settings2';
 import Settings from './nav/Settings';
 import TraineeCourse from './nav/TraineeCourse';
 import Ratings from './nav/Ratings';
-import InstructorCreate from './components/InstructorCreate';import MyReports from './nav/MyReports';
+import InstructorCreate from './components/InstructorCreate';
+import InstructorSubtitle from './components/InstructorSubtitle';
+import MyReports from './nav/MyReports';
 
 
 
@@ -58,7 +60,7 @@ function App() {
       <Routes>
       <Route path='/searchInstructor' element={<SearchInstructor/>}></Route>
       <Route path='/InstructorCreate' element={<InstructorCreate/>}></Route>
-
+      <Route path='/InstructorSubtitle' element={<InstructorSubtitle/>}></Route>
       <Route path='/' element={<Login/>}></Route>
       <Route path='/signup' element={<Signup/>}></Route>
       <Route path='/temp' element= {<Temp/>} > </Route>
