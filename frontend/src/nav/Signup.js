@@ -158,6 +158,7 @@ export default function Signup() {
 
   //handling errors in fields
   const[inital,setInital]=useState(false);
+  const[firstTime,setFirstTime]=useState(true);
   const [firstNameErr, setFirstNameErr] = useState();
   const [lastNameErr, setLastNameErr] = useState();
   const [emailErr, setEmailErr] = useState();
@@ -185,6 +186,7 @@ export default function Signup() {
     return !bool;
   }
 
+
   const handleSubmit =  async (event)  => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
@@ -193,10 +195,11 @@ export default function Signup() {
     //falsify();
     
     //before proceeding we have to make sure that the data is correct
-    if (data.get('firstName').trim().length < 2)
-      setFirstNameErr(true);
-    else
-      setFirstNameErr(false);
+    if (data.get('firstName').trim().length < 2){
+      setFirstNameErr(true);}
+    else{
+      setFirstNameErr(false);}
+      console.log(firstNameErr)
 
     if (data.get('lastName').trim().length < 2)
       setLastNameErr(true);
@@ -228,15 +231,19 @@ export default function Signup() {
       setGenderErr(true);
       else
       setGenderErr(false);
-      
-    if(firstNameErr==false && lastNameErr==false && emailErr==false && passwordErr==false && confirmErr==false && genderErr==false &&
-      usernameErr==false ){
-        console.log("in")
-        setInital(true)
-    }
-    if(inital==true){
-      //handleClickOpen();
-    }
+     return; 
+       console.log(firstNameErr);
+    // if(firstNameErr==false && lastNameErr==false && emailErr==false && passwordErr==false && confirmErr==false && genderErr==false &&
+    //   usernameErr==false  ){
+    //     handleClickOpen();
+    //     console.log("in")
+    //     //setInital(true)
+    // }
+    
+    
+    // if(inital==true){
+    //   handleClickOpen();
+    // }
 
 
     //if all the inputs are valid, open the contract dialogue
@@ -253,19 +260,21 @@ export default function Signup() {
 
 
   const change2 = async () => {
-    //window.location.href = `/`
-    //remember to handle close
-   console.log(username)
     const response = await axios.get(`http://localhost:8000/signUpError?username=${username}&email=${email}`
     
-    ).
-
-      catch((error) => setresErr(error.response.data.message))
-  
-    console.log(response.data)
+    ).catch((error) => setresErr(error.response.data.message))
+     console.log(response.data)
 
     if (response.status === 200) {
-        handleClickOpen();
+      handleSubmit();
+      if(firstNameErr===false && lastNameErr===false && emailErr===false && passwordErr===false && confirmErr===false && genderErr===false &&
+        usernameErr===false ){
+          handleClickOpen();
+          console.log("in")
+          //setInital(true)
+      }
+      //handleSubmit();
+       // handleClickOpen();
     }
 
     //let errorsExist= false;
@@ -338,7 +347,8 @@ export default function Signup() {
             <Typography component="h1" variant="h5">
               Sign up
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit} sx={{ mt: 3 }}>
+            <Box component="form" noValidate onSubmit={handleSubmit}  sx={{ mt: 3 }}>
+               {/* //onSubmit={handleSubmit} */}
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <TextField
@@ -452,7 +462,8 @@ export default function Signup() {
                 fullWidth
                 variant="contained"
                 sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E', mt: 3, mb: 2 }}
-                onClick={change2}>
+                onClick={change2}
+                onSubmit={handleSubmit}>
                 Sign Up
               </Button>
 
