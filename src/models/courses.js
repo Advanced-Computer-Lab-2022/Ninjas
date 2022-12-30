@@ -54,7 +54,10 @@ const coursesSchema = new Schema({
         type: [ratingSchema],
         default: []
     },
-    
+    startDate:{
+        type: Date,
+        required: false
+    },
     discountDuration:{
         type: Date,
         required: false

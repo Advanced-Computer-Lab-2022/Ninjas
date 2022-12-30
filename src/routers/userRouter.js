@@ -584,4 +584,14 @@ userRouter.get('/requestedTheRefund', async (req,res) => {
         res.status(error.code).json({ message: error.message });
     }
 })
+
+userRouter.post('/deleteCourseRating', async (req,res) => {
+    try {
+        const { userId, courseId } = req.query;
+        await userController.deleteCourseRating({ userId, courseId });
+        res.status(200).json({message: "Rating deleted successfully"});
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
 module.exports = userRouter;

@@ -1,8 +1,9 @@
 
 import * as React from 'react';
-import { Radio, RadioGroup,FormControlLabel } from '@mui/material' ;
-import { createTheme, ThemeProvider, styled,alpha } from '@mui/material/styles';
+import { Radio, RadioGroup, FormControlLabel, Drawer, Accordion, AccordionSummary } from '@mui/material';
+import { createTheme, ThemeProvider, styled, alpha } from '@mui/material/styles';
 import MenuIcon from '@mui/icons-material/Menu';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Box from '@mui/material/Box';
@@ -18,15 +19,22 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useEffect } from 'react';
 import { Alert, AlertTitle, Backdrop, CircularProgress, Dialog, DialogTitle, LinearProgress, Rating, TextField } from '@mui/material';
-import img from "../components/backgroundCourse.png";
+import img from "../study.jpg";
 import PlayCircleIcon from '@mui/icons-material/PlayCircle';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import ReactPlayer from 'react-player/youtube';
 import PersonIcon from '@mui/icons-material/Person';
-import { Text } from '@react-pdf/renderer';
+import { Document, Page, PDFDownloadLink, Text } from '@react-pdf/renderer';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import TraineeNav from '../nav/TraineeNav';
 import InstructorNav from '../nav/InstructorNav';
+import clickOnVid from '../clickvid.jpg';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DownloadIcon from '@mui/icons-material/Download';
+import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
+import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
+import BoyOutlinedIcon from '@mui/icons-material/BoyOutlined';
 const instructorNav = {};
 const traineeNav = {};
 function LinearProgressWithLabel(props) {
@@ -46,44 +54,44 @@ function LinearProgressWithLabel(props) {
 
 const StyledMenu = styled((props) => (
     <Menu
-      elevation={0}
-      anchorOrigin={{
-        vertical: 'bottom',
-        horizontal: 'right',
-      }}
-      transformOrigin={{
-        vertical: 'top',
-        horizontal: 'right',
-      }}
-      {...props}
+        elevation={0}
+        anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+        }}
+        transformOrigin={{
+            vertical: 'top',
+            horizontal: 'right',
+        }}
+        {...props}
     />
-  ))(({ theme }) => ({
+))(({ theme }) => ({
     '& .MuiPaper-root': {
-      borderRadius: 6,
-      marginTop: theme.spacing(1),
-      minWidth: 180,
-      color:
-        theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
-      boxShadow:
-        'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
-      '& .MuiMenu-list': {
-        padding: '4px 0',
-      },
-      '& .MuiMenuItem-root': {
-        '& .MuiSvgIcon-root': {
-          fontSize: 18,
-          color: theme.palette.text.secondary,
-          marginRight: theme.spacing(1.5),
+        borderRadius: 6,
+        marginTop: theme.spacing(1),
+        minWidth: 180,
+        color:
+            theme.palette.mode === 'light' ? 'rgb(55, 65, 81)' : theme.palette.grey[300],
+        boxShadow:
+            'rgb(255, 255, 255) 0px 0px 0px 0px, rgba(0, 0, 0, 0.05) 0px 0px 0px 1px, rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px',
+        '& .MuiMenu-list': {
+            padding: '4px 0',
         },
-        '&:active': {
-          backgroundColor: alpha(
-            theme.palette.primary.main,
-            theme.palette.action.selectedOpacity,
-          ),
+        '& .MuiMenuItem-root': {
+            '& .MuiSvgIcon-root': {
+                fontSize: 18,
+                color: theme.palette.text.secondary,
+                marginRight: theme.spacing(1.5),
+            },
+            '&:active': {
+                backgroundColor: alpha(
+                    theme.palette.primary.main,
+                    theme.palette.action.selectedOpacity,
+                ),
+            },
         },
-      },
     },
-  }));
+}));
 
 const CoursePage = () => {
 
@@ -130,7 +138,7 @@ const CoursePage = () => {
     const handleinstClose = () => {
         setOpenRateInstructor(false);
     };
-    
+
     //we can use the same rating and text variables in this case
     const submitInstructorRating = async () => {
         const response = await axios.put(`http://localhost:8000/rateInstructor?userId=${user._id}&instructorId=${course.instructors[0]._id}&ratingNumber=${rating}&ratingText=${text}`)
@@ -208,86 +216,97 @@ const CoursePage = () => {
             window.location.reload();
     }
 
-    const [reportMessage,setReportMessage]= useState(null);
-    const [openRM,setOpenRM]= useState(false);
-    const [openGrade,setOpenGrade]= useState(false);
-    const [grade,setGrade]= useState(null);
-    const [exerciseId,setExerciseId]= useState(null);
-    const [severity,setSeverity]= useState('info');
-    const [flagG,setFlagG]= useState(null);
-    async function reportCourse () {
-        
-          await axios.post(`http://localhost:8000/reportCourse?userId=${user._id}&courseId=${course._id}&problem=${problem}`)
-              .then(res => {
+    const [deletedMyRating, setDelete] = useState(false);
+    const deleteCourseRating = async () => {
+        const response = await axios.post(`http://localhost:8000/deleteCourseRating?userId=${user._id}&courseId=${course._id}`)
+            .catch((error) => console.log(error.response.data.message));
+
+        if (response.status == 200) //just refresh the page
+            {
+                setDelete(true);
+                setOpenPopup(true);
+            }
+    }
+
+    const [reportMessage, setReportMessage] = useState(null);
+    const [openRM, setOpenRM] = useState(false);
+    const [openGrade, setOpenGrade] = useState(false);
+    const [grade, setGrade] = useState(null);
+    const [exerciseId, setExerciseId] = useState(null);
+    const [severity, setSeverity] = useState('info');
+    const [flagG, setFlagG] = useState(null);
+    async function reportCourse() {
+
+        await axios.post(`http://localhost:8000/reportCourse?userId=${user._id}&courseId=${course._id}&problem=${problem}`)
+            .then(res => {
                 setSeverity('success')
                 setReportMessage('Your Report has been submitted')
                 setOpenRM(true)
-              // alert ('Your Report has been submitted')
-              })
-              .catch((error) => { 
+                // alert ('Your Report has been submitted')
+            })
+            .catch((error) => {
                 setSeverity('info')
                 setReportMessage(error.response.data.message)
                 setOpenRM(true)
                 //alert(error.response.data.message)
             })
-              //console.log(Search)
-             // const c = searchResult.currency
-            
-              
-        }
+        //console.log(Search)
+        // const c = searchResult.currency
 
 
-        async function handleGrade () {
-        
-            await axios.get(`http://localhost:8000/viewExerciseGrade?exersiseId=${exerciseId}&userId=${user._id}`)
-                .then(response => {
-                    if (response.data && response.data.solved){
-                        setGrade ( "You got "+ response.data.userGrade + " out of " + response.data.totalGrade)
-                        setOpenGrade(true)  
-                    }
-                  
-                  
-                  if (response.data && !response.data.solved){
-          
-                    setGrade( "You still did not solve the exercise")
-                    setOpenGrade(true)  
-                    
-                   
-          
-                  }
-                 // setGrade(response.data)
-                  //setOpenGrade(true)  //momken a5leha useEffect
-                // alert ('Your Report has been submitted')
-                })
-                .catch((error) => { 
-                  //setSeverity('info')
-                  setReportMessage(error.response.data.message)
-                  setOpenGrade(true)  
-                  //alert(error.response.data.message)
-              })
-                //console.log(Search)
-               // const c = searchResult.currency
-              
-                
-          }
-        const handleCloseRM = () =>{
-            setOpenRM(false);
-        }
-        const handleCloseGrade = () =>{
-            setOpenGrade(false);
-            setFlagG(false);
-           // handleCloseRM();
-        }
-        useEffect(()=>
-            {
-                if (exerciseId&&flagG){
-                    handleGrade();
+    }
+
+
+    async function handleGrade() {
+
+        await axios.get(`http://localhost:8000/viewExerciseGrade?exersiseId=${exerciseId}&userId=${user._id}`)
+            .then(response => {
+                if (response.data && response.data.solved) {
+                    setGrade("You got " + response.data.userGrade + " out of " + response.data.totalGrade)
+                    setOpenGrade(true)
                 }
 
-            },[flagG]
-        )
 
-     
+                if (response.data && !response.data.solved) {
+
+                    setGrade("You still did not solve the exercise")
+                    setOpenGrade(true)
+
+
+
+                }
+                // setGrade(response.data)
+                //setOpenGrade(true)  //momken a5leha useEffect
+                // alert ('Your Report has been submitted')
+            })
+            .catch((error) => {
+                //setSeverity('info')
+                setReportMessage(error.response.data.message)
+                setOpenGrade(true)
+                //alert(error.response.data.message)
+            })
+        //console.log(Search)
+        // const c = searchResult.currency
+
+
+    }
+    const handleCloseRM = () => {
+        setOpenRM(false);
+    }
+    const handleCloseGrade = () => {
+        setOpenGrade(false);
+        setFlagG(false);
+        // handleCloseRM();
+    }
+    useEffect(() => {
+        if (exerciseId && flagG) {
+            handleGrade();
+        }
+
+    }, [flagG]
+    )
+
+
     //when an enrolled user wants a refund
     const [requested, setRequested] = useState(false);
     const [openRefundPopup, setORP] = useState(false);
@@ -300,18 +319,16 @@ const CoursePage = () => {
         const response = await axios.get(`http://localhost:8000/requestedTheRefund?userId=${user._id}&courseId=${course._id}`)
             .catch((error) => console.log(error.response.data.message));
 
-        if (response.status === 200)
-            {
-                setRequested(true);
-            }
+        if (response.status === 200) {
+            setRequested(true);
+        }
 
     }
     const requestRefund = async () => {
         const response = await axios.post(`http://localhost:8000/requestRefund?courseId=${course._id}`)
             .catch((error) => console.log(error.response.data.message));
 
-        if (response.status == 200)
-        {
+        if (response.status == 200) {
             setORP(true);
         }
     }
@@ -319,43 +336,65 @@ const CoursePage = () => {
 
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open2 = Boolean(anchorEl);
-  
+
     const handleClick = (event) => {
         //console.log(event)
         setAnchorEl(event.currentTarget);
-        
-      };
-      const handleClose2 = (event) => {
+
+    };
+    const handleClose2 = (event) => {
         //console.log(event)
-         setAnchorEl(null);
-       };
-      
-       const handleProblem = (event) => {
-        if (problem == event.target.value){
+        setAnchorEl(null);
+    };
+
+    const handleProblem = (event) => {
+        if (problem == event.target.value) {
             setProblem(null);
-            
-             
-          }
-          else
-          {
+
+
+        }
+        else {
             setProblem(event.target.value);
 
         }
-       
-        
-      };
-      const handleDone = (event) => {
-        
-        if (problem){
-            
+
+
+    };
+    const handleDone = (event) => {
+
+        if (problem) {
+
             reportCourse();
         } else {
             setSeverity('info')
-                 setReportMessage('please specify the problem')
-                 setOpenRM(true)
-        
-       }
-      };
+            setReportMessage('please specify the problem')
+            setOpenRM(true)
+
+        }
+    };
+
+    //clicking on the video should display it
+    const [clickedVideo, setVideo] = useState(null);
+    const [notes, setNotes] = useState('');
+
+    const handleNotes = (event) => {
+        setNotes(event.target.value);
+    };
+
+    //if a video is clicked call the backend to recheck the progress
+    const recordProgress = async (subtitleId) => {
+        await axios.get(`http://localhost:8000/viewVideo?subtitleId=${subtitleId}&courseId=${courseId}`)
+            .catch((error) => alert(error.response.data.message))
+    }
+
+    const MyDoc = () => (
+        <Document>
+            <Page>
+                <Text>{notes}</Text>
+            </Page>
+        </Document>
+    )
+
     useEffect(() => {
         if (course._id && user._id) {
             //result of the backend request is ready
@@ -430,26 +469,29 @@ const CoursePage = () => {
                             <Paper
                                 sx={{
                                     position: 'relative',
-                                    backgroundColor: 'grey.800',
                                     color: '#000',
-                                    backgroundSize: 'cover',
                                     backgroundRepeat: 'no-repeat',
-                                    backgroundPosition: 'center',
+                                    backgroundPosition: 'right',
                                     backgroundImage: `url(${img})`,
+                                    backgroundSize: '20%',
+
                                 }}
                             >
-                                <Typography component="h1" variant="h3" color="inherit" gutterBottom>
+                                <Typography component="h1" variant="h3" color="inherit">
                                     Subject: {course.subject}
                                 </Typography>
-                                <Typography variant="h5" color="inherit" paragraph>
+                                <Typography variant="h4" color="inherit">
                                     Title: {course.title}
                                 </Typography>
-                                <Typography variant="subtitle1">
+                                <Rating defaultValue={course.rating} precision={0.1} readOnly />
+                                <Typography variant="h6"> <WatchLaterOutlinedIcon /> Total Hours: {course.totalHours} </Typography>
+                                <Typography variant="h6"> <GroupsOutlinedIcon />  Number of Students: {course.students.length} </Typography>
+                                <Typography variant="h6"> <BoyOutlinedIcon />
                                     Taught by {course.instructors[0].firstName} {course.instructors[0].lastName}
                                     <br></br>
                                     {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) &&
                                         <Button variant="contained" size="small"
-                                            sx={{align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                            sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                             onClick={openInstRate}>
                                             Rate this instructor
                                         </Button>
@@ -457,7 +499,6 @@ const CoursePage = () => {
                                 </Typography>
                             </Paper>
 
-                            <Divider />
                             <Box display="flex"
                                 mt={1}
                                 mb={1}
@@ -465,9 +506,6 @@ const CoursePage = () => {
                                 alignItems="center"
                                 justifyContent="center">
                                 <Typography variant="subtitle1">{course.summary}</Typography>
-                                <Typography variant="subtitle1"> Current course rating: <Rating defaultValue={course.rating} precision={0.1} readOnly /></Typography>
-                                <Typography variant="subtitle1"> The total hours of the course: {course.totalHours} </Typography>
-                                <Typography variant="subtitle1"> Current number of enrolled students: {course.students.length} </Typography>
                                 {/*dealing with the course price*/}
 
                                 {!["CORPORATE_TRAINEE", "ADMIN"].includes(user.type) &&
@@ -477,11 +515,11 @@ const CoursePage = () => {
                                             This course is on sale until {new Date(course.discountDuration).toLocaleDateString()} !
                                         </Typography>
                                         <Typography variant="subtitle1">
-                                        from
+                                            from
                                             <Text style={{ textDecorationLine: 'line-through' }}>  {price}     </Text>
-                                           
-                                              <Text>   to {afterdiscount}  {currency} </Text>
-                                              
+
+                                            <Text>   to {afterdiscount}  {currency} </Text>
+
                                         </Typography>
                                     </div>
                                 }
@@ -528,19 +566,11 @@ const CoursePage = () => {
                                         Want to enroll? Sign up now!
                                     </Button>
                                 }
-                               
+
                             </Box>
                             <Divider />
 
-                            <Box
-                                display="flex"
-                                alignItems="center"
-                                justifyContent="center">
-                                <ReactPlayer url={course.videoLink}
-                                    controls={true}
-                                />
-                            </Box>
-                            <Divider />
+
                             {/*display the user's progress*/}
                             {["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) && registered &&
                                 <Box sx={{ ml: 27, width: '70%' }}>
@@ -574,131 +604,190 @@ const CoursePage = () => {
                                 </Box>
                             }
 
-                            {
-                                course.subtitles.map((subtitle) => (
-                                    <Box
-                                        sx={{
-                                            mb: 2, mr:1,
-                                            p: 1, border: '3px dashed grey',
-                                            borderColor: '#00B4D8'
-                                        }}>
+                            {/* subtitle box, should be right aligned with all the subtitles collapsed inside an accordion */}
+                            {/* upon clicking on the sub video, the left box should display the reactPlayer,
+                            with the notes field and the download button */}
+                            <Box
+                                display="flex"
+                                flexDirection="row"
+                                justifyContent="center"
+                                sx={{ border: 1, borderColor: '#00B4D8' }}
+                            >
 
-                                        <Typography color="#03045E" sx={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}> {subtitle.text} </Typography>
-                                        <br></br>
-                                        <Typography> This subtitle's total hours: {subtitle.hours} </Typography>
-                                        <br></br>
-                                        <Typography
-                                            sx={{
-                                                alignItems: 'center',
-                                                '&:hover': {
-                                                    backgroundColor: '#CAF0F8',
-                                                },
-                                            }}
-                                            onClick={registered ? () => window.location.href = `/viewVideo?subtitleId=${subtitle._id}&courseId=${courseId}` : null}
-                                        >
-                                            <PlayCircleIcon color='#03045E' /> {subtitle.videoTitles.title}: {subtitle.videoTitles.description}
-                                        </Typography>
-
-                                        {subtitle.exercises.map((exercise) => (
-                                            <Grid container spacing={0}>
-                                            <Typography
+                                <Box
+                                    display="flex"
+                                    flexDirection="column"
+                                    alignItems="left"
+                                    minWidth={'50%'}
+                                >
+                                    {
+                                        course.subtitles.map((subtitle) => (
+                                            <Accordion
                                                 sx={{
-                                                    alignItems: 'center',
-                                                    '&:hover': {
-                                                        backgroundColor: '#CAF0F8',
-                                                    },
-                                                    width : '85%'
-                                                }}
-                                                onClick={registered ?
-                                                    () => window.location.href = `/solveExercise?userId=${user._id}&userType=${user.type}&courseId=${course._id}&exerciseId=${exercise._id}&subtitleId=${subtitle._id}`
-                                                    : null}
-                                            >
-                                                <MenuBookIcon color='#03045E' /> Exercise: {exercise.title}
+                                                    p: 0.5,
+                                                    border: 0.2,
+                                                    borderColor: '#00B4D8'
+                                                }}>
+                                                <AccordionSummary
+                                                    expandIcon={<ExpandMoreIcon />}
+                                                    aria-controls="panel1a-content"
+                                                    id="panel1a-header"
+                                                >
+                                                    <Typography color="#03045E" sx={{ fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}> {subtitle.text} </Typography>
+                                                </AccordionSummary>
 
-                                               
+                                                <br></br>
+                                                <Typography> This subtitle's total hours: {subtitle.hours} </Typography>
+                                                <br></br>
+                                                <Typography
+                                                    sx={{
+                                                        alignItems: 'center',
+                                                        '&:hover': {
+                                                            backgroundColor: '#CAF0F8',
+                                                        },
+                                                    }}
+                                                    onClick={registered ? () => { setVideo(subtitle.videoTitles.link); recordProgress(subtitle._id); } : null}
+                                                >
+                                                    <PlayCircleIcon color='#03045E' /> {subtitle.videoTitles.title}: {subtitle.videoTitles.description}
+                                                </Typography>
+
+                                                {subtitle.exercises.map((exercise) => (
+                                                    <Grid container spacing={0}>
+                                                        <Typography
+                                                            sx={{
+                                                                alignItems: 'center',
+                                                                '&:hover': {
+                                                                    backgroundColor: '#CAF0F8',
+                                                                },
+                                                                width: '85%'
+                                                            }}
+                                                            onClick={registered ?
+                                                                () => window.location.href = `/solveExercise?userId=${user._id}&userType=${user.type}&courseId=${course._id}&exerciseId=${exercise._id}&subtitleId=${subtitle._id}`
+                                                                : null}
+                                                        >
+                                                            <MenuBookIcon color='#03045E' /> Exercise: {exercise.title}
+
+
+                                                        </Typography>
+
+                                                        {registered && user.type != 'INSTRUCTOR' &&
+                                                            <Button
+                                                                sx={{ mt: 0, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                                                onClick={() => {
+                                                                    setExerciseId(exercise._id);
+                                                                    setFlagG(true);
+                                                                }}
+                                                            >
+                                                                view my grade
+                                                            </Button>
+                                                        }
+
+
+                                                        {/* //henaaaaa */}
+                                                        <Backdrop
+
+                                                            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                                            open={openGrade}
+                                                            onClick={handleCloseGrade}
+                                                        >
+                                                            <Alert sx={{ width: '400px' }} severity='info' icon={false}  >
+                                                                <AlertTitle>{grade}</AlertTitle>
+                                                                Click anywhere to continue
+                                                            </Alert>
+                                                        </Backdrop>
+
+
+                                                    </Grid>
+
+                                                ))}
+                                                { /*a5r el loop*/}
+
+                                                {
+                                                    user.type == 'INSTRUCTOR' && registered &&
+                                                    <Button
+                                                        sx={{ mt: 1, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                                        onClick={() =>
+                                                            window.location.href = `/exercise?courseId=${course._id}&&subtitleId=${subtitle._id}`}
+                                                    >
+                                                        Add another exercise
+                                                    </Button>
+                                                }
+                                            </Accordion>
+                                        ))
+                                    }
+                                </Box>
+
+                                <Box
+                                    display="flex"
+                                    flexDirection="column"
+                                    alignItems="center"
+                                    minWidth={'50%'}>
+                                    {
+                                        !clickedVideo &&
+                                        <div>
+                                            <img src={clickOnVid} />
+                                            <Typography color="#03045E" sx={{ alignSelf: 'center', fontSize: 18, fontWeight: 'bold' }}>
+                                                Click on a subtitle video to start watching!
                                             </Typography>
 
-                                          { registered&&  user.type != 'INSTRUCTOR' &&
-                                           <Button
-                                                sx={{ mt: 0, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                                onClick={()=>{
-                                                    setExerciseId(exercise._id);
-                                                    setFlagG(true);
-                                                }}
-                                            >
-                                                view my grade
-                                            </Button>
-}
+                                        </div>
 
 
-{/* //henaaaaa */} 
-<Backdrop
-                               
-                                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                                open={openGrade}
-                                onClick={handleCloseGrade}
-                            >
-                                <Alert sx={{ width: '400px' }}  severity='info'  icon={false}  >
-                                    <AlertTitle>{grade}</AlertTitle>
-                                    Click anywhere to continue
-                                </Alert>
-                            </Backdrop>
+                                    }
+                                    {
+                                        clickedVideo &&
+                                        <div>
+                                            <ReactPlayer url={clickedVideo}
+                                                controls={true}
+                                            />
+                                            <TextField multiline fullWidth label="Write some notes" focused sx={{ mt: 1 }} onChange={handleNotes} />
+
+                                            <PDFDownloadLink document={<MyDoc />} fileName="notes.pdf">
+                                                <Button size="large"
+                                                    sx={{ m: '1%', ml: '45%', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                                ><DownloadIcon /></Button>
+                                            </PDFDownloadLink>
+                                        </div>
+                                    }
+                                </Box>
 
 
-                                            </Grid>
-                                           
-                                        ))}
-                                        { /*a5r el loop*/}
 
-                                        {
-                                            user.type == 'INSTRUCTOR' && registered &&
-                                            <Button
-                                                sx={{ mt: 1, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                                onClick={() => 
-                                                    window.location.href=`/exercise?courseId=${course._id}&&subtitleId=${subtitle._id}`}
-                                            >
-                                                Add another exercise
-                                            </Button>
-                                        }
-                                    </Box>
-                                ))
-                            }
 
-                            {/*If the user is an instructor that teaches the course, display a button that allows them to add a sub*/}
-                            {
-                                user.type == 'INSTRUCTOR' && registered &&
-                                <Button
-                                    sx={{ ml: 75, mb: 1, size: 'large', align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                            </Box>
 
-                                >
-                                    Add another subtitle
-                                </Button>
-                            }
                             <Divider />
 
                             {/*Course ratings*/}
                             <Box
                                 sx={{
                                     mb: 2,
-                                    mr: 1,
+                                    mt: '1%',
                                     p: 1, border: 2, borderColor: '#00B4D8'
                                 }}>
                                 <Typography color="#03045E" sx={{ width: 155, fontSize: 20, fontWeight: 'bold', fontStyle: 'italic' }}> Course reviews </Typography>
                                 {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) && registered
-                                && course.reviews.filter(r => r.id===user._id.toString()).length===0 &&
+                                    && course.reviews.filter(r => r.id === user._id.toString()).length === 0 &&
                                     <Button sx={{ ml: '85%', mt: -5, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                         onClick={handleClickOpen}
                                     >
-                                    Rate this course
+                                        Rate this course
                                     </Button>
                                 }
                                 {["INDIVIDUAL_TRAINEE", "CORPORATE_TRAINEE"].includes(user.type) && registered
-                                && course.reviews.filter(r => r.id===user._id.toString()).length>0 &&
-                                    <Button sx={{ ml: '85%', mt: -5, align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                        onClick={handleClickOpen}
-                                    >
-                                    Update my rating
-                                    </Button>
+                                    && course.reviews.filter(r => r.id === user._id.toString()).length > 0 &&
+                                    <Box sx={{ mb: "-1.5%" }}>
+                                        <Button sx={{ ml: '83%', mt: "-4%", align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                            onClick={handleClickOpen} endIcon={<EditIcon />}
+                                        >
+                                            Update my rating
+                                        </Button>
+                                        <Button sx={{ ml: '83%', mt: "-2%", align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                            endIcon={<DeleteIcon />} onClick={deleteCourseRating}
+                                        >
+                                            Delete my rating
+                                        </Button>
+                                    </Box>
                                 }
                                 {
                                     course.reviews.map((review) => (
@@ -715,72 +804,72 @@ const CoursePage = () => {
                                 <Button></Button>
                             </Box>
 
-                           {["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE", "INSTRUCTOR"].includes(user.type) &&
-                                   
-                                    
-     <Button variant="contained" size="small"
-       sx={{ mb: 0.5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-   aria-controls={open2 ? 'demo-customized-menu' : undefined}
-       aria-haspopup="true"
-   aria-expanded={open2 ? 'true' : undefined}
-      disableElevation
-      onClick={handleClick}
-                              >
-            Report a problem
-             </Button>
+                            {["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE", "INSTRUCTOR"].includes(user.type) &&
+
+
+                                <Button variant="contained" size="small"
+                                    sx={{ mb: 0.5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                    aria-controls={open2 ? 'demo-customized-menu' : undefined}
+                                    aria-haspopup="true"
+                                    aria-expanded={open2 ? 'true' : undefined}
+                                    disableElevation
+                                    onClick={handleClick}
+                                >
+                                    Report a problem
+                                </Button>
 
                             }
-<StyledMenu
-id="demo-customized-menu"
-MenuListProps={{
-  'aria-labelledby': 'demo-customized-button',
-}}
-anchorEl={anchorEl}
-open={open2}
-onClose={handleClose2}
+                            <StyledMenu
+                                id="demo-customized-menu"
+                                MenuListProps={{
+                                    'aria-labelledby': 'demo-customized-button',
+                                }}
+                                anchorEl={anchorEl}
+                                open={open2}
+                                onClose={handleClose2}
 
->
-    
-    
-  
-
-<Typography >
-            Report a problem
-          </Typography>
-<Divider/>
-          <Typography 
-          >
-                      <RadioGroup
-                        //aria-labelledby="demo-radio-buttons-group-label"
-                       // name="controlled-radio-buttons-group"
-                        onChange={ handleProblem}
-                        onClick={handleProblem}
-                    >
-                        <FormControlLabel value={ 'technical'} control={<Radio />} label={ 'technical'} checked={problem == 'technical' } />
-                        <FormControlLabel value={'financial'} control={<Radio />} label={'financial'} checked={problem == 'financial' } />
-                        <FormControlLabel value={'other'} control={<Radio />} label={'other'} checked={problem == 'other' } />
-                       
-
-                    </RadioGroup>
-          </Typography>
-
-          <Typography >
-          <Button variant="contained" size="small"
-       sx={{ mb: 0.5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-      disableElevation
-      onClick={handleDone}
-                              >
-            Done
-             </Button>
-
-          </Typography>
+                            >
 
 
-    
-    
-     </StyledMenu>
-               
-                           
+
+
+                                <Typography >
+                                    Report a problem
+                                </Typography>
+                                <Divider />
+                                <Typography
+                                >
+                                    <RadioGroup
+                                        //aria-labelledby="demo-radio-buttons-group-label"
+                                        // name="controlled-radio-buttons-group"
+                                        onChange={handleProblem}
+                                        onClick={handleProblem}
+                                    >
+                                        <FormControlLabel value={'technical'} control={<Radio />} label={'technical'} checked={problem == 'technical'} />
+                                        <FormControlLabel value={'financial'} control={<Radio />} label={'financial'} checked={problem == 'financial'} />
+                                        <FormControlLabel value={'other'} control={<Radio />} label={'other'} checked={problem == 'other'} />
+
+
+                                    </RadioGroup>
+                                </Typography>
+
+                                <Typography >
+                                    <Button variant="contained" size="small"
+                                        sx={{ mb: 0.5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                        disableElevation
+                                        onClick={handleDone}
+                                    >
+                                        Done
+                                    </Button>
+
+                                </Typography>
+
+
+
+
+                            </StyledMenu>
+
+
                             {/*RATE THE COURSE POPUP DIALOGUE*/}
                             <Dialog onClose={handleClose} open={openRateCourse}
                                 sx={{
@@ -818,7 +907,12 @@ onClose={handleClose2}
                                 onClick={handleClosePopup}
                             >
                                 <Alert sx={{ tabSize: 'l' }} severity="success">
-                                    <AlertTitle>Your Rating has been submitted.</AlertTitle>
+                                { deletedMyRating &&
+                                    <AlertTitle>Your Rating has been deleted.</AlertTitle> 
+                                }
+                                { !deletedMyRating &&
+                                    <AlertTitle>Your Rating has been submitted.</AlertTitle> 
+                                }
                                     Click anywhere to continue
                                 </Alert>
                             </Backdrop>
@@ -867,12 +961,12 @@ onClose={handleClose2}
 
 
                             <Backdrop
-                               
+
                                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                                 open={openRM}
                                 onClick={handleCloseRM}
                             >
-                                <Alert sx={{ tabSize: 'l' }}  severity={severity} >
+                                <Alert sx={{ tabSize: 'l' }} severity={severity} >
                                     <AlertTitle>{reportMessage}</AlertTitle>
                                     Click anywhere to continue
                                 </Alert>
