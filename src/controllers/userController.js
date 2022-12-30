@@ -1082,6 +1082,25 @@ async checkRequestedRefund({ userId, courseId }) {
     } catch(error) {
         throw new DomainError("internal error", 500);
     }
+},
+
+async deleteCourseRating({ userId, courseId }) {
+    try {
+        const course = await Course.findOne({ _id: courseId });
+        const updatedReviewsArray = course.reviews.filter( rev => rev.id!==(userId.toString()));
+
+        let newRateSum = 0;
+        updatedReviewsArray.forEach( rev => newRateSum = parseInt(newRateSum) + parseInt(rev.rating));
+        const newRating = newRateSum / updatedReviewsArray.length;
+
+        await Course.updateOne({ _id: courseId}, {
+            rating: newRating,
+            $pull: { "reviews": { id: userId.toString() } }
+        })
+    } catch(error) {
+        console.log(error);
+        throw new DomainError("internal error", 500);
+    }
 }
 
 }

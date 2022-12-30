@@ -135,6 +135,7 @@ const [user,setUser] = useState(async () => {
   await axios.get('http://localhost:8000/userBySession')
   .then(res => setUser(res.data))
   .catch(err => {
+    console.log(err)
     if (err.response.status === 401) //you didn't login
     window.location.href='/';
   })
@@ -234,7 +235,12 @@ if (e.key === 'Enter') {
           </box>
       
           <box>
-          <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }} onClick={logout}>Log Out</Button>
+          { user.type !== "GUEST" &&
+            <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }} onClick={logout}>Log Out</Button>
+          }
+          { user.type === "GUEST" &&
+            <Button variant="outlined" sx={{ color: 'white',  borderColor: '#CAF0F8' }} onClick={() => window.location.href='/'}>Sign In</Button>
+          }
           </box>
           </Toolbar>
         </AppBar>
@@ -263,48 +269,6 @@ if (e.key === 'Enter') {
           <ListItemText primary='My Courses'/>
           </ListItemButton>
           }
-
-          {user.type !== "GUEST" &&
-          <ListItemButton onClick={() => open? setShow(!show) : null}>
-          {/*maps on the user certificates to display them*/}
-          <ListItemIcon>
-          <WorkspacePremiumIcon sx={{color:'black' }} />
-          </ListItemIcon>
-          <ListItemText primary='My Certificates'/>
-          </ListItemButton>
-          }
-          {ready && show && user.certificates.map((certificate) => (
-            <ListItemButton
-              key={certificate}
-              value={certificate}
-              sx={{ backgroundColor:'#eeeeee'}}
-            >
-              {certificate}
-
-              { certificate === 'englishCertificate.pdf' &&
-              <a href = {englishCertificate} download>
-              <DownloadIcon sx={{ ml:5, mt:0.5 }}/>
-              </a>
-              }
-              { certificate === 'csCertificate.pdf' &&
-              <a href = {csCertificate} download>
-              <DownloadIcon sx={{ ml:5, mt:0.5 }}/>
-              </a>
-              }
-              { certificate === 'mathCertificate.pdf' &&
-              <a href = {mathCertificate} download>
-              <DownloadIcon sx={{ ml:5, mt:0.5 }}/>
-              </a>
-              }
-              {
-                certificate === 'generalCertificate.pdf' &&
-                <a href = {generalCertificate} download>
-                <DownloadIcon sx={{ ml:5, mt:0.5 }}/>
-              </a>
-              }
-
-            </ListItemButton>
-          ))}
 
 { user.type==='INDIVIDUAL_TRAINEE' &&
 <div>
