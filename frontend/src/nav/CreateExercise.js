@@ -27,7 +27,7 @@ const instructorNav = {};
 
 
 
-const steps = ['Add Questions', 'Create Exercise'];
+const steps = ['Exercise Title', 'Add Questions'];
 
 function getStepContent(step) {
   switch (step) {
@@ -181,7 +181,14 @@ export default function Checkout() {
             Create Exercise
           </Typography>
           <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
-           {activeStep==0?(<React.Fragment>
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+              </Stepper>
+          <Stepper activeStep={activeStep} sx={{ pt: 3, pb: 5 }}>
+           {activeStep==1?(<React.Fragment>
       <Grid container spacing={3}>
         <Grid item  md={6}>
           <TextField
@@ -264,13 +271,9 @@ export default function Checkout() {
            </ListItem>
           </Grid>
         </Grid>
-        <Button
-
-variant="contained"
-onClick={handleNext}
-sx={{ mt: 3, ml: 1 }}>
-  Next
-  </Button>
+        <Button onClick={handleBack} sx={{ mt: 3, ml: 1 }}>
+                    Back
+                  </Button>
   <Button onClick={()=> {change()}} sx={{ mt: 3, ml: 1 }}>
   Add Another Question
 </Button>
@@ -298,18 +301,15 @@ sx={{ mt: 3, ml: 1 }}>
          
         </Grid>
         </Grid>
-        <Button onClick={handleBack} sx={{ mt: 3, ml: 1 }}>
-                    Back
-                  </Button>
+
 
                   <Button
-                variant="contained"
-                onClick={()=> {change2()}}
-                sx={{ mt: 3, ml: 1 }}
-                
-              >
-                Add Exercise
-                </Button>
+
+variant="contained"
+onClick={handleNext}
+sx={{ mt: 3, ml: 1 }}>
+  Next
+  </Button>
         
    
     </React.Fragment>)}

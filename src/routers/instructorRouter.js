@@ -499,7 +499,8 @@ console.log(courseId)
 
 instructorRouter.post('/acceptContract',async(req,res) => {
   try{
-const userId=req.body.userId
+    const session = sessionDetails.getSession(req.session.id);
+    const userId = session.userId
 console.log(userId)
 
 
