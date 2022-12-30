@@ -1003,7 +1003,7 @@ async mostPopularCourses() {
      }
 
     //we will assume for now that we need to display the three most popular courses
-    return popularCourses.sort(sorter).splice(0,3);
+    return popularCourses.sort(sorter).splice(0,4);
     } catch(error) {
         console.log(error);
         throw new DomainError("internal error", 500);
