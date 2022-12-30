@@ -222,10 +222,10 @@ const CoursePage = () => {
             .catch((error) => console.log(error.response.data.message));
 
         if (response.status == 200) //just refresh the page
-            {
-                setDelete(true);
-                setOpenPopup(true);
-            }
+        {
+            setDelete(true);
+            setOpenPopup(true);
+        }
     }
 
     const [reportMessage, setReportMessage] = useState(null);
@@ -524,6 +524,7 @@ const CoursePage = () => {
                                     </div>
                                 }
                                 {!["CORPORATE_TRAINEE", "ADMIN"].includes(user.type) && course.discount === 0 &&
+                                 (!registered && user.type ==='INDIVIDUAL_TRAINEE') || (user.type === 'INSTRUCTOR') &&
                                     <Typography variant="subtitle1">
                                         This course currently costs {price} {currency}
                                     </Typography>
@@ -610,15 +611,19 @@ const CoursePage = () => {
                             <Box
                                 display="flex"
                                 flexDirection="row"
-                                justifyContent="center"
                                 sx={{ border: 1, borderColor: '#00B4D8' }}
                             >
 
                                 <Box
                                     display="flex"
                                     flexDirection="column"
+                                    sx={{
+                                        overflow: "hidden",
+                                        overflowY: "scroll",
+                                    }}
                                     alignItems="left"
                                     minWidth={'50%'}
+                                    maxHeight='480px'
                                 >
                                     {
                                         course.subtitles.map((subtitle) => (
@@ -714,6 +719,7 @@ const CoursePage = () => {
                                                 }
                                             </Accordion>
                                         ))
+
                                     }
                                 </Box>
 
@@ -907,12 +913,12 @@ const CoursePage = () => {
                                 onClick={handleClosePopup}
                             >
                                 <Alert sx={{ tabSize: 'l' }} severity="success">
-                                { deletedMyRating &&
-                                    <AlertTitle>Your Rating has been deleted.</AlertTitle> 
-                                }
-                                { !deletedMyRating &&
-                                    <AlertTitle>Your Rating has been submitted.</AlertTitle> 
-                                }
+                                    {deletedMyRating &&
+                                        <AlertTitle>Your Rating has been deleted.</AlertTitle>
+                                    }
+                                    {!deletedMyRating &&
+                                        <AlertTitle>Your Rating has been submitted.</AlertTitle>
+                                    }
                                     Click anywhere to continue
                                 </Alert>
                             </Backdrop>
