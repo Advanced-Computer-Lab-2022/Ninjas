@@ -178,7 +178,7 @@ const Search = styled('div')(({ theme }) => ({
   }));
 
 const drawerWidth = 240;
-const InstructorCreate = () => {
+const InstructorCrEx = () => {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
@@ -226,67 +226,100 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
   const [open, setOpen] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
   const handleClose = async () => {
-//go to anothr page of adding subs not this page
-    window.location.href=`/InstructorSubtitle?courseId=${courseId}`;
+    window.location.href=`/InstructorCrEx?courseId=${courseId}&subtitleId=${subtitleId}`; //proceed to create exercise
     setOpen(false);
   };
+  const handleClose2 = async () => {
+        window.location.href=`/InstructorCrEx2?courseId=${courseId}&subtitleId=${subtitleId}&exerciseId=${exerciseId}`; //add another subtitle
+        setOpen(false);
+      };
   const handleClose3 = async () => {
-    setOpen(false);
-  };  
-  const handleClickOpen = async ()=>{
-    //check on it
-    const response = await axios.put(`http://localhost:8000/createcourse/`,{
-        subject: subject,
-        price: price,
-        totalHours: hours,
-        summary: summary,
-        title: title,
-        videoLink: video
+        setOpen(false);
+      };
+  const handleClose4 = async () => {
+        setOpen2(true);
+
+      };  
+  const handleClose5 = async () => {
+    window.location.href='/InstructorCreate'; //add another subtitle
+    setOpen2(false);
+      };  
+  const handleClose6 = async () => {
+    window.location.href=`/InstructorSubtitle?courseId=${courseId}`
+    setOpen2(false);
+      };  
+  const handleClose7 = async () => {
+    window.location.href='/SearchInstructor'; //add another subtitle
+    setOpen2(false);
+      };             
+  const handleClickOpen = async ()=>{ //Add subtitle
+    const response = await axios.put(`http://localhost:8000/addExercise?subtitleId=${subtitleId}&courseId=${courseId}`,{
+        title: exerciseTitle,
+        questionText: questionText,
+        choice1: choice1,
+        choice2: choice2,
+        choice3: choice3,
+        choice4: choice4,
+        correctAnswer: correctAnswer,
+        totalCredit: totalGrade
     }).
     catch( (error) => alert(error.response.data.message)) 
     console.log(response.data)
     if(response.status===200){
-      setCourseId(response.data._id);
+
       setOpen(true);
-      // alert(response.data);
+      setExId(response.data._id);
+      
     }}
  
 
-  const[title,setTitle]=useState('');
-  const[price,setPrice]=useState('');
-  const[hours,setHours]=useState('');
-  const[video,setVideo]=useState('');
-  const[summary,setSummary]=useState('');
-  const[subject,setSubject]=useState('');
-  const[courseId,setCourseId]=useState('');
+  const[exerciseTitle,setExTitle]=useState('');
+  const[questionText,setQuestion]=useState('');
+  const[choice1,setChoice1]=useState('');
+  const[choice2,setChoice2]=useState('');
+  const[choice3,setChoice3]=useState('');
+  const[choice4, setChoice4]=useState('');
+  const[correctAnswer, setCorrectAnswer]=useState('');
+  const[totalGrade, setGrade]=useState('');
+  const[exerciseId, setExId]=useState('');
+  const params1 = new URLSearchParams(window.location.search);
+  const courseId = params1.get('courseId');
+  const params2 = new URLSearchParams(window.location.search);
+  const subtitleId = params2.get('subtitleId');
+
 
  
-  const handleChangeTitle = (event) => {
-    setTitle(event.target.value);
+  const handleChangeExTitle = (event) => {
+    setExTitle(event.target.value);
+  } 
+  const handleChangeQuestion = (event) => {
+    setQuestion(event.target.value);
   }
-  const handleChangePrice = (event) => {
-    setPrice(event.target.value);
+  const handleChangeChoice1 = (event) => {
+    setChoice1(event.target.value);
   }
-  const handleChangeHours = (event) => {
-    setHours(event.target.value);
+  const handleChangeChoice2 = (event) => {
+    setChoice2(event.target.value);
   }
-  const handleChangeVideo = (event) => {
-    setVideo(event.target.value);
+  const handleChangeChoice3 = (event) => {
+    setChoice3(event.target.value);
   }
-  const handleChangeSummary = (event) => {
-    setSummary(event.target.value);
+  const handleChangeChoice4 = (event) => {
+    setChoice4(event.target.value);
   }
-
-const handleChangeSubject = (event) => {
-  setSubject(event.target.value);
-}
-
-
+  const handleChangeGrade = (event) => {
+    setGrade(event.target.value);
+  }
+  const handleChangeCorrect = (event) => {
+    setCorrectAnswer(event.target.value);
+  }
   
 return (
    
@@ -294,7 +327,6 @@ return (
       <Box sx={{ display: 'flex'   }}>
         <CssBaseline />
           <InstructorNav post={traineeNav}/>
-          
         <Box
           component="main"
           sx={{
@@ -315,41 +347,45 @@ return (
             <Copyright sx={{ pt: 4 }}  />
           </Container>
           <main>
-            <Typography variant="h4" sx={{ mt: 4, mb: 4 , ml: 7, color:'#03045E', fontWeight:'bold'}}>Create New Course</Typography>
+            <box sx={{ color:'white',borderColor:'gray',borderRadius:5, fontWeight:'bold'}}>
+            <Typography variant="h4" sx={{ mt: 4, mb: 4 , ml: 7, color:'#03045E', fontWeight:'bold'}}>Add Exercise</Typography>
+
           <Grid container spacing={2}  sx={{ ml: 5 }}>
-          <Grid item xs={5}>
+          <Grid item xs={10}>
                 <TextField
                   required
                   fullWidth
-                  name="Course Title"
-                  label="Course Title"
-                  type="Course Title"
-                  id="courseTitle"
-                  autoComplete="Course Title" onChange={(event)=>{handleChangeTitle(event)}}
+                  name="Exercise Title"
+                  label="Exercise Title"
+                  type="Exercise Title"
+                  id="exerciseTitle"
+                  autoComplete="Course Title" onChange={(event)=>{handleChangeExTitle(event)}}
                 />
               </Grid>
-            
+        {/* <Typography display={false}>{exerciseTitle}</Typography> */}
+  
+              <Grid item xs={10}>
+              {/* <FormControlLabel value="" control={<Radio />} label="" /> */}
+                <TextField
+                  required
+                  fullWidth
+                  name="Question"
+                  label="Question"
+                  type="Question"
+                  id="Question"
+                   onChange={(event)=>{handleChangeQuestion(event)}}
+                />
+              </Grid>
+
               <Grid item xs={5}>
                 <TextField
                   required
                   fullWidth
-                  name="Price"
-                  label="Price"
-                  type="Price"
-                  id="Price"
-                  onChange={(event)=>{handleChangePrice(event)}}
-                />
-              </Grid>
-        
-              <Grid item xs={5}>
-                <TextField
-                  required
-                  fullWidth
-                  name="Total Hours"
-                  label="Total Hours"
-                  type="Total Hours"
-                  id="Total Hours"
-                   onChange={(event)=>{handleChangeHours(event)}}
+                  name="Choice 1"
+                  label="Choice 1"
+                  type="Choice 1"
+                  id="Choice 1"
+                  onChange={(event)=>{handleChangeChoice1(event)}}
                 />
               </Grid>
               
@@ -357,44 +393,64 @@ return (
                 <TextField
                   required
                   fullWidth
-                  name="Preview Video Link"
-                  label="Preview Video Link"
-                  type="Preview Video Link"
-                  id="Preview Video Link"
-                  autoComplete="preview-video" onChange={(event)=>{handleChangeVideo(event)}}
+                  name="Choice 2"
+                  label="Choice 2"
+                  type="Choice 2"
+                  id="Choice 2"
+                  onChange={(event)=>{handleChangeChoice2(event)}}
                 />
               </Grid>
-              <Grid item xs={10}>
+              <Grid item xs={5}>
+                <TextField
+                  required
+                  fullWidth
+                  name="Choice 3"
+                  label="Choice 3"
+                  type="Choice 3"
+                  id="Choice 3"
+                  onChange={(event)=>{handleChangeChoice3(event)}}
+                />
+              </Grid>
+              <Grid item xs={5}>
+                <TextField
+                  required
+                  fullWidth
+                  name="Choice 4"
+                  label="Choice 4"
+                  type="Choice 4"
+                  id="Choice 4"
+                  onChange={(event)=>{handleChangeChoice4(event)}}
+                />
+              </Grid>
+              <Grid item xs={5}>
+                <TextField
+                  required
+                  fullWidth
+                  name="Correct Answer"
+                  label="Correct Answer"
+                  type="Correct Answer"
+                  id="Correct Answer"
+                  onChange={(event)=>{handleChangeCorrect(event)}}
+                />
+              </Grid>
+               <Grid item xs={5}>
                 <TextField 
                   required
                   fullWidth
-                  id="Summary"
-                  label="Summary"
-                  name="Summary"
-                  onChange={(event)=>{handleChangeSummary(event)}}
+                  id="Total Grade"
+                  label="Total Grade"
+                  name="Total Grade"
+                  onChange={(event)=>{handleChangeGrade(event)}}
                 />
               </Grid>
-              <Grid item xs={5} sx={{ mt : 4}}>
-              <FormControl >
-              <FormLabel id="demo-radio-buttons-group-label" sx={{ ml:2, mb:1}}>Subject</FormLabel>
-  <RadioGroup sx={{ml:2}}
-    aria-labelledby="demo-radio-buttons-group-label"
-    defaultValue="female"
-    name="radio-buttons-group"
-  >
-    <FormControlLabel value="CS" control={<Radio />} label="CS" onChange={(event)=>{handleChangeSubject(event)}}/>
-    <FormControlLabel value="English" control={<Radio />} label="English" onChange={(event)=>{handleChangeSubject(event)}}/>
-    <FormControlLabel value="Math" control={<Radio />} label="Math" onChange={(event)=>{handleChangeSubject(event)}}/>
-  
-  </RadioGroup>
-</FormControl >
-</Grid>
+             
            
               </Grid>
              
 <box>
-                <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E', ml: 73 }} 
-                onClick={()=> {handleClickOpen()}}>Add Course</Button>
+             <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E', ml: 73, mt: 2}} 
+                onClick={()=> {handleClickOpen()}}>Add Exercise</Button>
+</box>
 </box>
 <BootstrapDialog
         onClose={handleClose3}
@@ -408,53 +464,61 @@ return (
         </BootstrapDialogTitle>
         <DialogContent dividers>
           <Typography gutterBottom>
-            Add subtitles and exercises to course
+            Do you want to add another question to this exercise or add another exercise ?
           </Typography>   
         </DialogContent>
         <DialogActions>
           <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
           onClick={() => handleClose()}>
-            proceed
+            Another Exercise
+          </Button>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose2()}>
+            Another Question
+          </Button>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose4()}>
+            Furthur Actions
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+
+      <BootstrapDialog
+        onClose={handleClose3}
+        aria-labelledby="customized-dialog-title"
+        open={open2}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose3}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Please choose your next action ?
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose5()}>
+            Another Course
+          </Button>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose6()}>
+            Another Subtitle
+          </Button>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose7()}>
+            Finish
           </Button>
         </DialogActions>
       </BootstrapDialog>
 
 
           </main>
-
-
-
-         
-      
-
-
-  
         </Box>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
           </Box>
           </ThemeProvider>
           )
         }
-        export default InstructorCreate;
+        export default InstructorCrEx;

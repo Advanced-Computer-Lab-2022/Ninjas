@@ -48,7 +48,24 @@ import CloseIcon from '@mui/icons-material/Close';
 import PropTypes from 'prop-types';
 import { CircularProgress } from '@mui/material';
 
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 
+const  change2 =()=>{
+  window.location.href=`/AdminViewReports`
+}
+const  change3 =()=>{
+  window.location.href=`/AdminRefundRequests`
+}
+const  change4 =()=>{
+  window.location.href=`/AdminAccessCourse`
+}
+const  change5 =()=>{
+  window.location.href=`/AdminSetPromo`
+}
+const  change6 =()=>{
+  window.location.href=`/AdminAddUser`
+}
 
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -249,18 +266,7 @@ useEffect(() => {
               bgcolor: '#03045E'
             }}
           >
-            {/* <IconButton
-              edge="start"
-              color="inherit"
-              aria-label="open drawer"
-              onClick={toggleDrawer}
-              sx={{
-                marginRight: '36px',
-                ...(open && { display: 'none' }),
-              }}
-            >
-              <MenuIcon />
-            </IconButton > */}
+          
             <Typography
               component="h1"
               variant="h6"
@@ -270,18 +276,23 @@ useEffect(() => {
             >
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-            {/* <Search>
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-            />
-          </Search> */}
-          &nbsp;&nbsp;&nbsp;
-
-          <box>{mainListItems}</box>
+            <Box>
+            
+            </Box>
+                       
+              <Tabs sx={{color:'white', mt:2}} aria-label="basic tabs example">
+                <Tab label="Reports" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change2()}}/>
+                <Tab label="Refund Requests" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change3()}}/>
+                <Tab label="Access Course Requests" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change4()}}/>
+                <Tab label="Courses Promotion" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change5()}}/>
+                <Tab label="Add User" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change6()}}/>
+            
+              </Tabs>
+                    
+                      &nbsp;&nbsp;&nbsp;
+                      <box><Typography fontWeight={'bold'} sx={{ color: '#CAF0F8', ml:7}}>ADMIN</Typography></box>
+                      &nbsp;&nbsp;&nbsp;          
+                      <box>{mainListItems}</box>
           <box>
 
           <Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}>LOG OUT</Button>
@@ -339,14 +350,18 @@ useEffect(() => {
                 
                   <CardContent sx={{ flexGrow: 1 }}>
                 
-                    <Typography sx={{ color: '#03045E'}}>User ID: {card.accountId} </Typography>
-                    <Typography sx={{ color: '#03045E'}}>Course ID: {card.courseId}</Typography>
+                    <Typography sx={{ color: '#03045E'}}>User Email: {card.uname} </Typography>
+                    <Typography sx={{ color: '#03045E'}}>Course ID: {card.cname}</Typography>
                     
                   <br></br>
                     <box>
                 <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E' }} onClick={() =>
                   handleClickOpen(card._id)}>Grant Access</Button>
+                  &nbsp;&nbsp;&nbsp;
+                  <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E' }} onClick={() =>
+                  handleClickOpen(card._id)}>Deny Access</Button>
             </box>
+           
             <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
