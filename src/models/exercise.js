@@ -12,10 +12,12 @@ const exerciseSchema = new Schema({
         required: true
     },
     questions: {
-        type: [questionSchema]
+        type: [questionSchema],
+        default:[]
     },
     totalGrade: {
-        type: Number
+        type: Number,
+        default: 0
     }
 })
 

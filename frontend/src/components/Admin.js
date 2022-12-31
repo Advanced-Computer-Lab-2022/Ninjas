@@ -29,6 +29,12 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Stack from '@mui/material/Stack';
 import mainListItems from './listItems';
+import Tab from '@mui/material/Tab';
+// import TabContext from '@mui/material/TabContext';
+// import {TabList} from '@mui/material/TabList';
+// import { TabPanel } from '@mui/lab';
+import Tabs from '@mui/material/Tabs';
+
 
 
 const  change2 =()=>{
@@ -175,12 +181,15 @@ const mdTheme = createTheme();
               sx={{ flexGrow: 1 }}
             > 
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
+              <Box>
+            
+</Box>
             </Typography >
-        
+          &nbsp;&nbsp;&nbsp;
+          <box><Typography fontWeight={'bold'} sx={{ color: '#CAF0F8', ml:5}}>ADMIN</Typography></box>
           &nbsp;&nbsp;&nbsp;
           <box>{mainListItems}</box>
           <box>
-            
           <Button variant="outlined" sx={{ color: 'black', backgroundColor: '#CAF0F8',  borderColor: '#CAF0F8' }}>LOG OUT</Button>
           </box>
           
@@ -206,7 +215,7 @@ const mdTheme = createTheme();
     
       <main>
         {/* Hero unit */}
-        <Box
+        {/* <Box
           sx={{
             bgcolor: '#CAF0F8',
             pt: 8,
@@ -235,7 +244,7 @@ const mdTheme = createTheme();
           
             </Stack>
           </Container>
-        </Box>
+        </Box> */}
         <Container sx={{ py: 8 }} >
           {/* End hero unit */}
           <Grid container spacing={4} >

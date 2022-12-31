@@ -36,7 +36,9 @@ const adminCreateAccountsController =
     const theReport = await Report.findOne({_id: reportId}).catch(() => {
         throw new DomainError("Wrong Id", 400)
     });;
+
     await Report.updateOne({_id:reportId}, {seen: true});
+    
     return this.viewReportedProblems();
 
 
@@ -48,21 +50,52 @@ const adminCreateAccountsController =
         let resReport = [];
         let resReport1 = []; //seen
         let resReport2 = []; //unseen
+        //let cname = ""; //unseen
+        //let uname = ""; //unseen
         let resReport3 = []; //resolved
 
          const Reports = await Report.find();
          for(var i=0; i<Reports.length ; i++){
             if(Reports[i].seen == true){
                 if(Reports[i].progress == 'RESOLVED'){
-                    resReport3.push(Reports[i]);
+                    
+                    const theUser = await Account.findOne({_id: Reports[i].accountId});
+                    const theCourse = await Course.findOne({_id: Reports[i].courseId});
+                    console.log(theCourse);
+                    console.log(theUser.email);
+                    const u = theUser.email;
+                    const c = theCourse.title;
+                    const p = Reports[i].problem;
+                    const pr = 'RESOLVED';
+                    console.log({u, c,p , pr});
+
+                    // console.log(u);
+                    // console.log(c);
+                    // console.log(p);
+                    resReport3.push({u,c,p,pr});
                 }
                 else{
-                    resReport1.push(Reports[i]);
+                    const theUser = await Account.findOne({_id: Reports[i].accountId});
+                    const theCourse = await Course.findOne({_id: Reports[i].courseId});
+                    const uname = theUser.email;
+                    const cname = theCourse.title;
+                    const prob = Reports[i].problem;
+                    const prog = Reports[i].progress;
+
+
+                    resReport1.push({uname, cname, prob, prog});
                 }
 
             }
             else{
-                resReport2.push(Reports[i]);
+
+                const theUser = await Account.findOne({_id: Reports[i].accountId});
+                const theCourse = await Course.findOne({_id: Reports[i].courseId});
+                const uname = theUser.email;
+                const cname = theCourse.title;
+                console.log(uname)
+                console.log(cname)
+                resReport2.push({uname, cname});
             }
          }
          resReport.push(resReport1);
@@ -321,7 +354,11 @@ const adminCreateAccountsController =
          throw new DomainError("Wrong Id", 400)
      });;
       if(theUser.type == 'CORPORATE_TRAINEE'){ 
-         newRec.push(Requests[i]);
+        const uname = theUser.email;
+        const theCourse = await Course.findOne({_id: Requests[i].courseId});
+        const cname = theCourse.title
+        
+         newRec.push({uname, cname});
          
   }}
      return newRec;
