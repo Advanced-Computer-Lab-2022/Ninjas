@@ -508,7 +508,7 @@ const CoursePage = () => {
                                 <Typography variant="subtitle1">{course.summary}</Typography>
                                 {/*dealing with the course price*/}
 
-                                {!["CORPORATE_TRAINEE", "ADMIN"].includes(user.type) &&
+                                {( ['GUEST','INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered) ) &&
                                     course.discount > 0 &&
                                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                                         <Typography variant="subtitle1">
@@ -523,8 +523,7 @@ const CoursePage = () => {
                                         </Typography>
                                     </div>
                                 }
-                                {!["CORPORATE_TRAINEE", "ADMIN"].includes(user.type) && course.discount === 0 &&
-                                 (!registered && user.type ==='INDIVIDUAL_TRAINEE') || (user.type === 'INSTRUCTOR') &&
+                                { (['GUEST','INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered)) && course.discount ===0 &&
                                     <Typography variant="subtitle1">
                                         This course currently costs {price} {currency}
                                     </Typography>
