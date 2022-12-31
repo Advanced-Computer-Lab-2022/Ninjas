@@ -50,7 +50,8 @@ import InstructorCreate from './components/InstructorCreate';
 import InstructorSubtitle from './components/InstructorSubtitle';
 import MyReports from './nav/MyReports';
 import InstructorCrEx from './components/InstructorCrEx';
-import InstructorCrEx2 from './components/InstructorCrEx2';
+import InstructorCrEx2 from './components/InstructorCrEx2';import ViewCorrectAnswer from './components/viewTheCorrectAnswers';
+
 
 
 function App() {
@@ -60,6 +61,7 @@ function App() {
       <Routes>
       <Route path='/InstructorCrEx2' element={<InstructorCrEx2/>}></Route>
       <Route path='/InstructorCrEx' element={<InstructorCrEx/>}></Route>
+      <Route path='/viewCorrectAnswers' element={<ViewCorrectAnswer/>}></Route>
       <Route path='/searchInstructor' element={<SearchInstructor/>}></Route>
       <Route path='/InstructorCreate' element={<InstructorCreate/>}></Route>
       <Route path='/InstructorSubtitle' element={<InstructorSubtitle/>}></Route>
@@ -96,8 +98,6 @@ function App() {
         <Route path='/viewVideo' element= {<ViewVideo/>} >
         </Route>
         <Route path='/rateInstructor' element= {<RateInstructor/>} >
-        </Route>
-        <Route path='/viewCorrectAnswers' element= {<CorrectAnswer/>} >
         </Route>
         <Route path='/viewExerciseGrade' element= {<ViewExerciseGrade/>} >
         </Route>

@@ -13,8 +13,58 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import axios from 'axios';
-import { Alert, AlertTitle } from '@mui/material';
+import { Alert, AlertTitle, Dialog, DialogTitle, IconButton } from '@mui/material';
 import { useState } from 'react';
+import FormControl from '@mui/material/Container';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormLabel from '@mui/material/FormLabel';
+//import MenuItem from '@mui/material/MenuItem';
+import Menu from '@mui/material/Menu';
+import { styled, alpha } from '@mui/material/styles';
+import PropTypes from 'prop-types';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import CloseIcon from '@mui/icons-material/Close';
+
+
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
+
+function BootstrapDialogTitle(props) {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+}
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired,
+};
 
 function Copyright(props) {
   return (
@@ -29,6 +79,11 @@ function Copyright(props) {
 
 const Login = () => {
   const [errMsg, setMsg] = useState('');
+  const [open,setOpen] = useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
+  }
 
   const handleSubmit = async (event) => {
     //when the sign in button is clicked this function is called
@@ -65,7 +120,15 @@ const Login = () => {
           window.location.href = `/tHome`; break;
 
         case ('INSTRUCTOR'):
-          window.location.href = `/iHome`; break;
+          if (user.companyPolicy && user.contractStatus) {
+            window.location.href = `/iHome`;
+          }
+          else if (!user.companyPolicy)
+          {
+            setOpen2(true)
+          }
+          break;
+
 
         case ('ADMIN'):
           window.location.href = `/Admin`; break;
@@ -74,6 +137,37 @@ const Login = () => {
       console.log(user.type);
     }
   };
+
+  const change = async () => {
+    //updates the user (instructor) to accept the companyPolice=true
+  }
+  const [open2, setOpen2] = React.useState(false);
+  const handleClickOpen = () => {
+    setOpen2(true);
+  };
+  const change2 = async () => {
+    const response = await axios.post(`http://localhost:8000/acceptPolicy?`
+    
+    ).
+
+      catch((error) => (error.response.data.message))
+  
+    console.log(response.data)
+
+    if (response.status === 200) {
+        handleClickOpen();
+    }
+
+    //let errorsExist= false;
+    //errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
+    //setError(!errorsExist);
+    //console.log(errorsExist)
+    //if (errorsExist)
+    //console.log(true);
+    //else
+    //handleClickOpen();
+
+  }
 
   const continueAsGuest = async () => {
     //what if we want to continue as a guest?
@@ -165,6 +259,53 @@ const Login = () => {
             </Grid>
           </Box>
         </Box>
+        <BootstrapDialog
+                onClose={handleClose}
+                aria-labelledby="customized-dialog-title"
+                open={open2}
+              >
+                <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+                  <Typography gutterBottom component="h1" variant="h5">
+                    Online Career Course Refund Policy
+                  </Typography>
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                  <Typography gutterBottom>
+                    Students who register for a training course occasionally change their mind for one reason or another.
+                    Regardless of the reason, we believe there should be a definite refund policy for students who decide not to take the course.
+                    Refunds for online courses are only given under the following circumstances:
+                  </Typography>
+                  <Typography gutterBottom>
+                    1. The student/user accessed 50% of the online course AND the student/user requests a refund, in writing via email within three business days from the date of the registration (email notification sent).
+                    There will be no refunds for any online courses (or curricula) once a course has been accessed in any manner.
+                  </Typography>
+                  <Typography gutterBottom>
+                    2. A full refund will be issued less an administrative fee of $100.
+                  </Typography>
+                  <Typography gutterBottom component="h1" variant="h5">
+                    Online Professional Development Refund Policy
+                  </Typography>
+                  <Typography gutterBottom>
+                    The student/user did not access any portion of the online course AND the student/user requests a refund,
+                    in writing via email within 72 hours of enrolling in the course.
+                    We are unable to offer refunds after the exam has been attempted.
+                  </Typography>
+                  <Typography gutterBottom component="h1" variant="h5">
+                    Online Enrichment Course Refund Policy
+                  </Typography>
+                  <Typography gutterBottom>
+                    The student/user did not access any portion of the online course AND the student/user requests a refund, in writing via email within 72 hours of enrolling in the course.
+                    We are unable to offer refunds after the exam has been attempted.
+                    A refund will be issued less the materials fee for the course.
+                  </Typography>
+                </DialogContent>
+                <DialogActions>
+                  <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E' }} onClick={() =>{  window.location.href = `/iHome`;}}>
+                    Accept and Proceed
+                  </Button>
+                </DialogActions>
+              </BootstrapDialog>
+
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </Container>
   );
