@@ -1101,6 +1101,16 @@ async deleteCourseRating({ userId, courseId }) {
         console.log(error);
         throw new DomainError("internal error", 500);
     }
+},
+
+async exerciseHistory({ userId, courseId }) {
+    try {
+        const { subtitles } = await Course.findOne({ _id: courseId }, { subtitles:1 });
+        const userSolvedExercises = await UserExercise.find({ accountId: userId, "exercises.subtitleId": { $in: subtitles.map(s => s._id) }});
+        return userSolvedExercises;
+    } catch(error) {
+        throw new DomainError("internal error", 500);
+    }
 }
 
 }

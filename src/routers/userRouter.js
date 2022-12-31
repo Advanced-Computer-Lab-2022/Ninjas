@@ -594,4 +594,14 @@ userRouter.post('/deleteCourseRating', async (req,res) => {
         res.status(error.code).json({ message: error.message });
     }
 })
+
+userRouter.get('/exerciseHistory', async (req,res) => {
+    try {
+        const { userId, courseId } = req.query;
+        const result = await userController.exerciseHistory({ userId, courseId });
+        res.status(200).json(result);
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
 module.exports = userRouter;
