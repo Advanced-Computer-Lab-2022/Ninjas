@@ -12,7 +12,12 @@ import axios from "axios";
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import ReactPlayer from 'react-player/youtube';
-import {Rating} from '@mui/material';
+import {Button, Rating} from '@mui/material';
+import englishCertificate from '../englishCertificate.pdf'
+import generalCertificate from '../generalCertificate.pdf'
+import mathCertificate from '../mathCertificate.pdf'
+import csCertificate from '../csCertificate.pdf'
+import DownloadIcon from '@mui/icons-material/Download';
 
 const traineeNav = {};
 
@@ -27,10 +32,19 @@ const traineeNav = {};
         window.location.href='/';
       })
     })
+
+    const [user, setUser] = useState( async () => {
+      await axios.get('http://localhost:8000/userBySession')
+      .then(res => setUser(res.data))
+      .catch(err => {
+        if (err.response.status === 401) //you didn't login
+        window.location.href='/';
+      })
+    })
   
     const [ready, setReady] = useState(false);
     useEffect(() => {
-       if (course.length>0) {
+       if (course.length>0 && user._id) {
             setReady(true);
         }
     }, [course]);
@@ -77,7 +91,7 @@ const traineeNav = {};
 {ready && course.map((course) => (
 
 <Card  sx={{ display: 'flex' ,'&:hover': {    backgroundColor: 'white',
- },   backgroundColor: 'white' }} style={{width:"48%", height:"200px"}} 
+ },   backgroundColor: 'white' }} style={{width:"48%", height:"250px"}} 
 onClick={()=>{window.location.href=`course/${course._id}`}} >
 
 {(course.videoLink) &&
@@ -130,10 +144,37 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
            
 
             <Typography variant="h6" color="inherit"style={{width:'210'}} >
-            subject : {course.subject} 
+            subject : {course.subject}
             </Typography>
+            <br></br>
 
+            { user.progress.filter( prog => prog.courseId.toString() === course._id.toString())[0].currentProgress === 100 &&
+              <Button onClick={() => window.location.href='#'}
+              variant="contained" endIcon = {<DownloadIcon/>}
+              sx={{color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+              >
+              Download Certificate
+              { course.certificate === 'englishCertificate.pdf' &&
+              <a href = {englishCertificate} download>
+              </a>
+              }
 
+              { course.certificate === 'csCertificate.pdf' &&
+              <a href = {csCertificate} download>
+              </a>
+              }
+              { course.certificate === 'mathCertificate.pdf' &&
+              <a href = {mathCertificate} download>
+              </a>
+              }
+              {
+                course.certificate === 'generalCertificate.pdf' &&
+                <a href = {generalCertificate} download>
+              </a>
+              }  
+              </Button>            
+            }
+            
             
           </Box>
         </Grid>
