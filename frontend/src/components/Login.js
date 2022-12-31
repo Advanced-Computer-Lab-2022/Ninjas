@@ -84,6 +84,9 @@ const Login = () => {
   const handleClose = () => {
     setOpen(false);
   }
+  const handleClose2 = () => {
+    setOpen(false);
+  }
 
   const handleSubmit = async (event) => {
     //when the sign in button is clicked this function is called
@@ -117,15 +120,20 @@ const Login = () => {
           window.location.href = `/tHome`; break;
 
         case ('CORPORATE_TRAINEE'):
+
           window.location.href = `/tHome`; break;
 
         case ('INSTRUCTOR'):
+          setType(2);
           if (user.companyPolicy && user.contractStatus) {
             window.location.href = `/iHome`;
           }
           else if (!user.companyPolicy)
           {
             setOpen2(true)
+          }
+          else if(!user.contractStatus){
+            setOpen3(true)
           }
           break;
 
@@ -141,9 +149,16 @@ const Login = () => {
   const change = async () => {
     //updates the user (instructor) to accept the companyPolice=true
   }
+  const [type, setType] = React.useState(0);
   const [open2, setOpen2] = React.useState(false);
+  const [open3, setOpen3] = React.useState(false);
+  
   const handleClickOpen = () => {
     setOpen2(true);
+  };
+  const handleClickOpen3 = () => {
+    setOpen2(false);
+    setOpen3(true);
   };
   const change2 = async () => {
     const response = await axios.post(`http://localhost:8000/acceptPolicy?`
@@ -155,7 +170,31 @@ const Login = () => {
     console.log(response.data)
 
     if (response.status === 200) {
-        handleClickOpen();
+      handleClickOpen3();
+    }
+
+    //let errorsExist= false;
+    //errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
+    //setError(!errorsExist);
+    //console.log(errorsExist)
+    //if (errorsExist)
+    //console.log(true);
+    //else
+    //handleClickOpen();
+
+  }
+
+  const change3 = async () => {
+    const response = await axios.post(`http://localhost:8000/acceptContract?`
+    
+    ).
+
+      catch((error) => (error.response.data.message))
+  
+    console.log(response.data)
+
+    if (response.status === 200) {
+       window.location.href = `/iHome`;
     }
 
     //let errorsExist= false;
@@ -300,7 +339,43 @@ const Login = () => {
                   </Typography>
                 </DialogContent>
                 <DialogActions>
-                  <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E' }} onClick={() =>{  window.location.href = `/iHome`;}}>
+                  <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E' }} onClick={() =>{ change2()}}>
+                    Accept and Proceed
+                  </Button>
+                </DialogActions>
+              </BootstrapDialog>
+
+
+              <BootstrapDialog
+                onClose={handleClose2}
+                aria-labelledby="customized-dialog-title"
+                open={open3}
+              >
+                <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose2}>
+                  <Typography gutterBottom component="h1" variant="h5">
+                    Online Career Course Refund Policy
+                  </Typography>
+                </BootstrapDialogTitle>
+                <DialogContent dividers>
+                  <Typography gutterBottom component="h1" variant="h5">
+                  Company Rights and Responsibilities
+                  </Typography>
+                  <Typography gutterBottom>
+                  The instructor has the right and responsibility to develop curricula and to establish general course content. 
+                  All faculty possess the right to determine the instructional pedagogy in the courses that they are assigned within the given modality.
+                  Courses Planet has all the rights to posted videos and materials.
+                  </Typography>
+                  <Typography gutterBottom component="h1" variant="h5">
+                    Salary Policy
+                  </Typography>
+                  <Typography gutterBottom>
+                  Salaries and/or wages are to be calculated monthly and paid semi-monthly according to number of registered trainees in
+                  each course and course price.
+                  Courses Plant has the right to 40% of the profits made on each video by number of registered trainees.
+                  </Typography>
+                </DialogContent>
+                <DialogActions>
+                  <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E' }} onClick={() =>{change3()}}>
                     Accept and Proceed
                   </Button>
                 </DialogActions>
