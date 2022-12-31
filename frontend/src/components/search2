@@ -50,9 +50,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ReactPlayer from 'react-player/youtube'
 import { useEffect } from 'react';
 import TraineeNav from '../nav/TraineeNav';
-import InstructorNav from '../nav/InstructorNav';
-import TextField from '@mui/material/TextField';
-import { setbar } from '../nav/TraineeNav';
+import InstructorNav from '../nav/InstructorNav'
 const traineeNav = {};
 
 export  var searchtemp = null;
@@ -224,22 +222,18 @@ const [anchorEl, setAnchorEl] = React.useState(null);
    const [subject, setSubject] = React.useState(null);
    const [rating, setRating] = React.useState(null);
    const [expanded, setExpanded] = React.useState(false);
-   const [expandedf, setExpandedf] = React.useState(false);
-   const [minOn, setMinOn] = React.useState(true);
-   const [maxOn, setMaxOn] = React.useState(true);
+   const [minOn, setMinOn] = React.useState(false);
+   const [maxOn, setMaxOn] = React.useState(false);
    const [MinV, setMinV] = React.useState(null);
    const [MaxV, setMaxV] = React.useState(null);
    const [result, setResult] = React.useState([]);
    const [maxtemp, setMaxtemp] = React.useState(null);
    const [mintemp, setMintemp] = React.useState(null);
-   const [price, setPrice] = React.useState(false);
+
 
    const handleChange = (panel) => (event, isExpanded) => {
      setExpanded(isExpanded ? panel : false);
    };
-   const handleChangef = (panel) => (event, isExpanded) => {
-    setExpandedf(isExpanded ? panel : false);
-  };
  
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -265,13 +259,6 @@ const [anchorEl, setAnchorEl] = React.useState(null);
     
   };
 
-  const handlePrice = (event) => {
-    if (MinV == ''){setMinV(null);
-       setMintemp(null)}
-    if (MaxV == ''){setMaxV(null);
-       setMaxtemp(null)}
-   setPrice(!price)
-  }
 
   const handleMinV = (event) => {
     if ((minOn)){
@@ -384,13 +371,10 @@ const theme = useTheme();
 
   useEffect(() => 
   {
-    console.log('////min w max')
-    console.log(MinV);
-    console.log(MaxV);
     setReady(false);
    getResult ();
    }
-  ,[subject,price,rating,search]) 
+  ,[subject,minOn,maxOn,mintemp,maxtemp,rating,search]) 
   
   useEffect(() => {
   
@@ -461,12 +445,14 @@ console.log(searchResult.userType)
           <Toolbar />
 
           
-{/* 
+
           <Toolbar>
           <Container maxWidth="lg" sx={{ mt: 0, mb: 0 ,mr: 0 , ml: 0 }}  >
             <Grid container spacing={0}>
 
-    
+                 {/* filters */}
+       {/* el filter */}
+
       
        <Button id="demo-customized-button"
         aria-controls={open2 ? 'demo-customized-menu' : undefined}
@@ -528,7 +514,6 @@ console.log(searchResult.userType)
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />
         <MenuItem  disableRipple>
-       
         <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon />}
@@ -553,8 +538,8 @@ console.log(searchResult.userType)
       </Accordion>
          
           
-        </MenuItem> */}
-        {/* { searchResult.userType != 'CORPORATE_TRAINEE' && <Divider sx={{ my: 0.5 }} />}
+        </MenuItem>
+        { searchResult.userType != 'CORPORATE_TRAINEE' && <Divider sx={{ my: 0.5 }} />}
         { searchResult.userType != 'CORPORATE_TRAINEE' &&  <MenuItem  disableRipple>
         
         <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
@@ -580,12 +565,12 @@ console.log(searchResult.userType)
                         onClick={handlMinON}
                     >
           <FormControlLabel  control={<Radio />}  checked={minOn} />    {/* h3mlha on click */ }
-          {/* </RadioGroup>
+          </RadioGroup>
           
           minimum
           </Typography>
         
-
+{/* changeable default value */}
         <Slider
   aria-label="Temperature"
   defaultValue={0}
@@ -610,7 +595,7 @@ console.log(searchResult.userType)
                         onClick={handlMaxON}
                     >
           <FormControlLabel  control={<Radio />} checked={maxOn}   />    {/* h3mlha on click */ }
-          {/* maximum
+          maximum
           </RadioGroup>
           </Typography>
         
@@ -633,8 +618,8 @@ console.log(searchResult.userType)
                 
         </AccordionDetails>
       </Accordion>
-         </MenuItem>}  */} 
-      {/* </StyledMenu>
+         </MenuItem>}
+      </StyledMenu>
 
      
             </Grid>
@@ -643,242 +628,11 @@ console.log(searchResult.userType)
 
           </Container>
          
-          </Toolbar> */}
+          </Toolbar>
          
+        <Toolbar >
+          <Grid container spacing={2} sx={{ ml: 1 , mt:0.5 , mb:2}} style={{ gap: 20 }}>
 
-
-
-
-        <Toolbar>
-          <Box sx={{mt:0 ,ml:-5}} bgcolor='#CAF0F8' color='black'>
-         <Search   >
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-             defaultValue = {searchtemp}
-            
-            // variant='contained'
-              //onChange={(e) => setSearch(e.target.value)}
-              onKeyPress={handleKeypress}
-              
-            />
-          </Search>
-          </Box>
-       </Toolbar >
-
-<Toolbar>
-          <Grid container spacing={2} sx={{ ml: 1 , mt:0 , mb:2}} style={{ gap: 20 }}>
-
-          <Box 
-sx={{ml:-5}}
-width='16.5%'>
-                    <Box
-                     display="flex"
-                     flexDirection="column"
-                     sx={{
-                         overflow: "hidden",
-                         overflowY: "scroll",
-                     }}
-                     alignItems="left"
-                      
-                     //minWidth={'50%'}
-                     height='430px'
-                    >
-                       
- {/* <Button id="demo-customized-button"
-        aria-controls={open2 ? 'demo-customized-menu' : undefined}
-        aria-haspopup="true"
-        aria-expanded={open2 ? 'true' : undefined}
-        variant="text"
-        disableElevation
-        onClick={handleClick}
-        //endIcon={<KeyboardArrowDownIcon />}
-        sx={{ color: 'black'}}> */}
-
-<Accordion expanded={expandedf === 'panelf'  } onChange={handleChangef('panelf')}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
-        >
-      
-       
-          <Typography sx={{// width: '33%',
-           flexShrink: 0 }}>
-          < IoFilterSharp/>&nbsp;&nbsp; Filter
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          
-          {/* hna kol el filters */}
-
-          <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
-        >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
-            Subject
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <Toolbar>
-          <RadioGroup
-                        //aria-labelledby="demo-radio-buttons-group-label"
-                       // name="controlled-radio-buttons-group"
-                        onChange={ handleSubject}
-                        onClick={handleSubject}
-                    >
-                      
-                        <FormControlLabel value={'CS'} control={<Radio />} label={'CS'} checked={subject == 'CS'} />
-                        <FormControlLabel value={'English'} control={<Radio />} label={'English'} checked={subject == 'English'} />
-                        <FormControlLabel value={'Math'} control={<Radio />} label={'Math'} checked={subject == 'Math'} />
-                       
-
-                    </RadioGroup>
-                    </Toolbar>
-        </AccordionDetails>
-      </Accordion>
-
-        
-        <Divider sx={{ my: 0.5 }} />
-       
-          {/* nkml */}
-        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
-        >
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
-          Rating
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          
-          <Rating
-                                        name="simple-controlled"
-                                     
-                                        value = {rating}
-                                        //precision={0.005}
-                                        onChange={handleRating}
-                                    />
-                
-        </AccordionDetails>
-      </Accordion>
-         
-          
-        
-        { searchResult.userType != 'CORPORATE_TRAINEE' && <Divider sx={{ my: 0.5 }} />}
-        { searchResult.userType != 'CORPORATE_TRAINEE' &&  
-        
-        <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="panel1bh-content"
-          id="panel1bh-header"
-        >
-         <Typography sx={{ width: '33%', flexShrink: 0 }}>
-          Price
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-
-
-      
-          <Typography sx={{ width: '33%', flexShrink: 0 }}>
-<Button
-variant="contained" sx={{ color: 'white',  borderColor: '#03045E' }} 
-onClick={handlePrice}
->
-  Apply price
-</Button>
-          {/* <RadioGroup
-                        //aria-labelledby="demo-radio-buttons-group-label"
-                       // name="controlled-radio-buttons-group"
-                        onChange={ handlMinON}
-                        onClick={handlMinON}
-                    >
-          <FormControlLabel  control={<Radio />}  checked={minOn} />  
-          </RadioGroup> */}
-          
-          minimum
-          </Typography>
-        
-
-          <TextField
-          id="outlined-helperText"
-          //label="minimum price"
-          defaultValue={MinV}
-          onBlur={handleMinV}
-        />
-
-{/* changeable default value */}
-        {/* <Slider
-  aria-label="Temperature"
-  defaultValue={0}
-  value = {MinV}
-  onChange={handleMinV}
-  getAriaValueText={valuetext}
-  valueLabelDisplay="auto"
-  step={200}
-  marks
-  min={0}
-  max={1000}
-/> */}
-
-
-
-
-<Typography sx={{ width: '33%', flexShrink: 0 }}>
-
-          maximum
-        
-          </Typography>
-          <TextField
-          id="outlined-helperText"
-          //label="minimum price"
-          defaultValue={MaxV}
-          onBlur={handleMaxV}
-          ></TextField>
-          
-
-{/*    <Slider */}
-{/* //   aria-label="Temperature"
-//   defaultValue={0}
-//   value = {MaxV}
-//   onChange={handleMaxV}
-//   getAriaValueText={valuetext}
-//   valueLabelDisplay="auto"
-//   step={500}
-//   marks
-//   min={0}
-//   max={5000}
-// />
-                 */}
-      
-         
-                
-        </AccordionDetails>
-      </Accordion>
-         }
-
-
-
-
-                
-        </AccordionDetails>
-      </Accordion>
-
-
-    {/* </Button> */}
-    </Box>
-
-    </Box>
 
 
             
@@ -900,28 +654,17 @@ onClick={handlePrice}
 
                     }
 
-
-
-
-
-<Grid container spacing={0} 
-//sx={{ ml: 1 , mt:0.5 , mb:2}}
- style={{ gap: 15 }}
- //alignItems="right"
- width = '85%'
->
 {searchResult && searchResult.courses.length != 0 && searchResult.courses.map((course) => (
 
 <Card  sx={{ display: 'flex' ,'&:hover': {    backgroundColor: '#90E0EF',
- },   backgroundColor: '#CAF0F8' }} style={ { width:"49%",
-  height:"250px"}} 
+ },   backgroundColor: '#CAF0F8' }} style={{width:"48%", height:"250px"}} 
 onClick={()=>{window.location.href=`course/${course._id}`}} >
 {(!course.videoLink) &&
  <CardMedia
  allow="autoPlay"
  controls={true}
          component="img"
-      sx={{ width: '49%' }}
+      sx={{ width: '280px' }}
     
       // //style={{ width: 150, height: 200 }}
          src={previewPic}
@@ -996,10 +739,9 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
       </CardContent>
       
     </Card> ))}
-   </Grid>
    
-</Grid>
-  
+                    
+    </Grid>
     </Toolbar>
 
         </Box>

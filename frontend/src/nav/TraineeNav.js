@@ -34,6 +34,10 @@ import generalCertificate from '../generalCertificate.pdf';
 import { Path } from '@react-pdf/renderer';
 import { searchtemp } from '../components/Search';
 
+ var bar = false;
+ export  function setbar(f){
+      bar = f;
+ }
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     '& .MuiInputBase-input': {
@@ -211,7 +215,8 @@ if (e.key === 'Enter') {
             >
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-            <Search  >
+            {bar&&
+              <Search  >
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -223,7 +228,10 @@ if (e.key === 'Enter') {
               onKeyPress={handleKeypress}
               
             />
-          </Search>
+          </Search>}
+          {!bar &&
+            <Button variant="contained" sx={{ color: 'black',  bgcolor: '#CAF0F8' }} onClick={() => window.location.href='/temp'}>Courses</Button>
+          }
           &nbsp;&nbsp;
           <box>
 
