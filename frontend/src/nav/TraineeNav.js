@@ -140,11 +140,24 @@ const [user,setUser] = useState(async () => {
     window.location.href='/';
   })
 })
+
+const [curr, setCurr] = useState('');
+const getCurrency = async () => {
+  await axios.get(`http://localhost:8000/myCurrency?country=${user.country}`)
+  .then(res => setCurr(res.data.currency))
+  .catch(err => {
+    console.log(err)
+    if (err.response.status === 401) //you didn't login
+    window.location.href='/';
+  })
+}
 useEffect(() => {
   if (user._id)
 
-      { console.log(user)
-        setReady(true);}
+      {
+        getCurrency();
+        setReady(true);
+      }
 }, [user])
 
 //to show the certificates when clicked
@@ -229,7 +242,7 @@ if (e.key === 'Enter') {
 
           <ListItemButton  >
             <ListItemIcon >
-          <HomeIcon sx={{color:'#CAF0F8' }} />
+          <HomeIcon sx={{color:'#CAF0F8' }} onClick={ () => window.location.href='/tHome'} />
           </ListItemIcon>
           </ListItemButton>
           </box>
@@ -283,7 +296,7 @@ if (e.key === 'Enter') {
             <ListItemButton
               sx={{ backgroundColor:'#eeeeee'}}
             >
-              Account balance: {user.wallet}
+              Account balance: {user.wallet} {curr}
             </ListItemButton>
           } 
 </div>

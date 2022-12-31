@@ -344,6 +344,19 @@ const [user,setUser] = React.useState(async () => {
     window.location.href='/';
   })
 })
+
+const[showAmount,setShowAmount]= useState(false);
+const [curr, setCurr] = useState('');
+const getCurrency = async () => {
+  await axios.get(`http://localhost:8000/myCurrency?country=${user.country}`)
+  .then(res => setCurr(res.data.currency))
+  .catch(err => {
+    console.log(err)
+    if (err.response.status === 401) //you didn't login
+    window.location.href='/';
+  })
+}
+
 const[newEmail,setNewEmail]=useState(user.email);
 const[biography,setBiography]=useState(user.biography);
 const[oldPassword,setOldPassword]=useState('');
@@ -352,6 +365,7 @@ const[confirmPassword,setConfirmPassword]=useState('');
 const [ready, setReady] = useState(false);
 useEffect(() => {
     if (user._id) {
+        getCurrency();
         setReady(true);
         setNewEmail(user.email);
         setBiography(user.biography);
@@ -418,7 +432,7 @@ if (e.key === 'Enter') {
 
           <ListItemButton  >
             <ListItemIcon >
-          <HomeIcon sx={{color:'#CAF0F8' }} />
+          <HomeIcon sx={{color:'#CAF0F8' }} onClick={ () => window.location.href='/iHome'} />
           </ListItemIcon>
           </ListItemButton>
           </box>
@@ -463,12 +477,19 @@ if (e.key === 'Enter') {
           </ListItemIcon>
           <ListItemText primary='Create Course' onClick={CreateCourses}/>
           </ListItemButton>
-          <ListItemButton>
+          <ListItemButton onClick={() => setShowAmount(!showAmount)}>
             <ListItemIcon>
           <Wallet sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='Wallet'/>
           </ListItemButton>
+          {showAmount &&
+            <ListItemButton
+              sx={{ backgroundColor:'#eeeeee'}}
+            >
+              Account balance: {user.wallet} {curr}
+            </ListItemButton>
+          } 
           <ListItemButton onClick={handleClickOpen}>
             <ListItemIcon>
           <SettingsIcon sx={{color:'black' }} />
