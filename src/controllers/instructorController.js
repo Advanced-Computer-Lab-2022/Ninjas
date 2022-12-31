@@ -7,7 +7,8 @@ const { subtitleSchema, Subtitle } = require('../models/subtitle');
 const DomainError = require("../error/domainError");
 const { Video } = require('../models/video');
 const { question } = require('../models/question');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const UserExercise = require('../models/userExercise');
 var subtitlesArray = [subtitleSchema];
 var Totalhrs = 0;
 let questionArray = [];
@@ -1077,6 +1078,65 @@ try {
      
         }
     },
+
+    async averageExerciseGrade({courseId}) {
+        try {
+            //get the subtitles
+            const { subtitles } = await Course.findOne({ _id: courseId }, { subtitles:1 });
+
+            const gradesInExercise = new Map();
+
+            //set a key and a value for each exercise
+            subtitles.forEach(sub => {
+                sub.exercises.forEach(ex => {
+                    gradesInExercise.set(
+                        ex._id.toString(),
+                        {
+                        accumulatedGrade: 0,
+                        solveCount:0
+                        }
+                    );
+                }); 
+            });
+            //console.log(gradesInExercise)
+            //get the subtitle IDs
+            const subIds = subtitles.map(s => s._id);
+            //get the solved exercises
+            const solvedExercises = await UserExercise.find({ "exercises.subtitleId": { $in: subIds }});
+            
+            //update the accumulated grade and the number of times the exercise has been solved
+            solvedExercises.forEach( ex => {
+                //console.log(ex.exercises[0]._id)
+                gradesInExercise.set(ex.exercises[0]._id.toString(),
+                    {
+                        accumulatedGrade: gradesInExercise.get(ex.exercises[0]._id.toString()).accumulatedGrade + ex.userGrade,
+                        solveCount: gradesInExercise.get(ex.exercises[0]._id.toString()).solveCount + 1 
+                    });
+            });
+
+            //console.log(gradesInExercise)
+            const result=[];
+            let exerciseIDS = Array.from(gradesInExercise.keys());
+
+            exerciseIDS.forEach( ex => {
+            let avgGrade = gradesInExercise.get(ex).accumulatedGrade / gradesInExercise.get(ex).solveCount;
+            //if the exercise was not solved before the solve count is zero, and anything divided by zero is undefined.
+            if (!avgGrade) 
+                avgGrade = 0;
+
+            result.push({
+                exerciseId: ex,
+                avgGrade
+            })
+           })
+            
+           return result;
+
+        } catch(error) {
+            console.log(error)
+            throw new DomainError("internal error", 500);
+        }
+    }
  
 }
 
