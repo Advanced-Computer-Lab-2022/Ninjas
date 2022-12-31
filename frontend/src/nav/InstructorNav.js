@@ -400,19 +400,7 @@ if (e.key === 'Enter') {
             >
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-            <Search  >
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-             defaultValue = {searchtemp}
-              //onChange={(e) => setSearch(e.target.value)}
-              onKeyPress={handleKeypress}
-              
-            />
-          </Search>
+            <Button variant="contained" sx={{ color: 'black',  bgcolor: '#CAF0F8' }} onClick={() => window.location.href='/temp'}>Courses</Button>
           &nbsp;&nbsp;
           <box>
 

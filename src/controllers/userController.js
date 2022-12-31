@@ -240,7 +240,7 @@ const userController = {
                 //     //courses.splice(i, 1);
                 // }
             }
-            
+            console.log(courses2);
             return { courses: courses2, currency: details.currency , userType: user? user.type : 'GUEST'};
         }
         catch (err) {
