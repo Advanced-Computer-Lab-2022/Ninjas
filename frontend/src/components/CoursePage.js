@@ -527,7 +527,6 @@ const CoursePage = () => {
     useEffect(() => {
         if (course._id && user._id && avgGrades.length > 0) {
             //result of the backend request is ready
-            console.log(course);
             setReady(true);
             didRateInstructor();
 
@@ -674,21 +673,22 @@ const CoursePage = () => {
                                 {/*dealing with the course price*/}
 
                                 {(['GUEST', 'INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered)) &&
-                                    course.discount > 0 &&
+                                    course.discount > 0 && course.startDate && new Date(course.startDate) < new Date() &&
                                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                                         <Typography variant="subtitle1">
                                             This course is on sale until {new Date(course.discountDuration).toLocaleDateString()} !
                                         </Typography>
                                         <Typography variant="subtitle1">
-                                            from
+                                            From
                                             <Text style={{ textDecorationLine: 'line-through' }}>  {price}     </Text>
 
-                                            <Text>   to {afterdiscount}  {currency} </Text>
+                                            <Text>   To {afterdiscount}  {currency} </Text>
 
                                         </Typography>
                                     </div>
                                 }
-                                {(['GUEST', 'INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered)) && course.discount === 0 &&
+                                {(['GUEST', 'INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered)) &&
+                                 ( course.discount === 0 || (course.startDate && new Date(course.startDate) > new Date())) &&
                                     <Typography variant="subtitle1">
                                         This course currently costs {price} {currency}
                                     </Typography>

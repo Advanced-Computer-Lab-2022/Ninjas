@@ -481,8 +481,7 @@ userRouter.get('/course/:id', async (req, res) => {
 
         const session = sessionDetails.getSession(req.session.id);
         if (!session){
-            res.status(400).json({message:"you did not login"});
-           // throw new DomainError ("you did not login",400)
+            return res.status(400).json({message:"you did not login"});
     }
         const courseId = req.params.id;
         const { userId, type: userType } = session;

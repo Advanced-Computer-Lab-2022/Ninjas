@@ -13,7 +13,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import ReactPlayer from 'react-player/youtube';
-import {Rating} from '@mui/material';
+import {CircularProgress, Rating} from '@mui/material';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import home from '../home3.jpeg' ;
@@ -98,12 +98,22 @@ const mainFeaturedPost = {
 
         <main>
           <MainFeaturedPost post={mainFeaturedPost} />
+          {
+            !ready &&
+                        <Box
+                            display="flex"
+                            flexDirection="row"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight="100vh"
+                        >
+                            <CircularProgress />
+                        </Box>
+
+                    }   
           {/* start of card popular */}
              <Toolbar >
           <Grid container spacing={2} sx={{ ml: 1 , mt:0.5 , mb:2}} style={{ gap: 20 }}>
-
-
-
             
 
 
