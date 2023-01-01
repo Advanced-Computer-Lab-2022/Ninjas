@@ -1,4 +1,5 @@
 const session = require('express-session');
+
 var sess = {
   sessionId: null,
   session: null,
@@ -54,7 +55,23 @@ const requireAuth = (req, res, next) => {
   const id = req.session.id;
   const thisSession = sessions.filter(session => session.sessionId = id);
   if (thisSession.length>0)
+  {
+  console.log(thisSession[0].session.cookie._expires)
+  //check if the cookie expired
+  //i really wish i could do this in a more logical way, but we have no time...
+  if(thisSession[0].session.cookie._expires < Date.now()) {
+    console.log('trueeee')
+    //the session has expired. log the user out.
+    //kill the JWT cookie
+    const key = thisSession[0].username + 'jwt';
+    res.clearCookie(key);
+    //remove all the local user sessions
+    sessionDetails.killUserSessions(thisSession[0].userId);
+    return res.status(401).json({ message: 'you did not login' });
+
+  }
   next();
+  }
   else {
     res.status(401).json({ message: 'you did not login' })
   }
