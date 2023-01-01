@@ -21,6 +21,7 @@ import Checkbox from '@mui/material/Checkbox';
 import ListItem from "@mui/material/ListItem";
 import {useState,useEffect} from "react";
 import axios from "axios";
+import ButtonGroup from '@mui/material/ButtonGroup';
 
 
 const instructorNav = {};
@@ -29,29 +30,26 @@ const instructorNav = {};
 
 const steps = ['Exercise Title', 'Add Questions'];
 
-function getStepContent(step) {
-  switch (step) {
-    case 0:
-      return <QuestionForm />;
-    case 1:
-      return <ExerciseForm />;
-    default:
-      throw new Error('Unknown step');
-  }
-}
+
 
 const theme = createTheme();
 
 export default function Checkout() {
   const [activeStep, setActiveStep] = React.useState(0);
+  const[first,setFirst]=useState(0);
+  const[titleErr,setTitleErr]=useState(false)
 
   const handleNext = () => {
-    console.log('in');
-    setActiveStep(activeStep + 1);
+    setFirst(1);
+    setQuestionText("");
+    if(!title=='')
+    {
+    setActiveStep(activeStep + 1);}
   };
 
   const handleBack = () => {
     setActiveStep(activeStep - 1);
+    setTitle(title);
   };
     //const[title,setTitle]=useState('');
     const[questionText,setQuestionText]=useState('');
@@ -123,18 +121,30 @@ export default function Checkout() {
     setcheck4(true);
     // console.log(correctAnswer);
   }
+  const [first2,setFirst2] = useState(0);
 
   console.log(correctAnswer)
-  
+ 
+  const handleChangeChange = async () => {
+    setFirst2(1);
+    if(!questionText=='' && !mcq1=='' && !mcq2=='' && !mcq3=='' && !mcq4=='' && !totalCredit=='' && !correctAnswer=='' ){
 
-    const change = async ()=>{
       const response=await axios.post(`http://localhost:8000/addQuestion2/`,{questionText:questionText , mcq1:mcq1,mcq2:mcq2,
       mcq3:mcq3,mcq4:mcq4,correctAnswer:correctAnswer,totalCredit:totalCredit}
      ).catch( (error) => alert(error.response.data.message))
           console.log(response.data)
       if(response.status===200){
-          alert(response.data)
-      }}
+          setQuestionText('');
+          setMcq1('');
+          setMcq2('');
+          setMcq3('');
+          setMcq4('');
+          setTotalCredit('');
+          setCorrectAnswer('');
+          setFirst2(0);
+      }
+
+    }}
   
     useEffect( () => {
       console.log(correctAnswer);
@@ -192,11 +202,12 @@ export default function Checkout() {
       <Grid container spacing={3}>
         <Grid item  md={6}>
           <TextField
+          defaultValue=''
+            error={first2==1 && questionText==''}
             required
-            id="Question Text"
-            label="Question Text"
-            fullWidth
-            sx={{ width: '200%' }}
+            label={questionText === ""? "Question Text" : null}
+            value = {questionText}
+            sx={{ width: '170%' }}
             onChange={(event)=>{handleChangeQuestionText(event)}}
 
           />
@@ -209,7 +220,10 @@ export default function Checkout() {
             color="success"
           />
           <TextField
+          defaultValue={''}
+          error={first2==1 && mcq1==''}
             fullWidth
+            value = {mcq1}
             label="choice 1"
             onChange={(event)=>{handleChangeMcq1(event)}}
           />
@@ -223,27 +237,45 @@ export default function Checkout() {
             color="success"
           />
           <TextField
+          error={first2==1 && mcq3==''}
             fullWidth
+            value = {mcq3}
             label="choice 3"
             onChange={(event)=>{handleChangeMcq3(event)}}
           />
            </ListItem>
-           <TextField 
-            required
-            id="Total Credit"
-            label="Total Credit"
-            fullWidth
-            sx={{ width: '50%' ,ml:'75%' }}
-            onChange={(event)=>{handleChangeTotalCredit(event)}}
-       
-          />
+          &nbsp;
+
+          <Button variant="contained" onClick={handleBack}  sx={{ mt:0,ml:70 }}>
+                    Back
+                  </Button>
+                  <Button variant="contained" onClick={()=> {change2()}} sx={{mt:-8,ml:108.5,width:'35%'}}>
+  Add Exercise
+</Button>
+          <Button variant="contained" onClick={()=> {handleChangeChange()}} sx={{mt:-14,ml:80,width:'41%'}}>
+              Add Another Question
+        </Button>
+
+
+
           
           
          
         </Grid>
         <Grid item  mt={7} md={6}>
+
+        <TextField 
+            required
+            error={first2==1 && totalCredit==''}
+            id="Total Credit"
+            label="Total Credit"
+            value = {totalCredit}
+            fullWidth
+            sx={{ width: '25%' ,ml:45,mt:-7 }}
+            onChange={(event)=>{handleChangeTotalCredit(event)}}
        
-          <ListItem alignItems="center" sx={{ml:-3.5}}>
+          />
+          <ListItem alignItems="center" sx={{ml:-3.5,mt:-3}}>
           <Checkbox 
             checked={checked2}
             onChange={handleChange2}          
@@ -251,7 +283,9 @@ export default function Checkout() {
             color="success"
           />
           <TextField
+          error={first2==1 && mcq2==''}
             fullWidth
+            value = {mcq2}
             label="choice 2"
             onChange={(event)=>{handleChangeMcq2(event)}}
           />
@@ -264,33 +298,29 @@ export default function Checkout() {
             color="success"
           />
           <TextField
+          error={first2==1 && mcq4==''}
+          value = {mcq4}
             fullWidth
             label="choice 4"
             onChange={(event)=>{handleChangeMcq4(event)}}
           />
            </ListItem>
-          </Grid>
+           </Grid>
         </Grid>
-        <Button onClick={handleBack} sx={{ mt: 3, ml: 1 }}>
-                    Back
-                  </Button>
-  <Button onClick={()=> {change()}} sx={{ mt: 3, ml: 1 }}>
-  Add Another Question
-</Button>
+     
         
    
     </React.Fragment>)
     :(<React.Fragment>
-      <Typography variant="h6" gutterBottom>
-        Questions
-      </Typography>
       <Grid container spacing={3}>
         <Grid item  md={6}>
           <TextField
+          error={first==1 && title==''}
             required
             id="Exercise Text"
             label="Exercise Title"
-            fullWidth
+            value = {title}
+            sx={{ width: '75%'}}
             onChange={(event)=>{handleChangeTitle(event)}}
 
           />
@@ -320,9 +350,6 @@ sx={{ mt: 3, ml: 1 }}>
                 Exercise Created Successfully!
               </Typography>
               <Typography variant="subtitle1">
-                Your order number is #2001539. We have emailed your order
-                confirmation, and will send you an update when your order has
-                shipped.
               </Typography>
             </React.Fragment>
           ) : null

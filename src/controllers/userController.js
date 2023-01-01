@@ -174,7 +174,7 @@ const userController = {
 
             if (subject == 'null' &&
                 rating == 'null' && title == 'null' &&
-                instructor == '') {
+                instructor == 'null') {
 
                 courses = await Course.find()
             } else {
@@ -186,7 +186,7 @@ const userController = {
                 } }, { rating: { 
                     '$lte': (rating)
                 } }]}) }
-                if (title != 'null') {
+                if (title != 'null' && instructor == 'null') {
                     
                     queryArray.push(
 
@@ -205,7 +205,22 @@ const userController = {
                 ]}
                 )
                 }
+                if (title != 'null' && instructor != 'null') {
+                    
+                    queryArray.push(
 
+                       { '$or': [  
+                        { subject: { '$regex': '.*' +  title + '.*', '$options': 'i' } },
+                    { title: { '$regex': '.*' +  title + '.*', '$options': 'i' } }
+                
+                ]}
+                )
+                }
+                if (instructor != 'null' && userId!=null ){
+                    queryArray.push({ instructors: {  $elemMatch: {
+                         _id: userId
+                    } } });
+                }
 
                 courses = await Course.find({
                     '$and': queryArray
@@ -240,7 +255,7 @@ const userController = {
                 //     //courses.splice(i, 1);
                 // }
             }
-            
+            console.log(courses2);
             return { courses: courses2, currency: details.currency , userType: user? user.type : 'GUEST'};
         }
         catch (err) {
@@ -671,8 +686,8 @@ const userController = {
         try{
             const theUser = await Account.findOne({_id: userId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
-            });;
-            const thisCourse =  await Account.findOne({_id: courseId}).catch(() => {
+            });
+            const thisCourse =  await Course.findOne({_id: courseId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });;
             if(theUser.type == 'INDIVIDUAL TRAINEE'){
@@ -682,17 +697,35 @@ const userController = {
                    await Account.updateOne({_id: userId} ,{wallet: newWallet});
 
 
-                }
-                // if(theUser.wallet > 0 && theUser.wallet>=thisCourse.price){
-                //     let newBalance = theUser.wallet - thisCourse.price;
-                //    await Account.updateOne({_id:userId}, {wallet: newBalance })
-
-                // }
-         
+            //check if he has enough in the wallet
+            if (theUser.wallet >= thisCourse.price) {
+                await Course.updateOne({_id: courseId}, {$push: { students: userId}});
+                const walletAfter = theUser.wallet - thisCourse.price;
+                await Account.updateOne({ _id: userId}, {wallet: walletAfter});
+                return "yes"
             }
+            else {
+                return "no"
+            }
+
+
+            // if(theUser.type == 'INDIVIDUAL TRAINEE'){
+            //     if(coursePrice == thisCourse.price){
+            //         await Course.updateOne({_id: courseId}, {$push: { students: userId}});
+            //        await Course.updateOne({_id:courseId} ,{ $push: { students: userId }})
+
+            //     }
+            //     // if(theUser.wallet > 0 && theUser.wallet>=thisCourse.price){
+            //     //     let newBalance = theUser.wallet - thisCourse.price;
+            //     //    await Account.updateOne({_id:userId}, {wallet: newBalance })
+
+            //     // }
+         
+            // }
           //  return myCourses;
         }
         catch(err){
+            console.log(err)
             throw new DomainError('error internally', 500);
 
 
@@ -700,23 +733,27 @@ const userController = {
 
     },
 
-    async payForCourse2(userId, courseId, cardNo, country){ //name & postal code
+    async payForCourse2({userId, courseId, cardNo}){ //name & postal code
         //sheeeeeelyyy el countryy
          //from credit card
-         var cardForm = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
          
         try{
+            var cardForm = /^(?:4[0-9]{12}(?:[0-9]{3})?)$/;
+            console.log(userId)
+            console.log(courseId)
+            console.log(cardNo)
             const theUser = await Account.findOne({_id: userId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
-            });;
-            const thisCourse =  await Account.findOne({_id: courseId}).catch(() => {
+            });
+            console.log(theUser);
+            const thisCourse =  await Course.findOne({_id: courseId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
-            });;
-            if(theUser.type == 'INDIVIDUAL TRAINEE' && cardNo.value.match(cardForm) && theUser.country == country){
+            });
+            console.log(thisCourse);
+            if(theUser.type == 'INDIVIDUAL_TRAINEE'){
                 await Course.updateOne({_id:courseId} ,{ $push: { students: userId }})
-                //what to return
             }
-          //  return myCourses;
+
         }
         catch(err){
             throw new DomainError('error internally', 500);
@@ -865,7 +902,7 @@ async viewProgress({ userId,courseId }) {
 },
 
 
-async ReportCourse( userId,courseId, problem ) {
+async ReportCourse( userId,courseId, problem ,description) {
  try{
     const user = await Account.findOne({ _id: userId }, { type: 1 }).catch(() => {
         throw new DomainError("Wrong Id", 400)
@@ -879,7 +916,7 @@ async ReportCourse( userId,courseId, problem ) {
     throw new DomainError("you already reported", 401);
   }
 
-   const report = await Report.create( {accountId: userId,courseId, problem });
+   const report = await Report.create( {accountId: userId,courseId, problem , description});
    return "Done";
 }
 catch(err){
@@ -1050,6 +1087,17 @@ async getCourse({ courseId, userType, userId }) {
             response.currency = "";
             response.factor = 1;
         }
+        console.log('enteeeerr')
+        
+var EXgrades=  await UserExercise.find({
+    accountId: userId 
+}, { userGrade: 1, gradePercentage: 1, "exercises.totalGrade": 1 , "exercises._id": 1 })
+
+
+     response.EXgrades= EXgrades;
+
+
+
 
         return response;
     } catch(error) {
@@ -1103,9 +1151,65 @@ async deleteCourseRating({ userId, courseId }) {
         console.log(error);
         throw new DomainError("internal error", 500);
     }
-}
+},
+async viewReportedProblems()  {
+    userId
+    try {
+      let resReport = [];
+      let resReport1 = []; //seen
+      let resReport3 = []; //resolved
+       const Reports = await Report.find({accountId : userId});
+
+       for(var i=0; i<Reports.length; i++){
+        const c = await Course.findOne({_id:Reports[i].courseId});
+        console.log(c.title);
+        let title= c.title;
+        let problem=Reports[i].problem;
+        let description=Reports[i].description;
+        let id=Reports[i]._id
+        console.log(Reports);
+          if(Reports[i].seen == true){
+              if(Reports[i].progress == 'RESOLVED'){
+                  resReport3.push({title,problem,description,id});
+              }
+              else{
+                  resReport1.push({title,problem,description,id});
+              }
+
+          }
+          else{
+            resReport1.push({title,problem,description, id});
+          }
+
+       }
+       resReport.push(resReport1);
+       resReport.push(resReport3);
+
+
+       return resReport;
+
+
+   
+   } catch (err) {
+       if (err._message && err._message == 'Account validation failed') { throw new DomainError('validation Error', 400); }
+       throw new DomainError('error internally', 500);}
+
+   },
+
+
+async exerciseHistory({ userId, courseId }) {
+    try {
+        const { subtitles } = await Course.findOne({ _id: courseId }, { subtitles:1 });
+        const userSolvedExercises = await UserExercise.find({ accountId: userId, "exercises.subtitleId": { $in: subtitles.map(s => s._id) }});
+        return userSolvedExercises;
+    } catch(error) {
+        throw new DomainError("internal error", 500);
+    }
 
 }
+}
+
+
 
 
 

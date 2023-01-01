@@ -34,6 +34,10 @@ import generalCertificate from '../generalCertificate.pdf';
 import { Path } from '@react-pdf/renderer';
 import { searchtemp } from '../components/Search';
 
+ var bar = false;
+ export  function setbar(f){
+      bar = f;
+ }
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
     color: 'inherit',
     '& .MuiInputBase-input': {
@@ -140,11 +144,24 @@ const [user,setUser] = useState(async () => {
     window.location.href='/';
   })
 })
+
+const [curr, setCurr] = useState('');
+const getCurrency = async () => {
+  await axios.get(`http://localhost:8000/myCurrency?country=${user.country}`)
+  .then(res => setCurr(res.data.currency))
+  .catch(err => {
+    console.log(err)
+    if (err.response.status === 401) //you didn't login
+    window.location.href='/';
+  })
+}
 useEffect(() => {
   if (user._id)
 
-      { console.log(user)
-        setReady(true);}
+      {
+        getCurrency();
+        setReady(true);
+      }
 }, [user])
 
 //to show the certificates when clicked
@@ -211,7 +228,8 @@ if (e.key === 'Enter') {
             >
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-            <Search  >
+            {bar&&
+              <Search  >
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
@@ -223,13 +241,16 @@ if (e.key === 'Enter') {
               onKeyPress={handleKeypress}
               
             />
-          </Search>
+          </Search>}
+          {!bar &&
+            <Button variant="contained" sx={{ color: 'black',  bgcolor: '#CAF0F8' }} onClick={() => window.location.href='/temp'}>All courses</Button>
+          }
           &nbsp;&nbsp;
           <box>
 
           <ListItemButton  >
             <ListItemIcon >
-          <HomeIcon sx={{color:'#CAF0F8' }} />
+          <HomeIcon sx={{color:'#CAF0F8' }} onClick={ () => window.location.href='/tHome'} />
           </ListItemIcon>
           </ListItemButton>
           </box>
@@ -283,7 +304,7 @@ if (e.key === 'Enter') {
             <ListItemButton
               sx={{ backgroundColor:'#eeeeee'}}
             >
-              Account balance: {user.wallet}
+              Account balance: {user.wallet} {curr}
             </ListItemButton>
           } 
 </div>
