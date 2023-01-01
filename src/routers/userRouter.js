@@ -396,7 +396,47 @@ userRouter.get('/viewWallet', async (req, res) => {
     }
 })
 
+userRouter.get('/viewReportedProblems', async (req, res) => {
+    try {
+        const session = sessionDetails.getSession(req.session.id);
+        const userId = session.userId
+  
+      const reports = await userController.viewReportedProblems({ userId});
+      res.status(200).json(reports);
+  }
+  
+  catch (err) {
+    if (err instanceof DomainError) {
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ err });
+    }
+  }
+  
+  
+  })
 
+  userRouter.post('/followUp', async (req, res) => {
+    try {
+  
+  const reportId  = req.query.reportId;
+  
+  
+  const reply = await userController.followUp({ reportId });
+  console.log("hiii");
+  res.status(200).json(reply);
+  }
+  
+  catch (err) {
+    console.log(err)
+    if (err instanceof DomainError) {
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ err });
+    }
+  }
+  
+  })
 
 
 

@@ -1101,9 +1101,72 @@ async deleteCourseRating({ userId, courseId }) {
         console.log(error);
         throw new DomainError("internal error", 500);
     }
-}
+},
+async viewReportedProblems()  {
+    userId
+    try {
+      let resReport = [];
+      let resReport1 = []; //seen
+      let resReport3 = []; //resolved
+       const Reports = await Report.find({accountId : userId});
+
+       for(var i=0; i<Reports.length; i++){
+        const c = await Course.findOne({_id:Reports[i].courseId});
+        console.log(c.title);
+        let title= c.title;
+        let problem=Reports[i].problem;
+        let description=Reports[i].description;
+        let id=Reports[i]._id
+        console.log(Reports);
+          if(Reports[i].seen == true){
+              if(Reports[i].progress == 'RESOLVED'){
+                  resReport3.push({title,problem,description,id});
+              }
+              else{
+                  resReport1.push({title,problem,description,id});
+              }
+
+          }
+          else{
+            resReport1.push({title,problem,description, id});
+          }
+
+       }
+       resReport.push(resReport1);
+       resReport.push(resReport3);
+
+
+       return resReport;
+
+
+   
+   } catch (err) {
+       if (err._message && err._message == 'Account validation failed') { throw new DomainError('validation Error', 400); }
+       throw new DomainError('error internally', 500);}
+
+   },
+   async followUp({ reportId})  {
+    try {
+
+       const Reports = await Report.updateOne({_id:reportId},{followUp : true}).catch(() => {
+        throw new DomainError("no reports", 400)
+    });
+    console.log(Reports);
+    if (Reports.modifiedCount>0)
+      return 'Done';
+    else 
+      return 'a follow up was done before';
+   
+   } catch (err) {
+    console.log(err)
+       if (err._message && err._message == 'Account validation failed') { throw new DomainError('validation Error', 400); }
+       throw new DomainError('error internally', 500);}
+
+   },
 
 }
+
+
 
 
 
