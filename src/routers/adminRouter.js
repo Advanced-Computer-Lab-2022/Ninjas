@@ -265,8 +265,10 @@ adminRouter.put('/setPromotion', async (req, res) => {
   try {
     const selectedCourses = req.body.selectedCourses;
     const promotion = req.body.promotion;
-    await adminCreateAccountsController.setPromotion({selectedCourses, promotion});
-    res.status(200).send();
+    const { startDate, endDate } = req.body;
+    console.log(startDate);
+    await adminCreateAccountsController.setPromotion({selectedCourses, promotion, startDate, endDate});
+    res.status(200).json({ message: "promotions set successfully. "});
 }
 
 catch (err) {

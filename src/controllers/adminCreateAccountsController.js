@@ -219,27 +219,15 @@ const adminCreateAccountsController =
         }
       },
    
-      async setPromotion({selectedCourses, promotion}){ //All courses
+      async setPromotion({selectedCourses, promotion, startDate, endDate}){
         try{
-            let c = [];
-            let newPrice = 0;
-            for(var i=0; i<selectedCourses.length; i++){
-
-               const theCourse = await Course.findOne({_id: selectedCourses[i]}).catch(() => {
-                   throw new DomainError("Wrong Id", 400)
-                });;
-               c.push(theCourse);
-
-            }
-            for(var j =0; j<c.length; j++){
-
-            newPrice = c[j].price - c[j].price * (promotion/100);
-            await Course.updateOne({_id: c[j]._id}, {price: newPrice} );
-            await Course.updateOne({_id: c[j]._id}, {promoted: 'Promoted'} );
-           // this.getAllCoursesss();  
+             await Course.updateMany({ _id: { $in: selectedCourses }}, {
+                discount: promotion,
+                startDate,
+                discountDuration: endDate,
+                promoted: 'Promoted'
+             });
         }          
-            
-        }
         catch(err){
             throw new DomainError('error internally', 500);
  

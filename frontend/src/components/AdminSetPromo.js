@@ -33,7 +33,10 @@ import mainListItems from './listItems';
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 
-import { CircularProgress } from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Alert, AlertTitle, Backdrop, CircularProgress } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -195,20 +198,26 @@ const mdTheme = createTheme();
     setOpen(!open);
   };
 
+  //error handling
+  const [errPopup, seterrPopup] = useState(false);
   const handleClose = async () => {
     const response = await axios.put(`http://localhost:8000/admin/setPromotion`,
-    { selectedCourses: selects, promotion })
+    {
+      selectedCourses: selects,
+      promotion,
+      startDate,
+      endDate
+    })
     .catch(err=>console.log(err))
 
     if (response.status === 200)
     {
-      window.location.href='/AdminSetPromo';
+      window.location.reload();
     }
-    setOpen(false)
   };
 
   const [selects, setSelected] = useState([]);
-  const [promotion, setPromotion] = useState('');
+  const [promotion, setPromotion] = useState(null);
 
 
   const [courses, setCourses] = useState(async () => {
@@ -216,6 +225,7 @@ const mdTheme = createTheme();
         .then(res => { setCourses(res.data)})
         .catch((error) => alert(error.response.data.message))
 })
+
 
 const [ready, setReady] = useState(false);
 useEffect(() => {
@@ -237,9 +247,17 @@ const handleChangePromotion = (event) => {
 }
 
 const handleClickOpen = () => {
-  //console.log(reportId)
+  if (!startDate || selects.length === 0 || !endDate || !promotion || promotion <= 0)
+  {
+    seterrPopup(true);
+    return;
+  }
   setOpen(true);
 };
+
+const [startDate, setStartDate] = useState(null);
+const [endDate, setEndDate] = useState(null);
+
 useEffect( () => {
   console.log(selects)
 
@@ -318,10 +336,33 @@ useEffect( () => {
              color="#03045E"
              glutterBottom
             >Please specify promotion amount and select course(s)</Typography>
-            <TextField  label="Promotion" sx={{ml: 20}}  id="promo" variant="outlined" onChange={(event)=>{handleChangePromotion(event)}}/>
+            <TextField type="number"  label="Promotion" sx={{ml: 20}}  id="promo" variant="outlined" onChange={(event)=>{handleChangePromotion(event)}}/>
+            
+            <LocalizationProvider  dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Start Date"
+                value={startDate}
+                onChange={(newValue) => {
+                  setStartDate(newValue);
+                }}
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </LocalizationProvider>
+
+
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="End date"
+                value={endDate}
+                onChange={(newValue) => {
+                  setEndDate(newValue);
+                }}
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </LocalizationProvider>
+
             <Button  variant="contained"  sx={{ color: 'white', backgroundColor: '#03045E', borderColor: '#03045E', ml:4, mt:1 }} onClick={() =>
                   handleClickOpen()}>Set Promotion</Button>
-
         </Box>
 <main>
 <Container sx={{ py: 8 }} >
@@ -395,7 +436,24 @@ useEffect( () => {
 </main>
 
 
-         
+          <Backdrop
+
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={errPopup}
+            onClick={() => seterrPopup(false)}
+          >
+          <Alert severity="error">
+          <AlertTitle>Error</AlertTitle>
+          <strong>Please make sure to:
+              <br></br><br></br>
+              1. Enter both start and end dates, with the start date BEFORE the end date,
+              <br></br>
+              2. Set a promotion value that is greater than zero <br></br>
+              3. Select at least one course to apply the promotion on <br></br><br></br>
+              Click anywhere to continue
+              </strong>
+            </Alert>
+          </Backdrop>
       
 
 

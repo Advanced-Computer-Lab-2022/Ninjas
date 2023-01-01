@@ -1067,9 +1067,10 @@ async getCourse({ courseId, userType, userId }) {
             //update the local course object
             course.discountDuration = null;
             course.discount = 0;
+            course.promoted = 'Not Promoted'
 
             //update the value in the DB
-            await Course.updateOne({ _id: courseId }, { discountDuration: null, discount:0 });
+            await Course.updateOne({ _id: courseId }, { discountDuration: null, discount:0, promoted: 'Not Promoted' });
         }
 
         const response = { course }
