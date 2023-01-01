@@ -961,7 +961,7 @@ async folllowUp( userId , courseId , problem ) {
     }
     },
 
-async viewWallet({userId}) {
+async viewWallet({userId}) {   //lel inst 
 
 
       try {
