@@ -341,11 +341,16 @@ userRouter.get('/viewEnrolledCourses', async (req, res) => {
 userRouter.put('/payForCourse', async (req, res) => {
     try {
 
-        const userId = req.body.userId;
+        const session = sessionDetails.getSession(req.session.id);
+        const userId = session.userId;
         const courseId = req.body.courseId;
         const coursePrice = req.body.coursePrice;
-        await userController.payForCourse({userId, courseId, coursePrice})
-        res.status(200).json("You have paid successfully");
+        const result = await userController.payForCourse({userId, courseId, coursePrice})
+        if (result == "yes")
+        return res.status(200).json("You have paid successfully");
+        else if (result === "no")
+        return res.status(400).json("not enough balance");
+
     }
     catch (err) {
         if (err instanceof DomainError) {
@@ -360,11 +365,13 @@ userRouter.put('/payForCourse', async (req, res) => {
 userRouter.post('/payForCourse2', async (req, res) => {
     try {
 
-        const userId = req.body.userId
+        
+        const session = sessionDetails.getSession(req.session.id);
+        const userId = session.userId;
         const courseId = req.body.courseId
         const cardNo = req.body.cardNo
-        const country = req.body.country
-        await userController.payForCourse2(userId, courseId, couresId, cardNo, country)
+        console.log(userId)
+        await userController.payForCourse2({userId, courseId, cardNo})
         res.status(200).json("You have paid successfully");
     }
   catch(err){
@@ -396,7 +403,47 @@ userRouter.get('/viewWallet', async (req, res) => {
     }
 })
 
+userRouter.get('/viewReportedProblems', async (req, res) => {
+    try {
+        const session = sessionDetails.getSession(req.session.id);
+        const userId = session.userId
+  
+      const reports = await userController.viewReportedProblems({ userId});
+      res.status(200).json(reports);
+  }
+  
+  catch (err) {
+    if (err instanceof DomainError) {
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ err });
+    }
+  }
+  
+  
+  })
 
+  userRouter.post('/followUp', async (req, res) => {
+    try {
+  
+  const reportId  = req.query.reportId;
+  
+  
+  const reply = await userController.followUp({ reportId });
+  console.log("hiii");
+  res.status(200).json(reply);
+  }
+  
+  catch (err) {
+    console.log(err)
+    if (err instanceof DomainError) {
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ err });
+    }
+  }
+  
+  })
 
 
 
@@ -614,4 +661,6 @@ userRouter.get('/myCurrency', async(req,res) => {
         res.status(error.code).json({ message: error.message });
     }
 })
+
+
 module.exports = userRouter;

@@ -42,7 +42,258 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Grid from '@mui/material/Grid';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {TextField} from "@mui/material";
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
+import Autocomplete from '@mui/material/Autocomplete';
 
+const countryEnums = [
+  'Afghanistan',
+  'AlandIslands',
+  'Albania',
+  'Algeria',
+  'American Samoa',
+  'Andorra',
+  'Angola',
+  'Anguilla',
+  'Antarctica',
+  'Antigua and Barbuda',
+  'Argentina',
+  'Armenia',
+  'Aruba',
+  'Australia',
+  'Austria',
+  'Azerbaijan',
+  'Bahamas',
+  'Bahrain',
+  'Bangladesh',
+  'Barbados',
+  'Belarus',
+  'Belgium',
+  'Belize',
+  'Benin',
+  'Bermuda',
+  'Bhutan',
+  'Bolivia',
+  'Bosnia and Herzegovina',
+  'Botswana',
+  'Bouvet Island',
+  'Brazil',
+  'British Indian Ocean Territory',
+  'Brunei Darussalam',
+  'Bulgaria',
+  'Burkina Faso',
+  'Burundi',
+  'Cambodia',
+  'Cameroon',
+  'Canada',
+  'Cape Verde',
+  'Cayman Islands',
+  'Central African Republic',
+  'Chad',
+  'Chile',
+  'China',
+  'Christmas Island',
+  'Cocos Keeling Islands',
+  'Colombia',
+  'Comoros',
+  'Congo',
+  'Congo Democratic Republic',
+  'Cook Islands',
+  'Costa Rica',
+  'CoteDIvoire',
+  'Croatia',
+  'Cuba',
+  'Curaçao',
+  'Cyprus',
+  'CzechRepublic',
+  'Denmark',
+  'Djibouti',
+  'Dominica',
+  'Dominican Republic',
+  'Ecuador',
+  'Egypt',
+  'El Salvador',
+  'Equatorial Guinea',
+  'Eritrea',
+  'Estonia',
+  'Ethiopia',
+  'Falkland Islands',
+  'Faroe Islands',
+  'Fiji',
+  'Finland',
+  'France',
+  'French Guiana',
+  'French Polynesia',
+  'French Southern Territories',
+  'Gabon',
+  'Gambia',
+  'Georgia',
+  'Germany',
+  'Ghana',
+  'Gibraltar',
+  'Greece',
+  'Greenland',
+  'Grenada',
+  'Guadeloupe',
+  'Guam',
+  'Guatemala',
+  'Guernsey',
+  'Guinea',
+  'Guinea Bissau',
+  'Guyana',
+  'Haiti',
+  'Heard Island Mcdonald Islands',
+  'Holy See Vatican City State',
+  'Honduras',
+  'HongKong',
+  'Hungary',
+  'Iceland',
+  'India',
+  'Indonesia',
+  'Iran',
+  'Iraq',
+  'Ireland',
+  'Isle Of Man',
+  'Italy',
+  'Jamaica',
+  'Japan',
+  'Jersey',
+  'Jordan',
+  'Kazakhstan',
+  'Kenya',
+  'Kiribati',
+  'Korea, Republic of',
+  'Korea, Democratic People\'s Republic of',
+  'Kuwait',
+  'Kyrgyzstan',
+  'Lao Peoples Democratic Republic',
+  'Latvia',
+  'Lebanon',
+  'Lesotho',
+  'Liberia',
+  'Libyan Arab Jamahiriya',
+  'Liechtenstein',
+  'Lithuania',
+  'Luxembourg',
+  'Macao',
+  'Madagascar',
+  'Malawi',
+  'Malaysia',
+  'Maldives',
+  'Mali',
+  'Malta',
+  'Marshall Islands',
+  'Martinique',
+  'Mauritania',
+  'Mauritius',
+  'Mayotte',
+  'Mexico',
+  'Micronesia',
+  'Moldova',
+  'Monaco',
+  'Mongolia',
+  'Montenegro',
+  'Montserrat',
+  'Morocco',
+  'Mozambique',
+  'Myanmar',
+  'Namibia',
+  'Nauru',
+  'Nepal',
+  'Netherlands',
+  'New Caledonia',
+  'New Zealand',
+  'Nicaragua',
+  'Niger',
+  'Nigeria',
+  'Niue',
+  'Norfolk Island',
+  'Northern Mariana Islands',
+  'Norway',
+  'Oman',
+  'Pakistan',
+  'Palau',
+  'Palestinian Territory',
+  'Panama',
+  'Papua New Guinea',
+  'Paraguay',
+  'Peru',
+  'Philippines',
+  'Pitcairn',
+  'Poland',
+  'Portugal',
+  'Puerto Rico',
+  'Qatar',
+  'Reunion',
+  'Republic of North Macedonia',
+  'Romania',
+  'Russian Federation',
+  'Rwanda',
+  'Saint Barthelemy',
+  'Saint Helena',
+  'Saint Kitts And Nevis',
+  'Saint Lucia',
+  'Saint Martin',
+  'Saint Pierre And Miquelon',
+  'Saint Vincent And Grenadines',
+  'Samoa',
+  'San Marino',
+  'Sao Tome And Principe',
+  'Saudi Arabia',
+  'Senegal',
+  'Serbia',
+  'Seychelles',
+  'Sierra Leone',
+  'Singapore',
+  'Slovakia',
+  'Slovenia',
+  'Solomon Islands',
+  'Somalia',
+  'South Africa',
+  'South Georgia And Sandwich Island',
+  'Spain',
+  'Sri Lanka',
+  'Sudan',
+  'South Sudan',
+  'Suriname',
+  'Svalbard And Jan Mayen',
+  'Swaziland',
+  'Sweden',
+  'Switzerland',
+  'Sint Maarten (Dutch part)',
+  'Syrian Arab Republic',
+  'Taiwan',
+  'Tajikistan',
+  'Tanzania',
+  'Thailand',
+  'TimorLeste',
+  'Togo',
+  'Tokelau',
+  'Tonga',
+  'Trinidad And Tobago',
+  'Tunisia',
+  'Turkey',
+  'Turkmenistan',
+  'Turks And Caicos Islands',
+  'Tuvalu',
+  'Uganda',
+  'Ukraine',
+  'United Arab Emirates',
+  'United Kingdom',
+  'United States',
+  'United States Outlying Islands',
+  'Uruguay',
+  'Uzbekistan',
+  'Vanuatu',
+  'Venezuela',
+  'Vietnam',
+  'Virgin Islands British',
+  'Virgin Islands US',
+  'Wallis And Futuna',
+  'Western Sahara',
+  'Yemen',
+  'Zambia',
+  'Zimbabwe'
+];
 function stringToColor(string) {
   let hash = 0;
   let i;
@@ -201,60 +452,11 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 
 const mdTheme = createTheme();
   const [open2, setOpen2] = React.useState(false);
-  
-  const[wait,setWait]=useState(false);
-  const [emailSettings, setEmailSettings] = useState(false);
-  const [passwordSettings, setPasswordSettings] = useState(false);
-  const [countrySettings, setCountrySettings] = useState(false);
-  const [biographySettings, setBiographySettings] = useState(false);
-
-  const handleEmail = (event) => {
-    setEmailSettings(true);
-    setPasswordSettings(false);
-    setCountrySettings(false);
-    setBiographySettings(false);
-};
-const handlePassword = (event) => {
-    setPasswordSettings(true);
-    setEmailSettings(false);
-    setCountrySettings(false);
-    setBiographySettings(false);
-   
-};
-const handleCountry = (event) => {
-    setCountrySettings(true);
-    setEmailSettings(false);
-    setPasswordSettings(false);
-    setBiographySettings(false);
-   
-};
-const handleBiography = (event) => {
-    setBiographySettings(true);
-    setEmailSettings(false);
-    setPasswordSettings(false);
-    setCountrySettings(false);
-   
-};
-  
-
-
- 
-  const handleClickBack = () => {
-    setBiographySettings(false);
-    setEmailSettings(false);
-    setPasswordSettings(false);
-    setCountrySettings(false);
-    setOpen2(true);
-  };
   const handleClickOpen = () => {
     setOpen2(true);
   };
   const handleClose = () => {
-    setBiographySettings(false);
-    setEmailSettings(false);
-    setPasswordSettings(false);
-    setCountrySettings(false);
-    setOpen2(false);};
+     setOpen2(false);};
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
@@ -268,7 +470,8 @@ const handleBiography = (event) => {
 
 
 const handleChangeEmail = (event) => {
-  setNewEmail(event.target.value)}
+  setNewEmail(event.target.value)
+}
 
 const handleChangeBiography = (event) => {
     setBiography(event.target.value)}
@@ -280,6 +483,43 @@ const handleChangeNewPassword = (event) => {
       setNewPassword(event.target.value)}
       const handleChangeConfirmPassword = (event) => {
         setConfirmPassword(event.target.value)}
+
+const saveSettings = async ()=>{  
+  
+    const response=await axios.put(`http://localhost:8000/editEmail/`,{
+    newEmail:newEmail})
+    .catch( (error) => alert(error.response.data.message))
+    console.log(response.data)
+    if(response.status===200){
+    alert(response.data)
+          }
+
+    const response2=await axios.put(`http://localhost:8000/changePassword/`,{
+      oldPassword:oldPassword,
+      newPassword:newPassword}).
+      catch( (error) => alert(error.response.data.message))
+
+
+      console.log(response.data)
+      if(response.status===200){
+          alert(response.data)}
+
+
+    const response3=await axios.put(`http://localhost:8000/editBiography/`,{
+    newText:biography}).
+    catch( (error) => alert(error.response.data.message))
+
+
+    console.log(response.data)
+    if(response.status===200){
+        alert(response.data)
+    }
+
+  
+        
+        
+        
+      }
 
 const change = async ()=>{
   const response=await axios.put(`http://localhost:8000/editEmail/`,{
@@ -299,7 +539,8 @@ const change = async ()=>{
     console.log(response.data)
     if(response.status===200){
         alert(response.data)
-    }}
+    }
+  }
 
     const change3 = async ()=>{
       const response=await axios.put(`http://localhost:8000/changePassword/`,{
@@ -311,7 +552,8 @@ const change = async ()=>{
       console.log(response.data)
       if(response.status===200){
           alert(response.data)
-      }}
+      }
+    }
 
 
 
@@ -357,8 +599,8 @@ const getCurrency = async () => {
   })
 }
 
-const[newEmail,setNewEmail]=useState(user.email);
-const[biography,setBiography]=useState(user.biography);
+const[newEmail,setNewEmail]=useState('');
+const[biography,setBiography]=useState('');
 const[oldPassword,setOldPassword]=useState('');
 const[newPassword,setNewPassword]=useState('');
 const[confirmPassword,setConfirmPassword]=useState('');
@@ -367,8 +609,8 @@ useEffect(() => {
     if (user._id) {
         getCurrency();
         setReady(true);
-        setNewEmail(user.email);
-        setBiography(user.biography);
+        // setNewEmail(user.email);
+        // setBiography(user.biography);
 
         
     }
@@ -381,7 +623,23 @@ if (e.key === 'Enter') {
  // handleSearch(e)
   window.location.href=`/temp?userId=${user._id}&search=${e.target.value}`
 }
+}
+
+const [country, setCountry] = useState('');
+// const changeCountry = async () => {
+//   const response = await axios.post(`http://localhost:8000/selectCountry/${userId}`, { country })
+//   console.log(response.data)
+//   if (response.status == 201)
+//   {
+//       alert(response.data.message)
+//   }
+// }
+const handleChange = (event) => {
+  console.log(event.target.value)
+  //sets the country to the selected one
+  setCountry(event.target.value);
 };
+
   return (
     <ThemeProvider theme={mdTheme}>
       <Box sx={{ display: 'flex'  }}>
@@ -491,8 +749,8 @@ if (e.key === 'Enter') {
      PaperProps={{
         sx: {
           
-          height : '380px',
-          width :'470px'
+          height : '215%',
+          width :'100%'
         }
       }}
       fullWidth='true'
@@ -508,67 +766,40 @@ if (e.key === 'Enter') {
          
         </BootstrapDialogTitle>
 
-{!emailSettings && !passwordSettings && !biographySettings && !countrySettings  && open &&
+{ open &&
 
         <div>
             <ListItemIcon>
-          <SettingsIcon sx={{color:'#757575' }} />
-          <ListItemText primary='Account Settings' sx={{color:'black' }}/>
+          <SettingsIcon sx={{color:'#757575',mt:-1,ml:0.5 }} />
+          <ListItemText primary='Account Settings' sx={{mt:-1,ml:1,color:'black' }}/>
           </ListItemIcon>
         <Grid
         alignItems="center"
         justify="center">
         <Stack direction="row" spacing={2} ml={25}>
       <Avatar
-        sx={{ bgcolor: '#03045E', width: 56, height: 56,ml:'5%'  }}
+        sx={{ bgcolor: '#03045E', width: 56, height: 56,ml:'20%',mt:-1  }}
         alt={user.firstName}
-        src="/broken-image.jpg"
       />
 
     </Stack>
     &nbsp;
-        <Typography ml='45%'>
+        <Typography  sx={{mt:-3,ml:'47%',color:'black' }}>
         {user.firstName} {user.lastName}
     </Typography>
     &nbsp;&nbsp;&nbsp;
     &nbsp;&nbsp;&nbsp;
-    <ButtonGroup
-        orientation="vertical"
-        aria-label="vertical outlined button group"
-        sx={{ width: '80%' , ml:3 }}
-      >
-    <Button key="one"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E',  borderRadius:0,border:"1px solid"}} onClick={()=> {handleEmail()}}>Email</Button>
-    <Button key="two" sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E', borderRadius:0,border:"1px solid" }} onClick={()=> {handlePassword()}}>Password</Button>
-    <Button key="three" sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E', borderRadius:0,border:"1px solid" }}  onClick={()=> {handleCountry()}}>Country</Button>
-    <Button key="four" sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E' , borderRadius:0,border:"1px solid"}} onClick={()=> {handleBiography()}}>Biography</Button>
-      </ButtonGroup>
       </Grid>
       </div>}
 
-
- {emailSettings && open &&
-      <div>
-        <IconButton
-      aria-label="close"
-      onClick={handleClickBack}
-      sx={{
-        position: 'absolute',
-        right: 425,
-        top: 8,
-        color: (theme) => theme.palette.grey[500],
-          }}
-        >
- <ArrowBackIosIcon/>
- </IconButton>
-        <Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
-            Email
-        </Typography>
+ <Typography variant='body' sx={{mt:-2,ml:2}}>
+  Email
+ </Typography>
         <OutlinedInput 
             onChange={(event)=>{handleChangeEmail(event)}}
-            sx={{mt:2 , ml:5}}
+            sx={{mt:0 ,ml:2, mr:2}}
             label="Email"
-            type= {editEmail} 
-            defaultValue={newEmail}
+            //defaultValue={newEmail}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton 
@@ -584,51 +815,33 @@ if (e.key === 'Enter') {
 
           />
          <DialogActions>
-          <Button sx={{mt:25 , ml:5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E'}} autoFocus onClick={()=> {change()}}>
-            Save Changes
-          </Button>
         </DialogActions>
-      </div> }
 
-      {passwordSettings && open &&
 
-      <div>
-        <IconButton
-      aria-label="close"
-      onClick={handleClickBack}
-      sx={{
-        position: 'absolute',
-        right: 425,
-        top: 8,
-        color: (theme) => theme.palette.grey[500],
-          }}
-        >
- <ArrowBackIosIcon/>
- </IconButton>
 
-        <Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
-            Password
-        </Typography>
+<Typography variant='body' sx={{mt:-1.5,ml:2}}>
+  Password
+</Typography>
         <TextField
-        onChange={(event)=>{handleChangeOldPassowrd(event)}}
+        onBlur={(event)=>{handleChangeOldPassowrd(event)}}
           type='password'
-          sx={{mt:2 , ml:5}}
+          sx={{ ml:2,mr:2}}
           label="Old Password"
           id="old Passowrd"
           defaultValue=""
         />
          <TextField
-          onChange={(event)=>{handleChangeNewPassword(event)}}
+          onBlur={(event)=>{handleChangeNewPassword(event)}}
          type='password'
-         sx={{mt:1, ml:5}}
+         sx={{ml:2,mr:2}}
           label="New Passowrd"
           id="old Passowrd"
           defaultValue=""
         />
         <TextField
-         onChange={(event)=>{handleChangeConfirmPassword(event)}}
+         onBlur={(event)=>{handleChangeConfirmPassword(event)}}
         type='password'
-        sx={{ mt:1,ml:5}}
+        sx={{ml:2,mr:2}}
           label="Confrim New Passowrd"
           id="old Passowrd"
           defaultValue=""
@@ -637,80 +850,55 @@ if (e.key === 'Enter') {
    
 
            <DialogActions>
-          <Button sx={{mt:8 , ml:5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E'}} autoFocus onClick={()=> {change3()}}>
-            Save changes
-          </Button>
         </DialogActions>
-      </div> }
+  <Typography variant='body' sx={{mt:-1.5,ml:2}}>
+  Country
+</Typography>
 
+{/* <FormControl sx={{ width: '50%' }}>
+                <InputLabel id="country-select-label">Country</InputLabel>
+                <Select
+                    id="country-select"
+                    value={country}
+                    label="Country"
+                    onChange={handleChange}
+                    autoComplete= 'new-password'
+                >
+                    {
+                        countryEnums.map((country) => (
+                            <MenuItem value={country}>{country}</MenuItem>
+                        ))
+                    }
+                </Select>
+            </FormControl> */}
+{/* <Autocomplete
+      id="country-select-demo"
+      sx={{ width: 300 }}
+      options={countryEnums}
+      autoHighlight
+      getOptionLabel={ countryEnums.map((country) => (
+        {country}))}
 
-
-{countrySettings && open &&
-
-<div>
-<IconButton
-      aria-label="close"
-      onClick={handleClickBack}
-      sx={{
-        position: 'absolute',
-        right: 425,
-        top: 8,
-        color: (theme) => theme.palette.grey[500],
-          }}
-        >
- <ArrowBackIosIcon/>
- </IconButton>
-<Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
-            Country
-        </Typography>
-<OutlinedInput
- sx={{mt:2 , ml:5}}
-    label="Password"
-    defaultValue={user.country}
-    endAdornment={
-      <InputAdornment position="end">
-        <IconButton 
-         
-          aria-label="toggle password visibility"
-          onMouseDown={handleMouseDownPassword}
-          edge="end"
-        >
-          {showPassword ? <CreateIcon /> : <CreateIcon />}
-        </IconButton>
-      </InputAdornment>
+      renderOption={
+        countryEnums.map((country) => (
+            {country}
+        ))
     }
+      
 
-  />
+    /> */}
    <DialogActions>
-          <Button sx={{mt:25 , ml:5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E'}} autoFocus onClick={handleClose}>
-            Save changes
-          </Button>
         </DialogActions>
-</div> }
-{biographySettings && open &&
 
+<Typography variant='body' sx={{mt:-1.5,ml:2}}>
+  Biography
+</Typography>
 
-<div>
-<IconButton
-      aria-label="close"
-      onClick={handleClickBack}
-      sx={{
-        position: 'absolute',
-        right: 425,
-        top: 8,
-        color: (theme) => theme.palette.grey[500],
-          }}
-        >
- <ArrowBackIosIcon/>
- </IconButton>
-<Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
-            Biography
-        </Typography>
         <OutlinedInput
-         onChange={(event)=>{handleChangeBiography(event)}}
-         sx={{mt:2 , ml:5}}
+         sx={{mr:2 , ml:2}}
             label="Password"
             defaultValue={biography}
+            onBlur={handleChangeBiography}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton 
@@ -725,12 +913,17 @@ if (e.key === 'Enter') {
             }
 
           />
-           <DialogActions>
-          <Button sx={{mt:25 , ml:5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E'}} autoFocus onClick={()=> {change2()}}>
-            Save changes
+          <Button
+          variant="contained"
+          sx={{ mt:1,ml:49.25 ,width:'30%'}}
+          onClick={()=> {saveSettings()}}
+          >
+            Save Changes
           </Button>
+          
+           <DialogActions>
         </DialogActions>
-      </div>}
+
           
       </BootstrapDialog>
       </div>}

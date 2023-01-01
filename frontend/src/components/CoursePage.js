@@ -106,7 +106,9 @@ const CoursePage = () => {
         setOpenRateCourse(true);
     };
     const handleClose = () => {
+
         setOpenRateCourse(false);
+        setopenpay(false);
     };
     const [rating, setRating] = useState(0);
     const [text, setText] = useState("");
@@ -128,11 +130,11 @@ const CoursePage = () => {
     const [instR, setInstR] = useState(false);
     const handleClosePopup = () => {
         setOpenPopup(false);
-        if(instR){
+        if (instR) {
             setInstR(false)
             setdidRate(true)
-        }else
-        window.location.reload();
+        } else
+            window.location.reload();
     };
     const submitRating = async () => {
         const response = await axios.post(
@@ -168,20 +170,21 @@ const CoursePage = () => {
 
     const didRateInstructor = async () => {
 
-       console.log('henaa')
+        console.log('henaa')
         const response = await axios.get(`http://localhost:8000/didRateInstructor?userId=${user._id}&instructorId=${course.instructors[0]._id}&deleteR=${didRateDelete}`)
-           .then(res=>{ setdidRate(res.data.rated)
-           console.log( res.data.rated)
-        
-        }).catch((error) => setdidRate(false)  )
-            //alert(error.response.data.message)
+            .then(res => {
+                setdidRate(res.data.rated)
+                console.log(res.data.rated)
+
+            }).catch((error) => setdidRate(false))
+        //alert(error.response.data.message)
 
 
-            if (didRateDelete){
-                console.log('w b3deen');
-                setOpendidRateDelete(true)
-                setdidRateDelete(false)
-            }
+        if (didRateDelete) {
+            console.log('w b3deen');
+            setOpendidRateDelete(true)
+            setdidRateDelete(false)
+        }
         // if (response.status === 200) {
         //     setdidRate(true)
         // }
@@ -194,7 +197,7 @@ const CoursePage = () => {
     const [factor, setFactor] = useState(0);
     const [price, setPrice] = useState(0);
     const [userProgress, setProgress] = useState(0);
-    const[EXgrades,setEXgrades]=useState(null)
+    const [EXgrades, setEXgrades] = useState(null)
     const [course, setCourses] = useState(async () => {
         await axios.get(`http://localhost:8000/course/${courseId}`)
             .then(res => {
@@ -340,7 +343,7 @@ const CoursePage = () => {
 
 
     }
-    
+
     const handleReportDescription = (event) => {
         setRD(event.target.value);
     }
@@ -372,10 +375,10 @@ const CoursePage = () => {
     }, [didRateDelete]
     )
 
-    
 
 
-    
+
+
 
     //when an enrolled user wants a refund
     const [requested, setRequested] = useState(false);
@@ -484,6 +487,27 @@ const CoursePage = () => {
 
     })
 
+    //paying using the wallet
+    const [walletsuccess, setsuccess] = useState(false);
+    const [walletno, setno] = useState(false);
+    const payWallet = async () => {
+    const response = await axios.put(`http://localhost:8000/payForCourse`, {
+            courseId: course._id,
+            coursePrice: course.price,
+            instId:course.instructors[0]._id
+        }).catch(error => {
+            if(error.response.status === 400) {
+                setopenpay(false);
+                setno(true);
+            }
+        })
+
+        if (response.status === 200) {
+            setopenpay(false);
+            setsuccess(true);
+        }
+    }
+
     //The user's history of the course exercises
     const [exerciseHistory, setExerciseHistory] = useState([]);
     const checkExerciseHistory = async () => {
@@ -513,9 +537,9 @@ const CoursePage = () => {
         const solved = exerciseHistory.filter(ex => ex.exercises[0]._id.toString() === exerciseId.toString());
         //if he didn't solve the exercise return zero
         if (solved.length === 0)
-        return "Not Solved Yet.";
+            return "Not Solved Yet.";
         else
-        return solved[0].userGrade;
+            return solved[0].userGrade;
     }
 
     const [youSaw, setYouSaw] = useState(false);
@@ -523,6 +547,7 @@ const CoursePage = () => {
         setYouSaw(!youSaw)
     }
 
+    const [openpay, setopenpay] = useState(false);
 
     useEffect(() => {
         if (course._id && user._id && avgGrades.length > 0) {
@@ -626,30 +651,34 @@ const CoursePage = () => {
                                     {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) && !didRate &&
                                         <Button variant="contained" size="small"
                                             sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                            onClick={()=>{ setInstR(true);
-                                                openInstRate()}}>
+                                            onClick={() => {
+                                                setInstR(true);
+                                                openInstRate()
+                                            }}>
                                             Rate this instructor
                                         </Button>
                                     }
                                     {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) && didRate &&
                                         <Button variant="contained" size="small"
                                             sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                            onClick={()=>{ setInstR(true);
-                                                openInstRate()}} endIcon={<EditIcon />}>
+                                            onClick={() => {
+                                                setInstR(true);
+                                                openInstRate()
+                                            }} endIcon={<EditIcon />}>
                                             Update instructor's rating
                                         </Button>
-                                        
-                                      
+
+
                                     }
                                     {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) && didRate &&
                                         <Button variant="contained" size="small"
                                             sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                            onClick={handleDidRateDelete} 
+                                            onClick={handleDidRateDelete}
                                             endIcon={<DeleteIcon />}>
                                             delete instructor's rating
                                         </Button>
-                                        
-                                      
+
+
                                     }
                                 </Typography>
                             </Paper>
@@ -658,18 +687,19 @@ const CoursePage = () => {
                                 mt={0.5}
                                 mb={0.5}
                                 sx={{
-                                backgroundColor: (theme) =>
-                                theme.palette.mode === 'light'
-                                  ? theme.palette.grey[100]
-                                  : theme.palette.grey[900],}}
+                                    backgroundColor: (theme) =>
+                                        theme.palette.mode === 'light'
+                                            ? theme.palette.grey[100]
+                                            : theme.palette.grey[900],
+                                }}
                                 flexDirection="column"
                                 alignItems="center"
                                 justifyContent="center">
-                                
-                                    
-                                <Typography  variant="subtitle1">
-                                <Typography  variant="h6"> Summary:</Typography> {course.summary}</Typography>
-                                
+
+
+                                <Typography variant="subtitle1">
+                                    <Typography variant="h6"> Summary:</Typography> {course.summary}</Typography>
+
                                 {/*dealing with the course price*/}
 
                                 {(['GUEST', 'INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered)) &&
@@ -697,7 +727,7 @@ const CoursePage = () => {
                                     user.type === "INDIVIDUAL_TRAINEE" && !registered &&
                                     <Button size='large' variant="contained"
                                         sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                        onClick={() => window.location.href = '/payForCourse'}>
+                                        onClick={() => setopenpay(true)}>
                                         REGISTER NOW!
                                     </Button>
                                 }
@@ -808,20 +838,20 @@ const CoursePage = () => {
                                                 <br></br>
                                                 <Typography> This subtitle's total hours: {subtitle.hours} </Typography>
                                                 <br></br>
-                                                { subtitle.videoTitles &&
+                                                {subtitle.videoTitles &&
                                                     <Typography
-                                                    sx={{
-                                                        alignItems: 'center',
-                                                        '&:hover': {
-                                                            backgroundColor: '#CAF0F8',
-                                                        },
-                                                    }}
-                                                    onClick={registered ? () => { setVideo(subtitle.videoTitles.link); recordProgress(subtitle._id); } : null}
-                                                >
-                                                    <PlayCircleIcon color='#03045E' /> {subtitle.videoTitles.title}: {subtitle.videoTitles.description}
-                                                </Typography>
+                                                        sx={{
+                                                            alignItems: 'center',
+                                                            '&:hover': {
+                                                                backgroundColor: '#CAF0F8',
+                                                            },
+                                                        }}
+                                                        onClick={registered ? () => { setVideo(subtitle.videoTitles.link); recordProgress(subtitle._id); } : null}
+                                                    >
+                                                        <PlayCircleIcon color='#03045E' /> {subtitle.videoTitles.title}: {subtitle.videoTitles.description}
+                                                    </Typography>
                                                 }
-                                                
+
 
                                                 {subtitle.exercises.map((exercise) => (
                                                     <Grid container spacing={0}>
@@ -859,7 +889,7 @@ const CoursePage = () => {
                                                                     <AssignmentLateIcon /> Not solved yet.
                                                                 </Typography>
                                                             }
-                                                            </Typography>
+                                                        </Typography>
 
                                                         {/* //henaaaaa */}
                                                         <Backdrop
@@ -875,7 +905,7 @@ const CoursePage = () => {
                                                         </Backdrop>
 
 
-                                                                 
+
 
 
                                                     </Grid>
@@ -1001,10 +1031,10 @@ const CoursePage = () => {
                                 </Button>
 
                             }
-                            
+
                             {/*Report pop*/}
 
-                                 <Dialog onClose={handleClose2} open={open2}
+                            <Dialog onClose={handleClose2} open={open2}
                                 sx={{
                                     "& .MuiDialog-container": {
                                         "& .MuiPaper-root": {
@@ -1014,15 +1044,15 @@ const CoursePage = () => {
                                     },
                                     display: "flex", flexDirection: "column"
                                 }}>
-                                    
+
                                 <DialogTitle align='center' display={"flex"} flexDirection={"column"} alignItems={"center"}>
-                              
+
                                     Report a problem
-                                   
+
                                 </DialogTitle>
 
-                                 <Divider />
-                                <Typography  sx={{ml:2}}>
+                                <Divider />
+                                <Typography sx={{ ml: 2 }}>
                                     <RadioGroup
                                         //aria-labelledby="demo-radio-buttons-group-label"
                                         // name="controlled-radio-buttons-group"
@@ -1039,7 +1069,7 @@ const CoursePage = () => {
 
 
                                 <TextField id="standard-basic" label="what is your problem?" //variant="standard"
-                                    sx={{ m1: 5 ,mb:2}}
+                                    sx={{ m1: 5, mb: 2 }}
                                     onChange={handleReportDescription} />
 
                                 <Typography >
@@ -1055,22 +1085,22 @@ const CoursePage = () => {
 
                                     <Backdrop
 
-sx={{  color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-open={openRM}
-onClick={handleCloseRM}
->
-<Alert sx={{ tabSize: 'l' ,mt: -50 }} severity={severity} >
-    <AlertTitle>{reportMessage}</AlertTitle>
-    Click anywhere to continue
-</Alert>
-</Backdrop>
+                                        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                        open={openRM}
+                                        onClick={handleCloseRM}
+                                    >
+                                        <Alert sx={{ tabSize: 'l', mt: -50 }} severity={severity} >
+                                            <AlertTitle>{reportMessage}</AlertTitle>
+                                            Click anywhere to continue
+                                        </Alert>
+                                    </Backdrop>
 
 
                                 </Typography>
 
-                               
 
-                               
+
+
                             </Dialog>
 
 
@@ -1104,6 +1134,32 @@ onClick={handleCloseRM}
                                     Submit your rating
                                 </Button>
                             </Dialog>
+
+                            {/*payment method POPUP DIALOGUE*/}
+                            <Dialog onClose={handleClose} open={openpay}
+                                sx={{
+
+                                    display: "flex", flexDirection: "column", alignItems: 'center', alignSelf: 'center'
+                                }}>
+                                <DialogTitle align='center' display={"flex"} flexDirection={"column"} alignItems={"center"}>
+                                    Choose your payment method
+                                </DialogTitle>
+
+                                <Button
+                                    sx={{ alignSelf: 'center', width: '70%', mb: '5%', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                    onClick={payWallet}
+                                >
+                                    Pay using wallet
+                                </Button>
+
+                                <Button
+                                    sx={{ alignSelf: 'center', width: '70%', mb: '5%', align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                    onClick={() => window.location.href = `/checkout?courseId=${course._id}&price=${course.price}&instId=${course.instructors[0]._id}`}
+                                >
+                                    Pay using credit card
+                                </Button>
+                            </Dialog>
+
                             {/*alert shows up after submitting the rating*/}
                             <Backdrop
                                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -1163,7 +1219,34 @@ onClick={handleCloseRM}
                                 </Alert>
                             </Backdrop>
 
-                               {/* report alert */}
+
+                            {/*alert shows up after wallet payment*/}
+                            <Backdrop
+                                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                open={walletsuccess || walletno}
+                                onClick={() => window.location.reload()}
+                            >
+                                <Alert sx={{ tabSize: 'l' }} severity="info">
+                                    { walletsuccess &&
+                                        <div>
+                                            <AlertTitle>Registered successfully.</AlertTitle>
+                                            Click anywhere to continue
+                                        </div>
+
+                                    }
+                                    { walletno &&
+                                        <div>
+                                            <AlertTitle>The available balance is not enough.</AlertTitle>
+                                            Click anywhere to continue
+                                        </div>
+
+                                    }
+                                </Alert>
+                            </Backdrop>
+
+
+
+                            {/* report alert */}
                             {/* <Backdrop
 
                                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -1178,17 +1261,17 @@ onClick={handleCloseRM}
 
 
 
-<Backdrop
+                            <Backdrop
 
-sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-open={opendidRateDelete}
-onClick={handleClosedid}
->
-<Alert sx={{ width: '400px' }} severity='success'   >
-    <AlertTitle>Rating for this instructor has been deleted</AlertTitle>
-    Click anywhere to continue
-</Alert>
-          </Backdrop>
+                                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                open={opendidRateDelete}
+                                onClick={handleClosedid}
+                            >
+                                <Alert sx={{ width: '400px' }} severity='success'   >
+                                    <AlertTitle>Rating for this instructor has been deleted</AlertTitle>
+                                    Click anywhere to continue
+                                </Alert>
+                            </Backdrop>
                             {/* tells the user that they already saw the answers */}
                             <Backdrop
 
