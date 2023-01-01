@@ -3,7 +3,7 @@ const userController = require("../controllers/userController");
 const userRouter = new express.Router();
 const path = require('path');
 const DomainError = require("../error/domainError");
-const { Course } = require("../models/courses");
+const { Course, countryPriceDetails } = require("../models/courses");
 const { Exercise } = require("../models/exercise");
 const { question, questionSchema } = require("../models/question");
 const { Account } = require("../models/account");
@@ -571,8 +571,9 @@ userRouter.get('/checkRequestedAccess', async (req,res) => {
 
 userRouter.post('/reportCourse', async (req, res) => {
     try {
-        const { courseId, userId , problem } = req.query
-        const reported = await userController.ReportCourse( userId,courseId,problem);
+        const { courseId, userId , problem ,description} = req.query
+        //console.log(description);
+        const reported = await userController.ReportCourse( userId,courseId,problem,description);
         res.status(200).json({message:'Done'})
     }
     catch (err) {
@@ -630,6 +631,26 @@ userRouter.post('/deleteCourseRating', async (req,res) => {
         const { userId, courseId } = req.query;
         await userController.deleteCourseRating({ userId, courseId });
         res.status(200).json({message: "Rating deleted successfully"});
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
+
+userRouter.get('/exerciseHistory', async (req,res) => {
+    try {
+        const { userId, courseId } = req.query;
+        const result = await userController.exerciseHistory({ userId, courseId });
+        res.status(200).json(result);
+    } catch(error) {
+        res.status(error.code).json({ message: error.message });
+    }
+})
+
+userRouter.get('/myCurrency', async(req,res) => {
+    try {
+    const { country } = req.query;
+    const result = countryPriceDetails.get(country);
+    res.status(200).json({ currency: result.currency })
     } catch(error) {
         res.status(error.code).json({ message: error.message });
     }

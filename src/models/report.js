@@ -21,7 +21,12 @@ const reportSchema = new Schema({
         required: true
         
     },
-
+    description:{
+        type:String,
+        //enum: ['technical', 'financial', 'other'],
+        //required: true
+        
+    },
     progress:  {
         type:String,
         enum: ['RESOLVED', 'PENDING','INITIAL'],

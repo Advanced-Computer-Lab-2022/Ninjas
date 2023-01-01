@@ -39,7 +39,9 @@ const coursesSchema = new Schema({
 
     },
     subtitles: {
-        type: [subtitleSchema]
+        type: [subtitleSchema],
+        default: []
+
     },
     exercises: {
         type: [exerciseSchema]

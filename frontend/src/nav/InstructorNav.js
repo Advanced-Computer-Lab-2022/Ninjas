@@ -586,6 +586,19 @@ const [user,setUser] = React.useState(async () => {
     window.location.href='/';
   })
 })
+
+const[showAmount,setShowAmount]= useState(false);
+const [curr, setCurr] = useState('');
+const getCurrency = async () => {
+  await axios.get(`http://localhost:8000/myCurrency?country=${user.country}`)
+  .then(res => setCurr(res.data.currency))
+  .catch(err => {
+    console.log(err)
+    if (err.response.status === 401) //you didn't login
+    window.location.href='/';
+  })
+}
+
 const[newEmail,setNewEmail]=useState('');
 const[biography,setBiography]=useState('');
 const[oldPassword,setOldPassword]=useState('');
@@ -594,6 +607,7 @@ const[confirmPassword,setConfirmPassword]=useState('');
 const [ready, setReady] = useState(false);
 useEffect(() => {
     if (user._id) {
+        getCurrency();
         setReady(true);
         setNewEmail(user.email);
         setBiography(user.biography);
@@ -658,25 +672,13 @@ const handleChange = (event) => {
             >
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
-            <Search  >
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-             defaultValue = {searchtemp}
-              //onChange={(e) => setSearch(e.target.value)}
-              onKeyPress={handleKeypress}
-              
-            />
-          </Search>
+            <Button variant="contained" sx={{ color: 'black',  bgcolor: '#CAF0F8' }} onClick={() => window.location.href='/temp'}>All courses</Button>
           &nbsp;&nbsp;
           <box>
 
           <ListItemButton  >
             <ListItemIcon >
-          <HomeIcon sx={{color:'#CAF0F8' }} />
+          <HomeIcon sx={{color:'#CAF0F8' }} onClick={ () => window.location.href='/iHome'} />
           </ListItemIcon>
           </ListItemButton>
           </box>
@@ -721,12 +723,19 @@ const handleChange = (event) => {
           </ListItemIcon>
           <ListItemText primary='Create Course' onClick={CreateCourses}/>
           </ListItemButton>
-          <ListItemButton>
+          <ListItemButton onClick={() => setShowAmount(!showAmount)}>
             <ListItemIcon>
           <Wallet sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='Wallet'/>
           </ListItemButton>
+          {showAmount &&
+            <ListItemButton
+              sx={{ backgroundColor:'#eeeeee'}}
+            >
+              Account balance: {user.wallet} {curr}
+            </ListItemButton>
+          } 
           <ListItemButton onClick={handleClickOpen}>
             <ListItemIcon>
           <SettingsIcon sx={{color:'black' }} />

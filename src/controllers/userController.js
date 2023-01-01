@@ -174,7 +174,7 @@ const userController = {
 
             if (subject == 'null' &&
                 rating == 'null' && title == 'null' &&
-                instructor == '') {
+                instructor == 'null') {
 
                 courses = await Course.find()
             } else {
@@ -186,7 +186,7 @@ const userController = {
                 } }, { rating: { 
                     '$lte': (rating)
                 } }]}) }
-                if (title != 'null') {
+                if (title != 'null' && instructor == 'null') {
                     
                     queryArray.push(
 
@@ -205,7 +205,22 @@ const userController = {
                 ]}
                 )
                 }
+                if (title != 'null' && instructor != 'null') {
+                    
+                    queryArray.push(
 
+                       { '$or': [  
+                        { subject: { '$regex': '.*' +  title + '.*', '$options': 'i' } },
+                    { title: { '$regex': '.*' +  title + '.*', '$options': 'i' } }
+                
+                ]}
+                )
+                }
+                if (instructor != 'null' && userId!=null ){
+                    queryArray.push({ instructors: {  $elemMatch: {
+                         _id: userId
+                    } } });
+                }
 
                 courses = await Course.find({
                     '$and': queryArray
@@ -240,7 +255,7 @@ const userController = {
                 //     //courses.splice(i, 1);
                 // }
             }
-            
+            console.log(courses2);
             return { courses: courses2, currency: details.currency , userType: user? user.type : 'GUEST'};
         }
         catch (err) {
@@ -863,7 +878,7 @@ async viewProgress({ userId,courseId }) {
 },
 
 
-async ReportCourse( userId,courseId, problem ) {
+async ReportCourse( userId,courseId, problem ,description) {
  try{
     const user = await Account.findOne({ _id: userId }, { type: 1 }).catch(() => {
         throw new DomainError("Wrong Id", 400)
@@ -877,7 +892,7 @@ async ReportCourse( userId,courseId, problem ) {
     throw new DomainError("you already reported", 401);
   }
 
-   const report = await Report.create( {accountId: userId,courseId, problem });
+   const report = await Report.create( {accountId: userId,courseId, problem , description});
    return "Done";
 }
 catch(err){
@@ -1048,6 +1063,17 @@ async getCourse({ courseId, userType, userId }) {
             response.currency = "";
             response.factor = 1;
         }
+        console.log('enteeeerr')
+        
+var EXgrades=  await UserExercise.find({
+    accountId: userId 
+}, { userGrade: 1, gradePercentage: 1, "exercises.totalGrade": 1 , "exercises._id": 1 })
+
+
+     response.EXgrades= EXgrades;
+
+
+
 
         return response;
     } catch(error) {
@@ -1145,25 +1171,18 @@ async viewReportedProblems()  {
        throw new DomainError('error internally', 500);}
 
    },
-   async followUp({ reportId})  {
+
+
+async exerciseHistory({ userId, courseId }) {
     try {
+        const { subtitles } = await Course.findOne({ _id: courseId }, { subtitles:1 });
+        const userSolvedExercises = await UserExercise.find({ accountId: userId, "exercises.subtitleId": { $in: subtitles.map(s => s._id) }});
+        return userSolvedExercises;
+    } catch(error) {
+        throw new DomainError("internal error", 500);
+    }
 
-       const Reports = await Report.updateOne({_id:reportId},{followUp : true}).catch(() => {
-        throw new DomainError("no reports", 400)
-    });
-    console.log(Reports);
-    if (Reports.modifiedCount>0)
-      return 'Done';
-    else 
-      return 'a follow up was done before';
-   
-   } catch (err) {
-    console.log(err)
-       if (err._message && err._message == 'Account validation failed') { throw new DomainError('validation Error', 400); }
-       throw new DomainError('error internally', 500);}
-
-   },
-
+}
 }
 
 

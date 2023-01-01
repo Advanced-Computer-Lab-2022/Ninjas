@@ -35,9 +35,6 @@ import DownloadIcon from '@mui/icons-material/Download';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import BoyOutlinedIcon from '@mui/icons-material/BoyOutlined';
-import GradingIcon from '@mui/icons-material/Grading';
-import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import AssignmentLateIcon from '@mui/icons-material/AssignmentLate';
 const instructorNav = {};
 const traineeNav = {};
 function LinearProgressWithLabel(props) {
@@ -109,14 +106,7 @@ const CoursePage = () => {
         setOpenRateCourse(false);
     };
     const [rating, setRating] = useState(0);
-    const [text, setText] = useState("");
-    const [didRate, setdidRate] = useState(false);
-    const [didRateDelete, setdidRateDelete] = useState(false);
-    const [opendidRateDelete, setOpendidRateDelete] = useState(false);
-
-    const handleDidRateDelete = () => {
-        setdidRateDelete(true);
-    };
+    const [text, setText] = useState("")
     const handleRating = (event) => {
         setRating(event.target.value);
     };
@@ -125,13 +115,8 @@ const CoursePage = () => {
     };
 
     const [openPopup, setOpenPopup] = useState(false);
-    const [instR, setInstR] = useState(false);
     const handleClosePopup = () => {
         setOpenPopup(false);
-        if(instR){
-            setInstR(false)
-            setdidRate(true)
-        }else
         window.location.reload();
     };
     const submitRating = async () => {
@@ -166,43 +151,18 @@ const CoursePage = () => {
 
     }
 
-    const didRateInstructor = async () => {
-
-       console.log('henaa')
-        const response = await axios.get(`http://localhost:8000/didRateInstructor?userId=${user._id}&instructorId=${course.instructors[0]._id}&deleteR=${didRateDelete}`)
-           .then(res=>{ setdidRate(res.data.rated)
-           console.log( res.data.rated)
-        
-        }).catch((error) => setdidRate(false)  )
-            //alert(error.response.data.message)
-
-
-            if (didRateDelete){
-                console.log('w b3deen');
-                setOpendidRateDelete(true)
-                setdidRateDelete(false)
-            }
-        // if (response.status === 200) {
-        //     setdidRate(true)
-        // }
-
-    }
-
     //endpoint code
     const { id: courseId } = useParams();
     const [currency, setCurrency] = useState("");
     const [factor, setFactor] = useState(0);
     const [price, setPrice] = useState(0);
     const [userProgress, setProgress] = useState(0);
-    const[EXgrades,setEXgrades]=useState(null)
     const [course, setCourses] = useState(async () => {
         await axios.get(`http://localhost:8000/course/${courseId}`)
             .then(res => {
-                console.log(res.data)
                 setCourses(res.data.course);
                 setCurrency(res.data.currency);
                 setFactor(res.data.factor);
-                setEXgrades(res.data.Exgrades);
             })
             .catch((error) => {
                 console.log(error)
@@ -240,10 +200,7 @@ const CoursePage = () => {
     const [reqAccess, setReqAccess] = useState(false);
     const requestedAccess = async () => {
         const response = await axios.get(`http://localhost:8000/checkRequestedAccess?userId=${user._id}&courseId=${course._id}`)
-            .catch((error) => {
-                if (error.response.data.message === "you did not login")
-                    window.location.href = '/';
-            });
+            .catch((error) => console.log(error.response.data.message));
 
         if (response.status == 200)
             setReqAccess(true);
@@ -253,10 +210,7 @@ const CoursePage = () => {
     //when the corporate trainee clicks request access, this endpoint should be called.
     const requestCourseAccess = async () => {
         const response = await axios.post(`http://localhost:8000/requestAccess?userId=${user._id}&courseId=${course._id}`)
-            .catch((error) => {
-                if (error.response.data.message === "you did not login")
-                    window.location.href = '/';
-            });
+            .catch((error) => console.log(error.response.data.message));
 
         if (response.status == 200) //just refresh the page
             window.location.reload();
@@ -265,10 +219,7 @@ const CoursePage = () => {
     const [deletedMyRating, setDelete] = useState(false);
     const deleteCourseRating = async () => {
         const response = await axios.post(`http://localhost:8000/deleteCourseRating?userId=${user._id}&courseId=${course._id}`)
-            .catch((error) => {
-                if (error.response.data.message === "you did not login")
-                    window.location.href = '/';
-            });
+            .catch((error) => console.log(error.response.data.message));
 
         if (response.status == 200) //just refresh the page
         {
@@ -280,14 +231,15 @@ const CoursePage = () => {
     const [reportMessage, setReportMessage] = useState(null);
     const [openRM, setOpenRM] = useState(false);
     const [openGrade, setOpenGrade] = useState(false);
-    const [grade, setGrade] = useState(null);
+    const [grade, setGrade] = useState();
     const [exerciseId, setExerciseId] = useState(null);
     const [severity, setSeverity] = useState('info');
-    const [flagG, setFlagG] = useState(null);
-    const [RD, setRD] = useState(null);
+    const [flagG, setFlagG] = useState(false);
+    const [ELength, setELength] = useState(0);
+    const [counter, setCounter] = useState(0);
     async function reportCourse() {
 
-        await axios.post(`http://localhost:8000/reportCourse?userId=${user._id}&courseId=${course._id}&problem=${problem}&description=${RD}`)
+        await axios.post(`http://localhost:8000/reportCourse?userId=${user._id}&courseId=${course._id}&problem=${problem}`)
             .then(res => {
                 setSeverity('success')
                 setReportMessage('Your Report has been submitted')
@@ -306,75 +258,115 @@ const CoursePage = () => {
 
     }
 
+var [grade2,setGrade2]=useState([]);
 
-    async function handleGrade() {
-
-        await axios.get(`http://localhost:8000/viewExerciseGrade?exersiseId=${exerciseId}&userId=${user._id}`)
+    async function handleGrade(exerciseid) {
+      
+        await axios.get(`http://localhost:8000/viewExerciseGrade?exersiseId=${exerciseid}&userId=${user._id}`)
             .then(response => {
+                console.log(response)
                 if (response.data && response.data.solved) {
-                    setGrade("You got " + response.data.userGrade + " out of " + response.data.totalGrade)
-                    setOpenGrade(true)
+                    var grade1=[
+                        // id: exerciseid,
+                        // g: "Grade : " + response.data.userGrade + "/" + response.data.totalGrade
+                    ];
+                    grade1['id']= exerciseid;
+                    grade1['g']=("Grade : " + response.data.userGrade + "/" + response.data.totalGrade);
+                    //setOpenGrade(true)
+                    setGrade2(grade2.push(grade1))
+                    // grade2.push(grade1)
                 }
 
 
                 if (response.data && !response.data.solved) {
-
-                    setGrade("You still did not solve the exercise")
-                    setOpenGrade(true)
-
-
+                    var grade1=[]
+                        // id: exerciseid,
+                        // g: "Not solved"
+                    
+                    grade1['id']= exerciseid;
+                    grade1['g']=("Not solved");
+                  //  setOpenGrade(true)
+                  setGrade2(grade2.push(grade1))
+                  //grade2.push(grade1)
 
                 }
                 // setGrade(response.data)
                 //setOpenGrade(true)  //momken a5leha useEffect
                 // alert ('Your Report has been submitted')
+          // console.log(grade2.)
+         
             })
             .catch((error) => {
                 //setSeverity('info')
                 setReportMessage(error.response.data.message)
-                setOpenGrade(true)
+                //setOpenGrade(true)
                 //alert(error.response.data.message)
             })
-        //console.log(Search)
+            console.log('grade')
+        console.log(grade2)
         // const c = searchResult.currency
 
 
-    }
-    
-    const handleReportDescription = (event) => {
-        setRD(event.target.value);
+       
+
     }
     const handleCloseRM = () => {
         setOpenRM(false);
-    }
-
-    const handleClosedid = () => {
-        setOpendidRateDelete(false);
     }
     const handleCloseGrade = () => {
         setOpenGrade(false);
         setFlagG(false);
         // handleCloseRM();
     }
+
+
     useEffect(() => {
-        if (exerciseId && flagG) {
+        if (exerciseId ) {
             handleGrade();
+
         }
 
-    }, [flagG]
+    }, [exerciseId]
     )
 
-    useEffect(() => {
-        if (didRateDelete) {
-            didRateInstructor();
-        }
+// var grades=[];
+// useEffect(() => {
+//     console.log('graaaaaade')
+//     console.log(grade)
+//     if (grade){
+//     if (grade.length !=0 ) {
 
-    }, [didRateDelete]
-    )
+//         setReady(true)
+//         console.log('graaaaaade')
+//      console.log(grade)
+//     }}
 
+// }, [grade]
+// )
+
+
+useEffect(() => {
+ if (flagG){
+    console.log('eeeh')
+    console.log(grade2)
+       setGrade(grade2)
+       
+      setReady(true);
+ }
+
+}, [flagG]
+)
+
+
+useEffect(() => {
+        console.log('hh')
+        console.log(grade2)
+        // if (grade2.length == ) {
+        //     setReady(true)
+        // }
     
-
-
+    }, [grade2]
+    )
     
 
     //when an enrolled user wants a refund
@@ -432,7 +424,7 @@ const CoursePage = () => {
     };
     const handleDone = (event) => {
 
-        if (problem && RD) {
+        if (problem) {
 
             reportCourse();
         } else {
@@ -464,79 +456,18 @@ const CoursePage = () => {
             </Page>
         </Document>
     )
-    // EXgrades.filter(ex => ex.exercises[0]._id.toString() === exercise._id.toString()).length > 0
-    // && EXgrades.filter(ex => ex.exercises[0]._id.toString() === exercise._id.toString())[0].userGrade &&
-    // <Typography> heheeee </Typography>
-    const getTheGrade = () => {
-        console.log(EXgrades)
-    }
 
-    //for the instructor, check the average exercise grades
-    const [avgGrades, setAvgGrades] = useState(async () => {
-        const response = await axios.get(`http://localhost:8000/averageExerciseGrade?courseId=${courseId}`)
-            .catch((error) => {
-                if (error.response.data.message === "you did not login")
-                    window.location.href = '/';
-            })
-
-        if (response.status === 200)
-            setAvgGrades(response.data);
-
-    })
-
-    //The user's history of the course exercises
-    const [exerciseHistory, setExerciseHistory] = useState([]);
-    const checkExerciseHistory = async () => {
-        const response = await axios.get(`http://localhost:8000/exerciseHistory?courseId=${courseId}&userId=${user._id}`)
-            .catch((error) => {
-                if (error.response.data.message === "you did not login")
-                    window.location.href = '/';
-            })
-
-        if (response.status === 200) {
-            console.log(response.data)
-            setExerciseHistory(response.data);
-        }
-    }
-
-    //checks whether the user solved a specific exercise
-    const sawTheAnswers = (exerciseId) => {
-        const saw = exerciseHistory.filter(ex => ex.exercises[0]._id.toString() === exerciseId.toString());
-        //if he didn't solve the exercise return false
-        if (saw.length === 0)
-            return false;
-
-        return saw[0].viewedAnswers;
-    }
-
-    const solvedThisExercise = (exerciseId) => {
-        const solved = exerciseHistory.filter(ex => ex.exercises[0]._id.toString() === exerciseId.toString());
-        //if he didn't solve the exercise return zero
-        if (solved.length === 0)
-        return "Not Solved Yet.";
-        else
-        return solved[0].userGrade;
-    }
-
-    const [youSaw, setYouSaw] = useState(false);
-    const handleSawAns = () => {
-        setYouSaw(!youSaw)
-    }
+    useEffect( () => {
+        if (course._id && user._id) {
 
 
-    useEffect(() => {
-        if (course._id && user._id && avgGrades.length > 0) {
+            console.log('firssst');
             //result of the backend request is ready
-            console.log(course);
-            setReady(true);
-            didRateInstructor();
 
-            getTheGrade();
+           
+
             //check if this user is registered 
             setRegistered(isRegistered());
-
-            //check the exercise history to know whether the trainee solved this exercise before
-            checkExerciseHistory();
 
             //check if requested refund
             requestedTheRefund();
@@ -557,8 +488,44 @@ const CoursePage = () => {
             const progress = user.progress.filter(prog => prog.courseId.toString() === courseId.toString())[0]
             if (progress)
                 setProgress(progress.currentProgress);
-        }
-    }, [course, avgGrades])
+       
+              
+
+                //  var length=0;
+                for(var l = 0 ; l< course.subtitles.length; l++){
+                    setELength (ELength + course.subtitles[l].exercises.length)
+                   
+                }
+                //setELength(length);
+               
+               console.log('secccc')
+               console.log(ELength)
+
+                //setELength(length);
+            for(var i = 0 ; i< course.subtitles.length; i++){
+                  for(var j =0 ; j< course.subtitles[i].exercises.length; j++){
+                    console.log(course.subtitles[i].exercises[j]._id)
+                          //setExerciseId(course.subtitles[i].exercises[j]._id);
+                          
+                           handleGrade(course.subtitles[i].exercises[j]._id);
+                       // grades.push()
+
+                  }
+                  //console.log('looop')
+
+            }
+            
+            console.log('ttttttttttt')
+            //setGrade(null)
+            //setGrade(grade2)
+            setFlagG(!flagG)
+           // if (grade.length===ELength)
+           // setReady(true);
+            console.log('wsaal')
+           // console.log(grade)
+            
+            }
+    }, [course])
 
 
     return (
@@ -624,56 +591,26 @@ const CoursePage = () => {
                                 <Typography variant="h6"> <BoyOutlinedIcon />
                                     Taught by {course.instructors[0].firstName} {course.instructors[0].lastName}
                                     <br></br>
-                                    {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) && !didRate &&
+                                    {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) &&
                                         <Button variant="contained" size="small"
                                             sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                            onClick={()=>{ setInstR(true);
-                                                openInstRate()}}>
+                                            onClick={openInstRate}>
                                             Rate this instructor
                                         </Button>
-                                    }
-                                    {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) && didRate &&
-                                        <Button variant="contained" size="small"
-                                            sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                            onClick={()=>{ setInstR(true);
-                                                openInstRate()}} endIcon={<EditIcon />}>
-                                            Update instructor's rating
-                                        </Button>
-                                        
-                                      
-                                    }
-                                    {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) && didRate &&
-                                        <Button variant="contained" size="small"
-                                            sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                            onClick={handleDidRateDelete} 
-                                            endIcon={<DeleteIcon />}>
-                                            delete instructor's rating
-                                        </Button>
-                                        
-                                      
                                     }
                                 </Typography>
                             </Paper>
 
                             <Box display="flex"
-                                mt={0.5}
-                                mb={0.5}
-                                sx={{
-                                backgroundColor: (theme) =>
-                                theme.palette.mode === 'light'
-                                  ? theme.palette.grey[100]
-                                  : theme.palette.grey[900],}}
+                                mt={1}
+                                mb={1}
                                 flexDirection="column"
                                 alignItems="center"
                                 justifyContent="center">
-                                
-                                    
-                                <Typography  variant="subtitle1">
-                                <Typography  variant="h6"> Summary:</Typography> {course.summary}</Typography>
-                                
+                                <Typography variant="subtitle1">{course.summary}</Typography>
                                 {/*dealing with the course price*/}
 
-                                {(['GUEST', 'INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered)) &&
+                                {!["CORPORATE_TRAINEE", "ADMIN"].includes(user.type) &&
                                     course.discount > 0 &&
                                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                                         <Typography variant="subtitle1">
@@ -688,7 +625,8 @@ const CoursePage = () => {
                                         </Typography>
                                     </div>
                                 }
-                                {(['GUEST', 'INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered)) && course.discount === 0 &&
+                                {!["CORPORATE_TRAINEE", "ADMIN"].includes(user.type) && course.discount === 0 &&
+                                 (!registered && user.type ==='INDIVIDUAL_TRAINEE') || (user.type === 'INSTRUCTOR') &&
                                     <Typography variant="subtitle1">
                                         This course currently costs {price} {currency}
                                     </Typography>
@@ -808,8 +746,7 @@ const CoursePage = () => {
                                                 <br></br>
                                                 <Typography> This subtitle's total hours: {subtitle.hours} </Typography>
                                                 <br></br>
-                                                { subtitle.videoTitles &&
-                                                    <Typography
+                                                <Typography
                                                     sx={{
                                                         alignItems: 'center',
                                                         '&:hover': {
@@ -820,8 +757,6 @@ const CoursePage = () => {
                                                 >
                                                     <PlayCircleIcon color='#03045E' /> {subtitle.videoTitles.title}: {subtitle.videoTitles.description}
                                                 </Typography>
-                                                }
-                                                
 
                                                 {subtitle.exercises.map((exercise) => (
                                                     <Grid container spacing={0}>
@@ -831,35 +766,51 @@ const CoursePage = () => {
                                                                 '&:hover': {
                                                                     backgroundColor: '#CAF0F8',
                                                                 },
-                                                                width: '95%'
+                                                                width: '85%'
                                                             }}
-                                                            onClick={
-                                                                registered && !sawTheAnswers(exercise._id) ?
-                                                                    () => window.location.href = `/solveExercise?userId=${user._id}&userType=${user.type}&courseId=${course._id}&exerciseId=${exercise._id}&subtitleId=${subtitle._id}`
-                                                                    : registered && sawTheAnswers(exercise._id) ? handleSawAns : null}
-
+                                                            onClick={registered ?
+                                                                () => window.location.href = `/solveExercise?userId=${user._id}&userType=${user.type}&courseId=${course._id}&exerciseId=${exercise._id}&subtitleId=${subtitle._id}`
+                                                                : null}
                                                         >
                                                             <MenuBookIcon color='#03045E' /> Exercise: {exercise.title}
-                                                            {
-                                                                registered && user.type === 'INSTRUCTOR' && avgGrades.length > 0 &&
-                                                                <Typography sx={{ ml: '65%', mt: '-5%' }}>
-                                                                    <GradingIcon /> Average Grade: {avgGrades.filter(gr => gr.exerciseId === exercise._id.toString())[0].avgGrade} / {exercise.totalGrade}
 
-                                                                </Typography>
-                                                            }
-                                                            {
-                                                                registered && user.type !== 'INSTRUCTOR' && solvedThisExercise(exercise._id) !== "Not Solved Yet." &&
-                                                                <Typography sx={{ ml: '70%', mt: '-5%' }}>
-                                                                    <AssignmentTurnedInIcon /> You got {solvedThisExercise(exercise._id)} out of {exercise.totalGrade}.
-                                                                </Typography>
-                                                            }
-                                                            {
-                                                                registered && user.type !== 'INSTRUCTOR' && solvedThisExercise(exercise._id) === "Not Solved Yet." &&
-                                                                <Typography sx={{ ml: '70%', mt: '-5%' }}>
-                                                                    <AssignmentLateIcon /> Not solved yet.
-                                                                </Typography>
-                                                            }
-                                                            </Typography>
+
+                                                        </Typography>
+
+                                                        {registered && user.type != 'INSTRUCTOR' &&
+                                                            //<Typography></Typography>
+                                                                    grade.map(
+                                                                        (g) => (
+                                                                            <div>
+                                                                               <Typography>
+                                                                                here {g}
+                                                                                </Typography>
+                                                                            </div>
+                                                                        )
+                                                                    )
+                                                                
+
+                                                        // grade.map(g => (
+                                                            
+
+           
+                                                        // // { g.id == exercise._id &&
+                                                        // //     <Typography>heree</Typography>
+                                                        // // }
+                                                        // //     <Button
+                                                        // //     sx={{ mt: 0, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                                        // //     onClick={() => {
+                                                        // //         setExerciseId(exercise._id);
+                                                        // //         setFlagG(true);
+                                                        // //     }}
+                                                        // // >
+                                                        // //     here
+                                                        // //  </Button>
+                                                        //  ))
+                                                           
+                                                            
+                                                        }
+                                                        
 
                                                         {/* //henaaaaa */}
                                                         <Backdrop
@@ -873,9 +824,6 @@ const CoursePage = () => {
                                                                 Click anywhere to continue
                                                             </Alert>
                                                         </Backdrop>
-
-
-                                                                 
 
 
                                                     </Grid>
@@ -1001,28 +949,26 @@ const CoursePage = () => {
                                 </Button>
 
                             }
-                            
-                            {/*Report pop*/}
+                            <StyledMenu
+                                id="demo-customized-menu"
+                                MenuListProps={{
+                                    'aria-labelledby': 'demo-customized-button',
+                                }}
+                                anchorEl={anchorEl}
+                                open={open2}
+                                onClose={handleClose2}
 
-                                 <Dialog onClose={handleClose2} open={open2}
-                                sx={{
-                                    "& .MuiDialog-container": {
-                                        "& .MuiPaper-root": {
-                                            width: "100%",
-                                            maxWidth: "700px",
-                                        },
-                                    },
-                                    display: "flex", flexDirection: "column"
-                                }}>
-                                    
-                                <DialogTitle align='center' display={"flex"} flexDirection={"column"} alignItems={"center"}>
-                              
+                            >
+
+
+
+
+                                <Typography >
                                     Report a problem
-                                   
-                                </DialogTitle>
-
-                                 <Divider />
-                                <Typography  sx={{ml:2}}>
+                                </Typography>
+                                <Divider />
+                                <Typography
+                                >
                                     <RadioGroup
                                         //aria-labelledby="demo-radio-buttons-group-label"
                                         // name="controlled-radio-buttons-group"
@@ -1037,11 +983,6 @@ const CoursePage = () => {
                                     </RadioGroup>
                                 </Typography>
 
-
-                                <TextField id="standard-basic" label="what is your problem?" //variant="standard"
-                                    sx={{ m1: 5 ,mb:2}}
-                                    onChange={handleReportDescription} />
-
                                 <Typography >
                                     <Button variant="contained" size="small"
                                         sx={{ mb: 0.5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
@@ -1051,27 +992,12 @@ const CoursePage = () => {
                                         Done
                                     </Button>
 
-
-
-                                    <Backdrop
-
-sx={{  color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-open={openRM}
-onClick={handleCloseRM}
->
-<Alert sx={{ tabSize: 'l' ,mt: -50 }} severity={severity} >
-    <AlertTitle>{reportMessage}</AlertTitle>
-    Click anywhere to continue
-</Alert>
-</Backdrop>
-
-
                                 </Typography>
 
-                               
 
-                               
-                            </Dialog>
+
+
+                            </StyledMenu>
 
 
                             {/*RATE THE COURSE POPUP DIALOGUE*/}
@@ -1163,8 +1089,8 @@ onClick={handleCloseRM}
                                 </Alert>
                             </Backdrop>
 
-                               {/* report alert */}
-                            {/* <Backdrop
+
+                            <Backdrop
 
                                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                                 open={openRM}
@@ -1174,37 +1100,8 @@ onClick={handleCloseRM}
                                     <AlertTitle>{reportMessage}</AlertTitle>
                                     Click anywhere to continue
                                 </Alert>
-                            </Backdrop> */}
-
-
-
-<Backdrop
-
-sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-open={opendidRateDelete}
-onClick={handleClosedid}
->
-<Alert sx={{ width: '400px' }} severity='success'   >
-    <AlertTitle>Rating for this instructor has been deleted</AlertTitle>
-    Click anywhere to continue
-</Alert>
-          </Backdrop>
-                            {/* tells the user that they already saw the answers */}
-                            <Backdrop
-
-                                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-                                open={youSaw}
-                                onClick={handleSawAns}
-                            >
-                                <Alert sx={{ width: '400px' }} severity='info' icon={false}  >
-                                    <AlertTitle>You saw this exercise's answers!</AlertTitle>
-                                    you can not re-solve exercises after seeing their correct answers.
-                                    Click anywhere to continue
-                                </Alert>
                             </Backdrop>
                         </div>
-
-
                     }
 
 

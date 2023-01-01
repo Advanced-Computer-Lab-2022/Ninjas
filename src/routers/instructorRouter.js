@@ -208,18 +208,18 @@ instructorRouter.get('/SearchInst', async (req, res) => {
 
 
     const { type } = await Account.findOne({ _id: userId }, { type: 1 });
-    console.log(userId);
+    //console.log(userId);
     if (type != 'INSTRUCTOR') {
       throw new DomainError("unauthorized user: not an instructor", 401);
     }
 
-
+console.log(search)
     const SearchResults = await
       instructorController.getSearchResult({ username, search, userId });
-      console.log(SearchResults)
+     // console.log(SearchResults)
 
-      console.log(userId);
-      console.log(SearchResults)
+     // console.log(userId);
+     // console.log(SearchResults)
     
     res.status(200).json(SearchResults);
   }
@@ -382,6 +382,114 @@ instructorRouter.put('/addDiscount', async (req, res) => {
 
 })
 
+instructorRouter.put('/addSubtitle', async (req, res) => {
+  try {
+    const session = sessionDetails.getSession(req.session.id);
+    const instructorId = session.userId;
+    const courseId = req.query.courseId;
+    const text =  req.body.text;
+    const hours =  req.body.hours;
+    const title =  req.body.title;
+    const videoLink =  req.body.videoLink;
+    const description =  req.body.description;
+
+    const s = await instructorController.addsubtitle({ instructorId, courseId, text, hours, title, videoLink, description });
+    if (!s){
+       res.status(500).send("notCreated");
+  }
+  else {res.status(200).json(s);}
+
+  }
+  catch (err) {
+    if (err instanceof DomainError) {
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ err });
+    }
+  }
+
+
+
+})
+
+instructorRouter.put('/addExercise', async (req, res) => {
+  try {
+    
+    const session = sessionDetails.getSession(req.session.id);
+    const instructorId = session.userId;
+    const subtitleId = req.query.subtitleId;
+    const courseId = req.query.courseId;
+    const title =  req.body.title;
+    const questionText =  req.body.questionText;
+    const choice1 =  req.body.choice1;
+    const choice2 =  req.body.choice2;
+    const choice3 =  req.body.choice3;
+    const choice4 =  req.body.choice4;
+    const correctAnswer =  req.body.correctAnswer;
+    const totalCredit =  req.body.totalCredit;
+
+
+    const s = await instructorController.addExercise
+    ({ instructorId, subtitleId, courseId, title, questionText, choice1, choice2, choice3, choice4, correctAnswer, totalCredit });
+    if (!s){
+       res.status(500).send("notCreated");
+  }
+  else {res.status(200).json(s);}
+
+  }
+  catch (err) {
+    if (err instanceof DomainError) {
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ err });
+    }
+  }
+
+
+
+})
+
+instructorRouter.put('/addAnotherQuestion', async (req, res) => {
+  try {
+    
+    const session = sessionDetails.getSession(req.session.id);
+    const instructorId = session.userId;
+    //const subtitleId = req.query.subtitleId;
+    // const courseId = req.query.courseId;
+    const exerciseId = req.query.exerciseId;
+    const questionText =  req.body.questionText;
+    const choice1 =  req.body.choice1;
+    const choice2 =  req.body.choice2;
+    const choice3 =  req.body.choice3;
+    const choice4 =  req.body.choice4;
+    const correctAnswer =  req.body.correctAnswer;
+    const totalCredit =  req.body.totalCredit;
+
+
+    const s = await instructorController.addAnotherQuestion
+    ({ instructorId, exerciseId, questionText, choice1, choice2, choice3, choice4, correctAnswer, totalCredit });
+    if (!s){
+       res.status(500).send("notCreated");
+  }
+  else {res.status(200).json(s);}
+
+  }
+  catch (err) {
+    if (err instanceof DomainError) {
+      res.status(err.code).json({ code: err.code, message: err.message })
+    } else {
+      res.status(500).json({ err });
+    }
+  }
+
+
+
+})
+
+
+
+
+
 instructorRouter.get('/instructor/:id', async (req, res) => {
   //gets the instructor's details, to be used later on in the frontend page.
   try {
@@ -394,9 +502,27 @@ instructorRouter.get('/instructor/:id', async (req, res) => {
   }
 })
 
+
+
+instructorRouter.get('/didRateInstructor',async(req,res) => {
+  try{
+const {instructorId,userId, deleteR}= req.query
+  const result = await instructorController.didRatedInst (instructorId , userId ,deleteR)
+  res.status(200).json({rated: result});
+  }
+  catch(err){
+    console.log(err)
+    if (err instanceof DomainError) {
+      res.status(err.code).json({message: err.message})
+    } else {
+      res.status(500).json({ err });
+    }
+  }
+})
+
 instructorRouter.put('/rateInstructor',async(req,res) => {
   try{
-const {instructorId,userId, ratingNumber, ratingText}= req.query
+const {instructorId,userId, ratingNumber, ratingText }= req.query
   await instructorController.rateInstructor(instructorId,userId, ratingNumber, ratingText)
   res.status(200).json({Done: true});
   }
@@ -606,6 +732,14 @@ instructorRouter.get('/owedMoney', async (req, res) =>{
 
 })
 
-
+instructorRouter.get('/averageExerciseGrade', async(req, res) => {
+  try {
+    const { courseId } = req.query;
+    const averageGrades = await instructorController.averageExerciseGrade({ courseId });
+    res.status(200).json(averageGrades)
+  } catch(error) {
+    res.status(error.code).json({ message: error.message });
+  }
+})
 
 module.exports = instructorRouter;

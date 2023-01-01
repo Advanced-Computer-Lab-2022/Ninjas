@@ -39,6 +39,25 @@ import CloseIcon from '@mui/icons-material/Close';
 import PropTypes from 'prop-types';
 import { CircularProgress } from '@mui/material';
 
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+
+const  change2 =()=>{
+  window.location.href=`/AdminViewReports`
+}
+const  change3 =()=>{
+  window.location.href=`/AdminRefundRequests`
+}
+const  change4 =()=>{
+  window.location.href=`/AdminAccessCourse`
+}
+const  change5 =()=>{
+  window.location.href=`/AdminSetPromo`
+}
+const  change6 =()=>{
+  window.location.href=`/AdminAddUser`
+}
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
@@ -262,8 +281,23 @@ const handleChangeType = (event) => {
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
            
-          &nbsp;&nbsp;&nbsp;
-          <box>{mainListItems}</box>
+            <Box>
+            
+            </Box>
+                       
+              <Tabs sx={{color:'white', mt:2}} aria-label="basic tabs example">
+                <Tab label="Reports" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change2()}}/>
+                <Tab label="Refund Requests" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change3()}}/>
+                <Tab label="Access Course Requests" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change4()}}/>
+                <Tab label="Courses Promotion" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change5()}}/>
+                <Tab label="Add User" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change6()}}/>
+            
+              </Tabs>
+                    
+                      &nbsp;&nbsp;&nbsp;
+                      <box><Typography fontWeight={'bold'} sx={{ color: '#CAF0F8', ml:7}}>ADMIN</Typography></box>
+                      &nbsp;&nbsp;&nbsp;          
+                      <box>{mainListItems}</box>
 
           <box>
 
@@ -385,7 +419,7 @@ const handleChangeType = (event) => {
     name="radio-buttons-group"
   >
     <FormControlLabel value="INSTRUCTOR" control={<Radio />} label="Instructor" onChange={(event)=>{handleChangeType(event)}}/>
-    <FormControlLabel value="INDIVIDUAL_TRAINEE" control={<Radio />} label="Individual Trainee" onChange={(event)=>{handleChangeType(event)}}/>
+    {/* <FormControlLabel value="INDIVIDUAL_TRAINEE" control={<Radio />} label="Individual Trainee" onChange={(event)=>{handleChangeType(event)}}/> */}
     <FormControlLabel value="CORPORATE_TRAINEE" control={<Radio />} label="Corporate Trainee" onChange={(event)=>{handleChangeType(event)}}/>
     <FormControlLabel value="ADMIN" control={<Radio />} label="Admin" onChange={(event)=>{handleChangeType(event)}}/>
 

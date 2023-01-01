@@ -2,13 +2,13 @@ const mongoose = require('mongoose');
 const { Account, accountSchema } = require("../models/account");
 const { Course, countryPriceDetails } = require("../models/courses");
 const  InstructorToCourses  = require("../models/InstructorToCourses");
-const { exerciseSchema } = require('../models/exercise');
+const { Exercise, exerciseSchema } = require('../models/exercise');
 const { subtitleSchema, Subtitle } = require('../models/subtitle');
 const DomainError = require("../error/domainError");
 const { Video } = require('../models/video');
-const { Exercise } = require('../models/exercise');
 const { question } = require('../models/question');
-const bcrypt = require('bcrypt')
+const bcrypt = require('bcrypt');
+const UserExercise = require('../models/userExercise');
 var subtitlesArray = [subtitleSchema];
 var Totalhrs = 0;
 let questionArray = [];
@@ -236,6 +236,8 @@ const instructorController = {
         username, search, userId
     }) {
 
+        console.log('search')
+       console.log(search)
         try {
             const final = [];
             const result3 = []
@@ -288,6 +290,7 @@ const instructorController = {
             return { courses: final, currency: details.currency, userType: 'INSTRUCTOR' };
         }
         catch (err) {
+            console.log(err)
             throw new DomainError('error internally', 500);
         }
 
@@ -425,20 +428,215 @@ const instructorController = {
 
 
 
-    async addsubtitle(subArray) {
-        for (var i = 0; i < subArray.length; i++) {
+    async addsubtitle({instructorId, courseId, text, hours, title, videoLink, description }) {
+        // for (var i = 0; i < subArray.length; i++) {
+        //     const sub = new Subtitle({
+        //         text: subArray[i].text,
+        //         hours: subArray[i].hours
+        //     })
+        //     await sub.save()
+        //     subtitlesArray.push(sub);
+        // }
+        // return subtitlesArray
 
-
-            const sub = new Subtitle({
-                text: subArray[i].text,
-                hours: subArray[i].hours
+        try {
+            const thisInstructor = await Account.findOne({ _id: instructorId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+            const thisCourse = await Account.findOne({ _id: courseId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+           
+            const Newsubtitle = new Subtitle({
+                text: text,
+                hours: hours,
+                title: title,
+                link: videoLink,
+                description: description
             })
-            await sub.save()
-            subtitlesArray.push(sub);
+            Newsubtitle.save();
+            // console.log(courseId);
+            await Course.updateOne({_id: courseId}, {$push: { subtitles: Newsubtitle }})
+            console.log(Newsubtitle._id);
+
+      
+        return Newsubtitle
+
+        } catch (err) {
+            if (err._message && err._message == 'Course validation failed') { 
+                console.log(err);
+                throw new DomainError('validation Error', 400); }
+            throw new DomainError('error internally', 500);
+
+
         }
-        return subtitlesArray
 
     },
+
+    async addExercise({instructorId, subtitleId, courseId, title, questionText, choice1, choice2, choice3, choice4, correctAnswer, totalCredit }) {
+       
+        try {
+            const thisInstructor = await Account.findOne({ _id: instructorId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+          
+           
+            const Newquestion = new question({
+                questionText: questionText,
+                mcqs: [choice1, choice2, choice3, choice4],
+                correctAnswer: correctAnswer,
+                totalCredit: totalCredit
+            })
+
+            await Newquestion.save();
+           // console.log("hellooooo");
+
+           // console.log(Newquestion._id);
+
+            const NewExercise = new Exercise({
+                title: title,
+                subtitleId: subtitleId,
+            })
+
+            NewExercise.questions.push(Newquestion);
+
+            for(var i=0; i< NewExercise.questions.length ; i++ ){
+                NewExercise.totalGrade = NewExercise.totalGrade + NewExercise.questions[i].totalCredit;
+
+            }
+            NewExercise.save();
+            
+            await Subtitle.updateOne({_id: subtitleId}, {$push: { exercises: NewExercise }});
+            // const sub = await Subtitle.findOne({_id: subtitleId})
+
+            // await Course.updateOne({_id: courseId}, {$pop: { subtitles: sub }});
+            // await Course.updateOne({_id: courseId}, {$push: { subtitles: sub }});
+
+
+            const c = Course.findOne({_id: courseId});
+            for(var j=0; j<c.subtitles ; j++){
+                if(c.subtitles[j]._id == subtitleId){
+                    c.subtitles[j].exercises.push(NewExercise);
+                    break;
+                }
+
+            }
+
+
+            console.log(NewExercise._id);
+
+      
+        return NewExercise;
+
+        } catch (err) {
+            if (err._message && err._message == 'Course validation failed') { 
+                console.log(err);
+                throw new DomainError('validation Error', 400); }
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+    },
+
+
+    async addAnotherQuestion ({instructorId, exerciseId, questionText, choice1, choice2, choice3, choice4, correctAnswer, totalCredit}){
+
+        try {
+
+            const thisInstructor = await Account.findOne({ _id: instructorId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+            const thisEx = await Exercise.findOne({ _id: exerciseId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+           
+            const Newquestion = new question({
+                questionText: questionText,
+                mcqs: [choice1, choice2, choice3, choice4],
+                correctAnswer: correctAnswer,
+                totalCredit: totalCredit
+            })
+
+            await Newquestion.save();
+            console.log("hellooooo");
+            console.log("hellooooo00000000000000000000");
+            console.log(Newquestion._id);
+            console.log("hellooooo00000000000000000000");
+
+            const thisEx2 = await Exercise.findOne({ _id: exerciseId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+            thisEx2.questions.push(Newquestion);
+            let newGrade = thisEx2.totalGrade + Newquestion.totalCredit;
+            await Exercise.updateOne({_id: exerciseId}, {totalGrade: newGrade});
+            await Exercise.updateOne({_id: exerciseId}, {$push: { questions: Newquestion }});
+
+            //thisEx2.totalGrade = thisEx2.totalGrade + Newquestion.totalCredit;
+            // await Exercise.updateOne({_id: exerciseId}, {$push: {questions, Newquestion}});
+            // let newGrade = thisEx.totalGrade + Newquestion.totalCredit;
+            // await Exercise.updateOne({_id: exerciseId}, {totalGrade: newGrade});
+        
+
+
+        return Newquestion;
+
+        } catch (err) {
+            if (err._message && err._message == 'Course validation failed') { 
+                console.log(err);
+                throw new DomainError('validation Error', 400); }
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+
+    },
+
+    // async addAnotherExercise({subtitleId, title, questionText, choice1, choice2, choice3, choice4, correctAnswer, totalCredit}){
+
+    //     try {
+    //         // const thisInstructor = await Account.findOne({ _id: instructorId }).catch(() => {
+    //         //     throw new DomainError("Wrong Id", 400)
+    //         // });
+    //         const thisSub = await Exercise.findOne({ _id: subtitleId }).catch(() => {
+    //             throw new DomainError("Wrong Id", 400)
+    //         });
+           
+    //         const Newquestion = new question({
+    //             questionText: questionText,
+    //             mcqs: [choice1, choice2, choice3, choice4],
+    //             correctAnswer: correctAnswer,
+    //             totalCredit: totalCredit
+    //         })
+
+    //         await Newquestion.save();
+    //         console.log("hellooooo");
+
+    //         console.log(Newquestion._id);
+
+    //         await Exercise.updateOne({_id: exerciseId}, {$push: {questions, Newquestion}});
+    //         let newGrade = thisEx.totalGrade + Newquestion.totalCredit;
+    //         await Exercise.updateOne({_id: exerciseId}, {totalGrade: newGrade});
+    //        // await Subtitle.updateOne({_id: exerciseId}, {totalGrade: newGrade});
+
+    //     return Newquestion;
+
+    //     } catch (err) {
+    //         if (err._message && err._message == 'Course validation failed') { 
+    //             console.log(err);
+    //             throw new DomainError('validation Error', 400); }
+    //         throw new DomainError('error internally', 500);
+
+
+    //     }
+
+
+    // },
+
+
+    
 
     async calculateHours(subArray) {
         for (var i = 0; i < subArray.length; i++) {
@@ -456,13 +654,13 @@ const instructorController = {
             const thisInstructor = await Account.findOne({ _id: instructorId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
-            let i = [];
-            var res = videoLink.split("=");
-            var embeddedUrl = "https://www.youtube.com/embed/"+res[1];
+            // let i = [];
+            // var res = videoLink.split("=");
+            // var embeddedUrl = "https://www.youtube.com/embed/"+res[1];
 
            
-            console.log("helllooo");
-            console.log(thisInstructor);
+            // console.log("helllooo");
+            // console.log(thisInstructor);
 
             const Newcourse = new Course({
                 subject: subject,
@@ -470,7 +668,7 @@ const instructorController = {
                 totalHours: totalHours,
                 summary: summary,
                 title: title,
-                videoLink: embeddedUrl
+                videoLink: videoLink
             })
             Newcourse.instructors.push(thisInstructor)
             // console.log(Newcourse);
@@ -568,9 +766,40 @@ const instructorController = {
 
 },
 
+async didRatedInst (instructorId , userId ,deleteR)
+{try {
 
 
-async rateInstructor (instructorId , userId , ratingNumber, ratingText){
+    if(deleteR == 'true'){
+
+        await Account.findOneAndUpdate({_id : instructorId}, {"$pull": {"review" : {id: userId}}})
+        return false;
+    }
+    
+    else{
+
+       
+   const found = await Account.findOne({'$and': [
+        { _id : instructorId  },
+        { review: { $elemMatch: { id: userId } } }
+    ]}).catch(()=> {return false;})
+
+    if (found){
+
+        return true;
+    }
+    else return false;
+}
+
+}
+catch(err){
+    console.log(err)
+    if (err instanceof DomainError) { throw err; }
+    throw new DomainError('error internally', 500);
+}  
+
+},
+async rateInstructor (instructorId , userId , ratingNumber, ratingText ){
 try {
 
 
@@ -587,6 +816,9 @@ try {
     
     await Account.findOneAndUpdate({_id : instructorId}, {"$pull": {"review" : {id: query.id}}})
 
+
+
+   
     const result = await Account.findOneAndUpdate({ _id : instructorId},
         {   "$push": { "review": query }  },
         { "new": true, "upsert": true })
@@ -675,30 +907,81 @@ try {
         }
     },
 
-    async addQuestion2({ questionText, mcq1,mcq2,mcq3,mcq4, correctAnswer, totalCredit}) {
+    // async addQuestion2({ questionText, mcq1,mcq2,mcq3,mcq4, correctAnswer, totalCredit}) {
 
-         try {
-            console.log(questionText,mcq1,mcq2,mcq3,mcq4,correctAnswer,totalCredit);
-            const newQuestion = new question({
-             questionText: questionText,
-             mcqs:[mcq1,mcq2,mcq3,mcq4],
-             correctAnswer: correctAnswer,
-             totalCredit: totalCredit
+    //      try {
+    //         console.log(questionText,mcq1,mcq2,mcq3,mcq4,correctAnswer,totalCredit);
+    //         const newQuestion = new question({
+    //          questionText: questionText,
+    //          mcqs:[mcq1,mcq2,mcq3,mcq4],
+    //          correctAnswer: correctAnswer,
+    //          totalCredit: totalCredit
  
-            })
-            newQuestion.save()
-            questionArray.push(newQuestion)
+    //         })
+    //         newQuestion.save()
+    //         questionArray.push(newQuestion)
  
          
-         } catch (err) {
-             if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
-             throw new DomainError('error internally', 500);
+    //      } catch (err) {
+    //          if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+    //          throw new DomainError('error internally', 500);
  
  
-         }
+    //      }
  
  
-     },
+    //  },
+
+    async addQuestion2({exerciseTitle, subtitleId, questionText, mcq1,mcq2,mcq3,mcq4, correctAnswer, totalCredit}) {
+
+        try {
+           let c = "";
+           console.log(questionText,mcq1,mcq2,mcq3,mcq4,correctAnswer,totalCredit);
+           if(correctAnswer == "Choice 1"){
+               c = mcq1;
+           }
+           else{
+               if( correctAnswer == "Choice 2"){
+                   c = mcq2;
+               }
+               else{
+                   if(correctAnswer == "Choice 3"){
+                       c = mcq3;
+                   }
+                   else{
+                       c = mcq4;
+
+                   }
+               }
+           }
+           const newQuestion = new question({
+            questionText: questionText,
+            mcqs:[mcq1,mcq2,mcq3,mcq4],
+            correctAnswer: c,
+            totalCredit: totalCredit
+
+           })
+           newQuestion.save()
+           questionArray.push(newQuestion);
+
+           const newExercise = new Exercise({
+               exerciseTitle: exerciseTitle,
+               subtitleId:subtitleId,
+               totalGrade: totalCredit,
+              })
+           newExercise.questions.push(newQuestion);
+           return newExercise;
+
+        
+        } catch (err) {
+            if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+            throw new DomainError('error internally', 500);
+
+
+        }
+
+
+    },
 
      async addVideo({ subtitleId, title, link, description}) {
 
@@ -832,6 +1115,65 @@ try {
      
         }
     },
+
+    async averageExerciseGrade({courseId}) {
+        try {
+            //get the subtitles
+            const { subtitles } = await Course.findOne({ _id: courseId }, { subtitles:1 });
+
+            const gradesInExercise = new Map();
+
+            //set a key and a value for each exercise
+            subtitles.forEach(sub => {
+                sub.exercises.forEach(ex => {
+                    gradesInExercise.set(
+                        ex._id.toString(),
+                        {
+                        accumulatedGrade: 0,
+                        solveCount:0
+                        }
+                    );
+                }); 
+            });
+            //console.log(gradesInExercise)
+            //get the subtitle IDs
+            const subIds = subtitles.map(s => s._id);
+            //get the solved exercises
+            const solvedExercises = await UserExercise.find({ "exercises.subtitleId": { $in: subIds }});
+            
+            //update the accumulated grade and the number of times the exercise has been solved
+            solvedExercises.forEach( ex => {
+                //console.log(ex.exercises[0]._id)
+                gradesInExercise.set(ex.exercises[0]._id.toString(),
+                    {
+                        accumulatedGrade: gradesInExercise.get(ex.exercises[0]._id.toString()).accumulatedGrade + ex.userGrade,
+                        solveCount: gradesInExercise.get(ex.exercises[0]._id.toString()).solveCount + 1 
+                    });
+            });
+
+            //console.log(gradesInExercise)
+            const result=[];
+            let exerciseIDS = Array.from(gradesInExercise.keys());
+
+            exerciseIDS.forEach( ex => {
+            let avgGrade = gradesInExercise.get(ex).accumulatedGrade / gradesInExercise.get(ex).solveCount;
+            //if the exercise was not solved before the solve count is zero, and anything divided by zero is undefined.
+            if (!avgGrade) 
+                avgGrade = 0;
+
+            result.push({
+                exerciseId: ex,
+                avgGrade
+            })
+           })
+            
+           return result;
+
+        } catch(error) {
+            console.log(error)
+            throw new DomainError("internal error", 500);
+        }
+    }
  
 }
 

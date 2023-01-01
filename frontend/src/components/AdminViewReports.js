@@ -46,6 +46,24 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import CloseIcon from '@mui/icons-material/Close';
 import PropTypes from 'prop-types';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
+
+const  change2 =()=>{
+  window.location.href=`/AdminViewReports`
+}
+const  change3 =()=>{
+  window.location.href=`/AdminRefundRequests`
+}
+const  change4 =()=>{
+  window.location.href=`/AdminAccessCourse`
+}
+const  change5 =()=>{
+  window.location.href=`/AdminSetPromo`
+}
+const  change6 =()=>{
+  window.location.href=`/AdminAddUser`
+}
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -235,6 +253,8 @@ const viewUnseen = async (reportId) => {
   }
 };
 
+
+
 const [ready, setReady] = useState(false);
 useEffect(() => {
     if (reports.length>=0)
@@ -274,8 +294,23 @@ const handleClickOpen = (reportId) => {
               <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
             </Typography >
           
-          &nbsp;&nbsp;&nbsp;
-          <box>{mainListItems}</box>
+            <Box>
+            
+            </Box>
+                       
+              <Tabs sx={{color:'white', mt:2}} aria-label="basic tabs example">
+                <Tab label="Reports" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change2()}}/>
+                <Tab label="Refund Requests" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change2=3()}}/>
+                <Tab label="Access Course Requests" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change4()}}/>
+                <Tab label="Courses Promotion" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change5()}}/>
+                <Tab label="Add User" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change6()}}/>
+            
+              </Tabs>
+                    
+                      &nbsp;&nbsp;&nbsp;
+                      <box><Typography fontWeight={'bold'} sx={{ color: '#CAF0F8', ml:7}}>ADMIN</Typography></box>
+                      &nbsp;&nbsp;&nbsp;          
+                      <box>{mainListItems}</box>
 
           <box>
 
@@ -331,6 +366,8 @@ const handleClickOpen = (reportId) => {
                 
                   <CardContent sx={{ flexGrow: 1 , align: 'center' }}>
                   <Typography sx={{ color: '#03045E', fontWeight: 'bold' , align: 'center', mb: 2 }}>Report</Typography>
+                  <Typography sx={{ color: '#03045E'}}>User Email: {card.uname} </Typography>
+                    <Typography sx={{ color: '#03045E', mb:2}}>Course: {card.cname}</Typography>
                   <Button sx={{ backgroundColor: '#03045E' , color:'#CAF0F8', align: 'center' }} onClick={() =>
                   viewUnseen(card._id)}>View</Button>
                    
@@ -351,11 +388,11 @@ const handleClickOpen = (reportId) => {
                 
                   <CardContent sx={{ flexGrow: 1 , align: 'center' }}>
                   <Typography sx={{ color: '#03045E', fontWeight: 'bold' , align: 'center', mb:2 }}>Report</Typography>
-                    <Typography sx={{ color: '#03045E'}}>User ID: {card.accountId} </Typography>
-                    <Typography sx={{ color: '#03045E'}}>Course ID: {card.courseId}</Typography>
-                    <Typography sx={{ color: '#03045E'}}>Problem: {card.problem}</Typography>
+                    <Typography sx={{ color: '#03045E'}}>User Email: {card.uname} </Typography>
+                    <Typography sx={{ color: '#03045E'}}>Course: {card.cname}</Typography>
+                    <Typography sx={{ color: '#03045E'}}>Problem: {card.prob}</Typography>
                     <Typography align="center" sx={{ color: '#00B4D8', backgroundColor:'white', fontWeight:'bold', mt:2}}>
-                      {card.progress}</Typography>
+                      {card.prog}</Typography>
                    
                   <br></br>
             <box>
@@ -410,11 +447,11 @@ const handleClickOpen = (reportId) => {
                 
                   <CardContent sx={{ flexGrow: 1 , align: 'center' }}>
                   <Typography sx={{ color: '#03045E', fontWeight: 'bold' , align: 'center', mb:2 }}>Report</Typography>
-                    <Typography sx={{ color: '#03045E'}}>User ID: {card.accountId} </Typography>
-                    <Typography sx={{ color: '#03045E'}}>Course ID: {card.courseId}</Typography>
-                    <Typography sx={{ color: '#03045E'}}>Problem: {card.problem}</Typography>
+                    <Typography sx={{ color: '#03045E'}}>User Email: {card.u} </Typography>
+                    <Typography sx={{ color: '#03045E'}}>Course : {card.c}</Typography>
+                    <Typography sx={{ color: '#03045E'}}>Problem: {card.p}</Typography>
                     <Typography align="center" sx={{ color: 'white', fontWeight:'bold', backgroundColor:'#00B4D8', mt:2}}>
-                    {card.progress}</Typography>
+                    {card.pr}</Typography>
                    
                   </CardContent>
                  
