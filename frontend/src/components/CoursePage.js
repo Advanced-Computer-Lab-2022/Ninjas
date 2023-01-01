@@ -493,7 +493,8 @@ const CoursePage = () => {
     const payWallet = async () => {
     const response = await axios.put(`http://localhost:8000/payForCourse`, {
             courseId: course._id,
-            coursePrice: course.price
+            coursePrice: course.price,
+            instId:course.instructors[0]._id
         }).catch(error => {
             if(error.response.status === 400) {
                 setopenpay(false);
@@ -1153,7 +1154,7 @@ const CoursePage = () => {
 
                                 <Button
                                     sx={{ alignSelf: 'center', width: '70%', mb: '5%', align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                    onClick={() => window.location.href = `/checkout?courseId=${course._id}&price=${course.price}`}
+                                    onClick={() => window.location.href = `/checkout?courseId=${course._id}&price=${course.price}&instId=${course.instructors[0]._id}`}
                                 >
                                     Pay using credit card
                                 </Button>
