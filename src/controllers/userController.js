@@ -690,12 +690,6 @@ const userController = {
             const thisCourse =  await Course.findOne({_id: courseId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });;
-            if(theUser.type == 'INDIVIDUAL TRAINEE'){
-                if(theUser.wallet >= thisCourse.price){
-                   await Course.updateOne({_id: courseId}, {$push: { students: userId}});
-                   let newWallet = theUser.wallet - thisCourse.price;
-                   await Account.updateOne({_id: userId} ,{wallet: newWallet});
-
 
             //check if he has enough in the wallet
             if (theUser.wallet >= thisCourse.price) {
