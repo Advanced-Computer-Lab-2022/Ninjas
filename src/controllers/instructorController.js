@@ -236,6 +236,8 @@ const instructorController = {
         username, search, userId
     }) {
 
+        console.log('search')
+       console.log(search)
         try {
             const final = [];
             const result3 = []
@@ -288,6 +290,7 @@ const instructorController = {
             return { courses: final, currency: details.currency, userType: 'INSTRUCTOR' };
         }
         catch (err) {
+            console.log(err)
             throw new DomainError('error internally', 500);
         }
 

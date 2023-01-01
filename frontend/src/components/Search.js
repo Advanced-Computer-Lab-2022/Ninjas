@@ -404,7 +404,7 @@ const theme = useTheme();
     }
   }, [searchResult])
 
-console.log(searchResult.userType)
+//console.log(searchResult.userType)
 
   return (
    

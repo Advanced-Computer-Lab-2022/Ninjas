@@ -208,18 +208,18 @@ instructorRouter.get('/SearchInst', async (req, res) => {
 
 
     const { type } = await Account.findOne({ _id: userId }, { type: 1 });
-    console.log(userId);
+    //console.log(userId);
     if (type != 'INSTRUCTOR') {
       throw new DomainError("unauthorized user: not an instructor", 401);
     }
 
-
+console.log(search)
     const SearchResults = await
       instructorController.getSearchResult({ username, search, userId });
-      console.log(SearchResults)
+     // console.log(SearchResults)
 
-      console.log(userId);
-      console.log(SearchResults)
+     // console.log(userId);
+     // console.log(SearchResults)
     
     res.status(200).json(SearchResults);
   }
