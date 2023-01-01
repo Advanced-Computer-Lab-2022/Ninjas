@@ -147,7 +147,6 @@ export default function Signup() {
   const handleChangeUsername = (event) => {
     setUsername(event.target.value);
   }
-  const [anchorEl, setAnchorEl] = React.useState(null);
 
 
   var validateEmail = function (email) {
@@ -157,139 +156,126 @@ export default function Signup() {
 
 
   //handling errors in fields
-  const[inital,setInital]=useState(false);
-  const[firstTime,setFirstTime]=useState(true);
-  const [firstNameErr, setFirstNameErr] = useState();
-  const [lastNameErr, setLastNameErr] = useState();
-  const [emailErr, setEmailErr] = useState();
-  const [passwordErr, setPasswordErr] = useState();
-  const [confirmErr, setConfirmErr] = useState();
-  const [genderErr, setGenderErr] = useState();
-  const [usernameErr, setUsernameErr] = useState();
+
+  // const [firstNameErr, setFirstNameErr] = useState();
+  // const [lastNameErr, setLastNameErr] = useState();
+  // const [emailErr, setEmailErr] = useState();
+  // const [passwordErr, setPasswordErr] = useState();
+  // const [confirmErr, setConfirmErr] = useState();
+  // const [genderErr, setGenderErr] = useState();
+  // const [usernameErr, setUsernameErr] = useState();
   const[confirm,setConfirm]=useState('');
-  const[responseErr, setresErr] = useState('');
+   const[responseErr, setresErr] = useState('');
 
-  const falsify = () => {
-    setFirstNameErr(true);
-    setLastNameErr(true);
-    setEmailErr(true);
-    setPasswordErr(true);
-    setConfirmErr(true);
-    setGenderErr(true);
-    setUsernameErr(true);
-    console.log("in in")
-  }
+  // const falsify = () => {
+  //   setFirstNameErr(true);
+  //   setLastNameErr(true);
+  //   setEmailErr(true);
+  //   setPasswordErr(true);
+  //   setConfirmErr(true);
+  //   setGenderErr(true);
+  //   setUsernameErr(true);
+  //   console.log("in in")
+  // }
 
-  const allCorrect = () => {
-    const bool = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
-    //they all have to be set to false
-    return !bool;
-  }
+  // const allCorrect = () => {
+  //   const bool = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
+  //   //they all have to be set to false
+  //   return !bool;
+  // }
 
 
-  const handleSubmit =  async (event)  => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
+  // const handleSubmit =  async (event)  => {
+  //   event.preventDefault();
+  //   const data = new FormData(event.currentTarget);
 
-    //set the values to false, in case something was corrected
-    //falsify();
+  //   //set the values to false, in case something was corrected
+  //   //falsify();
     
-    //before proceeding we have to make sure that the data is correct
-    if (data.get('firstName').trim().length < 2){
-      setFirstNameErr(true);}
-    else{
-      setFirstNameErr(false);}
-      console.log(firstNameErr)
+  //   //before proceeding we have to make sure that the data is correct
+  //   if (data.get('firstName').trim().length < 2){
+  //     setFirstNameErr(true);}
+  //   else{
+  //     setFirstNameErr(false);}
+  //     console.log(firstNameErr)
 
-    if (data.get('lastName').trim().length < 2)
-      setLastNameErr(true);
-      else
-      setLastNameErr(false);
+  //   if (data.get('lastName').trim().length < 2)
+  //     setLastNameErr(true);
+  //     else
+  //     setLastNameErr(false);
 
-    if (!validateEmail(data.get('email')))
-      setEmailErr(true);
-      else
-      setEmailErr(false);
+  //   if (!validateEmail(data.get('email')))
+  //     setEmailErr(true);
+  //     else
+  //     setEmailErr(false);
 
-    if (data.get('username').trim().length < 6)
-      setUsernameErr(true);
-      else
-      setUsernameErr(false);
+  //   if (data.get('username').trim().length < 6)
+  //     setUsernameErr(true);
+  //     else
+  //     setUsernameErr(false);
 
-    if (data.get('password').trim().length < 6)
-      setPasswordErr(true);
-      else
-      setPasswordErr(false);
+  //   if (data.get('password').trim().length < 6)
+  //     setPasswordErr(true);
+  //     else
+  //     setPasswordErr(false);
 
-    if (!(data.get('password') === data.get('confirmpassword')) || data.get('confirmpassword').trim().length < 6) //passwords do not match
-      setConfirmErr(true);
-      else
-      setConfirmErr(false);
+  //   if (!(data.get('password') === data.get('confirmpassword')) || data.get('confirmpassword').trim().length < 6) //passwords do not match
+  //     setConfirmErr(true);
+  //     else
+  //     setConfirmErr(false);
 
 
-    if (!data.get('maleButton') && !data.get('femaleButton')) //they did not choose their gender
-      setGenderErr(true);
-      else
-      setGenderErr(false);
-     return; 
-       console.log(firstNameErr);
-    // if(firstNameErr==false && lastNameErr==false && emailErr==false && passwordErr==false && confirmErr==false && genderErr==false &&
-    //   usernameErr==false  ){
-    //     handleClickOpen();
-    //     console.log("in")
-    //     //setInital(true)
-    // }
+  //   if (!data.get('maleButton') && !data.get('femaleButton')) //they did not choose their gender
+  //     setGenderErr(true);
+  //     else
+  //     setGenderErr(false);
+  //    return; 
+  //      console.log(firstNameErr);
+  //   // if(firstNameErr==false && lastNameErr==false && emailErr==false && passwordErr==false && confirmErr==false && genderErr==false &&
+  //   //   usernameErr==false  ){
+  //   //     handleClickOpen();
+  //   //     console.log("in")
+  //   //     //setInital(true)
+  //   // }
     
     
-    // if(inital==true){
-    //   handleClickOpen();
-    // }
+  //   // if(inital==true){
+  //   //   handleClickOpen();
+  //   // }
 
 
-    //if all the inputs are valid, open the contract dialogue
-    //let errorsExist= false;
-    //errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
-    //setError(!errorsExist);
-   // console.log(errorsExist)
-    //if (errorsExist)
-    //console.log(true);
-    //else
-   // handleClickOpen();
-  };
+  //   //if all the inputs are valid, open the contract dialogue
+  //   //let errorsExist= false;
+  //   //errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
+  //   //setError(!errorsExist);
+  //  // console.log(errorsExist)
+  //   //if (errorsExist)
+  //   //console.log(true);
+  //   //else
+  //  // handleClickOpen();
+  // };
 
+  const[first, setFirst] = useState(0);
 
-
-  const change2 = async () => {
+  const handleChangeChange2 =  async ()  => {
+    setFirst(1);
     const response = await axios.get(`http://localhost:8000/signUpError?username=${username}&email=${email}`
-    
     ).catch((error) => setresErr(error.response.data.message))
      console.log(response.data)
 
     if (response.status === 200) {
-      handleSubmit();
-      if(firstNameErr===false && lastNameErr===false && emailErr===false && passwordErr===false && confirmErr===false && genderErr===false &&
-        usernameErr===false ){
-          handleClickOpen();
-          console.log("in")
-          //setInital(true)
       }
-      //handleSubmit();
-       // handleClickOpen();
+      console.log(firstName)
+    if(!firstName=='' && !lastName=='' && !username=='' && !email=='' && !password==''  ){
+      console.log('in')
+      handleClickOpen();
     }
-
-    //let errorsExist= false;
-    //errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
-    //setError(!errorsExist);
-    //console.log(errorsExist)
-    //if (errorsExist)
-    //console.log(true);
-    //else
-    //handleClickOpen();
+      
+  
 
   }
   const change = async () => {
-    //window.location.href = `/`
-    //remember to handle close
+
    
     const response = await axios.post(`http://localhost:8000/signUp/`, {
       username: username,
@@ -309,14 +295,6 @@ export default function Signup() {
         window.location.href = `/`
     }
 
-    //let errorsExist= false;
-    //errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
-    //setError(!errorsExist);
-    //console.log(errorsExist)
-    //if (errorsExist)
-    //console.log(true);
-    //else
-    //handleClickOpen();
 
   }
   
@@ -347,13 +325,13 @@ export default function Signup() {
             <Typography component="h1" variant="h5">
               Sign up
             </Typography>
-            <Box component="form" noValidate onSubmit={handleSubmit}  sx={{ mt: 3 }}>
+            <Box component="form"   sx={{ mt: 3 }}>
                {/* //onSubmit={handleSubmit} */}
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    error={firstNameErr}
-                    helperText={firstNameErr ? "Please enter at least 2 characters." : null}
+                    error={first==1 && firstName==''}
+                    helperText={first==1 && firstName.length<2 ? "Please enter at least 2 characters." : null}
                     autoComplete="given-name"
                     name="firstName"
                     required
@@ -368,8 +346,8 @@ export default function Signup() {
                   <TextField
                     required
                     fullWidth
-                    error={lastNameErr}
-                    helperText={lastNameErr ? "Please enter at least 2 characters." : null}
+                    error={first==1 && lastName==''}
+                    helperText={first==1 && lastName.length<2 ? "Please enter at least 2 characters." : null}
                     id="lastName"
                     label="Last Name"
                     name="lastName"
@@ -381,8 +359,8 @@ export default function Signup() {
                   <TextField
                     required
                     fullWidth
-                    error={usernameErr}
-                    helperText={usernameErr ? "Please enter at least 6 characters." : null}
+                    error={first==1 &&  username==''}
+                    helperText={first==1 && username.length<2 ? "Please enter at least 6 characters." : null}
                     name="username"
                     label="Username"
                     id="username"
@@ -394,8 +372,8 @@ export default function Signup() {
                   <TextField
                     required
                     fullWidth
-                    error={emailErr}
-                    helperText={emailErr ? "Please enter a valid email." : null}
+                    error={first==1 && email==''}
+                    //helperText={emailErr ? "Please enter a valid email." : null}
                     id="email"
                     label="Email Address"
                     name="email"
@@ -407,8 +385,8 @@ export default function Signup() {
                   <TextField
                     required
                     fullWidth
-                    error={passwordErr}
-                    helperText={passwordErr ? "Please enter at least 6 characters." : null}
+                    error={first==1 && password==''}
+                    helperText={first==1 && password.length<2 ? "Please enter at least 6 characters." : null}
                     name="password"
                     label="Password"
                     type="password"
@@ -421,8 +399,8 @@ export default function Signup() {
                   <TextField
                     required
                     fullWidth
-                    error={confirmErr}
-                    helperText={confirmErr ? "The two passwords do not match." : null}
+                    //error={}
+                   // helperText={ ? "The two passwords do not match." : null}
                     name="confirmpassword"
                     label="Confirm Password"
                     type="password"
@@ -433,7 +411,7 @@ export default function Signup() {
                 </Grid>
                 &nbsp;
                 <FormControl>
-                  <FormLabel error={genderErr} id="demo-row-radio-buttons-group-label" >
+                  <FormLabel id="demo-row-radio-buttons-group-label" >
                     Gender
                   </FormLabel>
                   <RadioGroup
@@ -447,7 +425,7 @@ export default function Signup() {
 
                   </RadioGroup>
                   {
-                    genderErr &&
+                    gender.length=='' && first==1 &&
                     <FormHelperText sx={{ color: '#cc0000' }}> Please choose a gender. </FormHelperText>
                   }
                 </FormControl>
@@ -458,12 +436,13 @@ export default function Signup() {
 
 
 
-              <Button type="submit"
+              <Button 
                 fullWidth
                 variant="contained"
                 sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E', mt: 3, mb: 2 }}
-                onClick={change2}
-                onSubmit={handleSubmit}>
+                onClick={()=> {handleChangeChange2()}}
+                //onSubmit={handleSubmit}
+                >
                 Sign Up
               </Button>
 

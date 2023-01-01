@@ -48,9 +48,10 @@ import TraineeCourse from './nav/TraineeCourse';
 import Ratings from './nav/Ratings';
 import InstructorCreate from './components/InstructorCreate';
 import InstructorSubtitle from './components/InstructorSubtitle';
-import MyReports from './nav/MyReports';
+import MyReport from './nav/MyReport';
 import InstructorCrEx from './components/InstructorCrEx';
 import InstructorCrEx2 from './components/InstructorCrEx2';
+
 import ViewCorrectAnswer from './components/viewTheCorrectAnswers';
 import InstructorCreateEx2 from './components/InstructorCreateEx2';
 
@@ -80,7 +81,7 @@ function App() {
       <Route path='/settingsT' element= {<Settings/>} > </Route>
       <Route path='/ratings' element={<Ratings/>}></Route>
       <Route path='/enrolled' element={<TraineeCourse/>}></Route>
-      <Route path='/myReports' element={<MyReports/>}></Route>
+      <Route path='/myReports' element={<MyReport/>}></Route>
         <Route path='/home' element= {<Home/>} >
         </Route>
         <Route path='/changePassword' element= {<ChangePassword/>} >

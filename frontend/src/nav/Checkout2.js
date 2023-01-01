@@ -19,6 +19,7 @@ import TextField from '@mui/material/TextField';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
+import axios from 'axios';
 
 const traineeNav = {};
 
@@ -26,33 +27,14 @@ const traineeNav = {};
 
 const steps = ['Payemnt Details', 'Confirmation'];
 
-function getStepContent(step) {
-  switch (step) {
-    case 0:
-      return <PaymentForm />;
-    case 1:
-      return <Review />;
-    default:
-      throw new Error('Unknown step');
-  }
-}
 
 const theme = createTheme();
 
 export default function Checkout() {
   const [activeStep, setActiveStep] = React.useState(0);
-  const [name, setName] = React.useState('');
   const [number, setNumber] = React.useState('');
-  const [exDate, setExDate] = React.useState('');
-  const [cvv, setCVV] = React.useState('');
-  const handleChangeName= (event) => {
-    setName(event.target.value)}
   const handleChangeNumber = (event) => {
       setNumber(event.target.value)}
-  const handleChangeExDate = (event) => {
-      setExDate(event.target.value)}
-  const handleChangeCVV = (event) => {
-        setCVV(event.target.value)}
   const handleNext = () => {
     setActiveStep(activeStep + 1);
   };
@@ -61,6 +43,26 @@ export default function Checkout() {
     setActiveStep(activeStep - 1);
     
   };
+
+  const params = new URLSearchParams(window.location.search);
+  const courseId = params.get('courseId')
+  const price= params.get('price')
+
+  const pay = async () => {
+    const response = await axios.post(`http://localhost:8000/payForCourse2`, {
+            courseId: courseId,
+            cardNo:number
+        }).catch(error => {
+            if(error.response.status === 400) {
+            }
+        })
+
+        if (response.status === 200) {
+            window.location.href=`course/${courseId}`
+        }
+  
+    }
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -111,7 +113,6 @@ export default function Checkout() {
         <Grid item xs={12} md={6}>
         
           <TextField
-            onChange={(event)=>{handleChangeName(event)}}
             required
             id="cardName"
             label="Name on card"
@@ -133,7 +134,6 @@ export default function Checkout() {
         </Grid>
         <Grid item xs={12} md={6}>
           <TextField
-          onChange={(event)=>{handleChangeExDate(event)}}
             required
             id="expDate"
             label="Expiry date"
@@ -144,7 +144,6 @@ export default function Checkout() {
         </Grid>
         <Grid item xs={12} md={6}>
           <TextField
-          onChange={(event)=>{handleChangeCVV(event)}}
             required
             id="cvv"
             label="CVV"
@@ -187,18 +186,7 @@ export default function Checkout() {
           <Typography variant="h6" gutterBottom sx={{ mt: 2 }}>
             Payment details
           </Typography>
-          {/* <Grid container>
-            {payments.map((payment) => (
-              <React.Fragment key={payment.name}>
-                <Grid item xs={6}>
-                  <Typography gutterBottom>{payment.name}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography gutterBottom>{payment.detail}</Typography>
-                </Grid>
-              </React.Fragment>
-            ))}
-          </Grid> */}
+ 
         </Grid>
       </Grid>
     </React.Fragment>)}
@@ -223,13 +211,21 @@ export default function Checkout() {
                   </Button>
                 )}
 
-                <Button
+
+                  {activeStep === steps.length - 1 ? 
+                  <Button
                   variant="contained"
-                  onClick={handleNext}
-                  sx={{ mt: 3, ml: 1 }}
-                >
-                  {activeStep === steps.length - 1 ? 'Place order' : 'Next'}
-                </Button>
+                  onClick={pay}
+                  sx={{ mt: 3, ml: 1 }}>
+                    Register Now
+                  </Button>
+                : <Button
+                variant="contained"
+                onClick={handleNext}
+                sx={{ mt: 3, ml: 1 }}>
+                  Next
+                </Button>}
+
               </Box>
             </React.Fragment>
           )}
