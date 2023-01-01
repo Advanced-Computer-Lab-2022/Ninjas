@@ -50,7 +50,8 @@ import InstructorCreate from './components/InstructorCreate';
 import InstructorSubtitle from './components/InstructorSubtitle';
 import MyReport from './nav/MyReport';
 import InstructorCrEx from './components/InstructorCrEx';
-import InstructorCrEx2 from './components/InstructorCrEx2';import ViewCorrectAnswer from './components/viewTheCorrectAnswers';
+import InstructorCrEx2 from './components/InstructorCrEx2';
+import ViewCorrectAnswer from './components/viewTheCorrectAnswers';
 
 
 

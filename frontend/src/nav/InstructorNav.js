@@ -485,16 +485,16 @@ const handleChangeNewPassword = (event) => {
         setConfirmPassword(event.target.value)}
 
 const saveSettings = async ()=>{  
-  if(newEmail!=''){
+  
     const response=await axios.put(`http://localhost:8000/editEmail/`,{
     newEmail:newEmail})
     .catch( (error) => alert(error.response.data.message))
     console.log(response.data)
     if(response.status===200){
     alert(response.data)
-          }}
-  if(newPassword!=''){
-    const response=await axios.put(`http://localhost:8000/changePassword/`,{
+          }
+
+    const response2=await axios.put(`http://localhost:8000/changePassword/`,{
       oldPassword:oldPassword,
       newPassword:newPassword}).
       catch( (error) => alert(error.response.data.message))
@@ -502,10 +502,10 @@ const saveSettings = async ()=>{
 
       console.log(response.data)
       if(response.status===200){
-          alert(response.data)}}
+          alert(response.data)}
 
-  if(biography!=''){  
-    const response=await axios.put(`http://localhost:8000/editBiography/`,{
+
+    const response3=await axios.put(`http://localhost:8000/editBiography/`,{
     newText:biography}).
     catch( (error) => alert(error.response.data.message))
 
@@ -518,7 +518,7 @@ const saveSettings = async ()=>{
   
         
         
-        }
+        
       }
 
 const change = async ()=>{
@@ -609,8 +609,8 @@ useEffect(() => {
     if (user._id) {
         getCurrency();
         setReady(true);
-        setNewEmail(user.email);
-        setBiography(user.biography);
+        // setNewEmail(user.email);
+        // setBiography(user.biography);
 
         
     }
@@ -799,7 +799,6 @@ const handleChange = (event) => {
             onChange={(event)=>{handleChangeEmail(event)}}
             sx={{mt:0 ,ml:2, mr:2}}
             label="Email"
-            type= {!editEmail} 
             //defaultValue={newEmail}
             endAdornment={
               <InputAdornment position="end">
