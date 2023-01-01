@@ -40,32 +40,32 @@ This project uses standard JavaScript code style. [ESLint](https://eslint.org/) 
 
 ## Features
 
-1. Write notes while watching video :writing_hand:
-  Why use a pen and a paper when you can type down your notes and download them as a PDF file? In Courses Planet, you can drop down lines of code while watching the video at the same time! It's completely up to you to choose whether you want to download the notes or not afterwards.
+1. Write notes while watching video :writing_hand: <br />
+    Why use a pen and a paper when you can type down your notes and download them as a PDF file? In Courses Planet, you can drop down lines of code while watching the video at the same time! It's completely up to you to choose whether you want to download the notes or not afterwards.
 
-2. Pay using a credit card OR your wallet :credit_card: :dollar:
+2. Pay using a credit card OR your wallet :credit_card: :dollar: <br />
   Do you want to use your course refund to register in another course? We got you covered! Our system allows the trainees to pay for course registeration using their credit cards or the balance in their wallet.
 
-3. Edit or delete their rating on a specific course or instructor :star: :star: :star:
+3. Edit or delete their rating on a specific course or instructor :star: :star: :star: <br />
   In case you change your mind after rating a course/instructor, the website permits you to edit your rating or delete it if needed.
 
-4. Retake a failed exercise :memo:
+4. Retake a failed exercise :memo: <br />
   Life is full of second chances. If you failed an exercise, Courses Planet will allow you to retake it over and over again, until your grade is over 50% of the total grade of that exercise. Don't worry, we won't tell anyone. :slightly_smiling_face:
 
-5. View the grade of a previously solved exercise :books:
+5. View the grade of a previously solved exercise :books: <br />
   You can always come back later to recheck your latest grade in an exercise you have solved in the past. Just go to the course page, open the subtitle, and the grade will show up for you.
 
-6. See the total number of enrolled students in a course at this very moment :busts_in_silhouette:
+6. See the total number of enrolled students in a course at this very moment :busts_in_silhouette: <br />
   Wondering how popular the course is? Go to its page to see the number of enrolled students.
 
-7. Instructors can see the average grade scored in their course exercises :chart_with_upwards_trend:
+7. Instructors can see the average grade scored in their course exercises :chart_with_upwards_trend: <br />
   Sometimes instructors want to know whether the exercise they added to a subtitle is too hard, or way too easy. To help them decide, we always display the average grade scored in an exercise.
 
-8. Exercise grades are realistic :page_facing_up: :negative_squared_cross_mark:
+8. Exercise grades are realistic :page_facing_up: :negative_squared_cross_mark: <br />
   A common problem in myriads of online learning systems is that trainees can retake an exam or resubmit an exercise solution after seeing the correct answers. This results in the average grades of the exercise being unrealistic. We prevent this issue by not allowing a trainee to re-solve an exercise if they have already seen its correct answer.
 
-9. Ease of use and flexibility :sparkles:
-  You do not have to navigate between the pages alot.
+9. Ease of use and flexibility :sparkles: <br />
+      You do not have to navigate between the pages alot.
       - The video view panel is inside the course page, and the notes box is also with it, so there will be no need to navigate anywhere. Just stay focused on watching the video! :blush:
       - The subtitles panel is scrollable so you won't worry about scrolling down and up the whole page to find different subtitles. 
       - You can check the available balance in your wallet anywhere and everywhere, since it's in the side menu.
@@ -73,11 +73,11 @@ This project uses standard JavaScript code style. [ESLint](https://eslint.org/) 
       - EXCLUSIVELY: The admin can select MULTIPLE courses and set their promotion at once.
       - You can also change your country at any time you want. :crossed_flags:
 
-10. Security :closed_lock_with_key:
+10. Security :closed_lock_with_key: <br />
     - Our system obligates the users to set a password of 6+ characters while signing up. In case you forget your password, we ask for your **username**, and send you an email with the link to reset it. There is no other way.
     - Your credit card details are **NEVER** saved in our database, in order to ensure your privacy and safety.
 
-11. Certificates of course completion are both emailed and downloadable from the website! :medal_sports:
+11. Certificates of course completion are both emailed and downloadable from the website! :medal_sports: <br />
   This is to allow the trainees to re-download their certificates in case they suddenly lost access to them.
 
 ## Code Example
