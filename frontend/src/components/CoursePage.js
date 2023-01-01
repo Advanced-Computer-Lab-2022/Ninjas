@@ -106,7 +106,14 @@ const CoursePage = () => {
         setOpenRateCourse(false);
     };
     const [rating, setRating] = useState(0);
-    const [text, setText] = useState("")
+    const [text, setText] = useState("");
+    const [didRate, setdidRate] = useState(false);
+    const [didRateDelete, setdidRateDelete] = useState(false);
+    const [opendidRateDelete, setOpendidRateDelete] = useState(false);
+
+    const handleDidRateDelete = () => {
+        setdidRateDelete(true);
+    };
     const handleRating = (event) => {
         setRating(event.target.value);
     };
@@ -115,8 +122,13 @@ const CoursePage = () => {
     };
 
     const [openPopup, setOpenPopup] = useState(false);
+    const [instR, setInstR] = useState(false);
     const handleClosePopup = () => {
         setOpenPopup(false);
+        if(instR){
+            setInstR(false)
+            setdidRate(true)
+        }else
         window.location.reload();
     };
     const submitRating = async () => {
@@ -151,18 +163,43 @@ const CoursePage = () => {
 
     }
 
+    const didRateInstructor = async () => {
+
+       console.log('henaa')
+        const response = await axios.get(`http://localhost:8000/didRateInstructor?userId=${user._id}&instructorId=${course.instructors[0]._id}&deleteR=${didRateDelete}`)
+           .then(res=>{ setdidRate(res.data.rated)
+           console.log( res.data.rated)
+        
+        }).catch((error) => setdidRate(false)  )
+            //alert(error.response.data.message)
+
+
+            if (didRateDelete){
+                console.log('w b3deen');
+                setOpendidRateDelete(true)
+                setdidRateDelete(false)
+            }
+        // if (response.status === 200) {
+        //     setdidRate(true)
+        // }
+
+    }
+
     //endpoint code
     const { id: courseId } = useParams();
     const [currency, setCurrency] = useState("");
     const [factor, setFactor] = useState(0);
     const [price, setPrice] = useState(0);
     const [userProgress, setProgress] = useState(0);
+    const[EXgrades,setEXgrades]=useState(null)
     const [course, setCourses] = useState(async () => {
         await axios.get(`http://localhost:8000/course/${courseId}`)
             .then(res => {
+                console.log(res.data)
                 setCourses(res.data.course);
                 setCurrency(res.data.currency);
                 setFactor(res.data.factor);
+                setEXgrades(res.data.Exgrades);
             })
             .catch((error) => {
                 console.log(error)
@@ -235,9 +272,10 @@ const CoursePage = () => {
     const [exerciseId, setExerciseId] = useState(null);
     const [severity, setSeverity] = useState('info');
     const [flagG, setFlagG] = useState(null);
+    const [RD, setRD] = useState(null);
     async function reportCourse() {
 
-        await axios.post(`http://localhost:8000/reportCourse?userId=${user._id}&courseId=${course._id}&problem=${problem}`)
+        await axios.post(`http://localhost:8000/reportCourse?userId=${user._id}&courseId=${course._id}&problem=${problem}&description=${RD}`)
             .then(res => {
                 setSeverity('success')
                 setReportMessage('Your Report has been submitted')
@@ -290,8 +328,16 @@ const CoursePage = () => {
 
 
     }
+    
+    const handleReportDescription = (event) => {
+        setRD(event.target.value);
+    }
     const handleCloseRM = () => {
         setOpenRM(false);
+    }
+
+    const handleClosedid = () => {
+        setOpendidRateDelete(false);
     }
     const handleCloseGrade = () => {
         setOpenGrade(false);
@@ -306,6 +352,18 @@ const CoursePage = () => {
     }, [flagG]
     )
 
+    useEffect(() => {
+        if (didRateDelete) {
+            didRateInstructor();
+        }
+
+    }, [didRateDelete]
+    )
+
+    
+
+
+    
 
     //when an enrolled user wants a refund
     const [requested, setRequested] = useState(false);
@@ -362,7 +420,7 @@ const CoursePage = () => {
     };
     const handleDone = (event) => {
 
-        if (problem) {
+        if (problem && RD) {
 
             reportCourse();
         } else {
@@ -394,12 +452,21 @@ const CoursePage = () => {
             </Page>
         </Document>
     )
+    // EXgrades.filter(ex => ex.exercises[0]._id.toString() === exercise._id.toString()).length > 0
+    // && EXgrades.filter(ex => ex.exercises[0]._id.toString() === exercise._id.toString())[0].userGrade &&
+    // <Typography> heheeee </Typography>
+    const getTheGrade = () => {
+        console.log(EXgrades)
+    }
 
     useEffect(() => {
         if (course._id && user._id) {
             //result of the backend request is ready
+            console.log(course);
             setReady(true);
+            didRateInstructor();
 
+            getTheGrade();
             //check if this user is registered 
             setRegistered(isRegistered());
 
@@ -489,23 +556,53 @@ const CoursePage = () => {
                                 <Typography variant="h6"> <BoyOutlinedIcon />
                                     Taught by {course.instructors[0].firstName} {course.instructors[0].lastName}
                                     <br></br>
-                                    {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) &&
+                                    {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) && !didRate &&
                                         <Button variant="contained" size="small"
                                             sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                            onClick={openInstRate}>
+                                            onClick={()=>{ setInstR(true);
+                                                openInstRate()}}>
                                             Rate this instructor
                                         </Button>
+                                    }
+                                    {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) && didRate &&
+                                        <Button variant="contained" size="small"
+                                            sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                            onClick={()=>{ setInstR(true);
+                                                openInstRate()}} endIcon={<EditIcon />}>
+                                            Update instructor's rating
+                                        </Button>
+                                        
+                                      
+                                    }
+                                    {registered && ["CORPORATE_TRAINEE", "INDIVIDUAL_TRAINEE"].includes(user.type) && didRate &&
+                                        <Button variant="contained" size="small"
+                                            sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                            onClick={handleDidRateDelete} 
+                                            endIcon={<DeleteIcon />}>
+                                            delete instructor's rating
+                                        </Button>
+                                        
+                                      
                                     }
                                 </Typography>
                             </Paper>
 
                             <Box display="flex"
-                                mt={1}
-                                mb={1}
+                                mt={0.5}
+                                mb={0.5}
+                                sx={{
+                                backgroundColor: (theme) =>
+                                theme.palette.mode === 'light'
+                                  ? theme.palette.grey[100]
+                                  : theme.palette.grey[900],}}
                                 flexDirection="column"
                                 alignItems="center"
                                 justifyContent="center">
-                                <Typography variant="subtitle1">{course.summary}</Typography>
+                                
+                                    
+                                <Typography  variant="subtitle1">
+                                <Typography  variant="h6"> Summary:</Typography> {course.summary}</Typography>
+                                
                                 {/*dealing with the course price*/}
 
                                 {( ['GUEST','INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered) ) &&
@@ -675,6 +772,18 @@ const CoursePage = () => {
                                                         </Typography>
 
                                                         {registered && user.type != 'INSTRUCTOR' &&
+                                                                //  EXgrades.map((record) => (
+                                                                //   {record.exercises[0]._id == exercise._id &&
+                                                                //     <Typography>
+                                                                //     here
+                                                                // </Typography>
+                                                                //   }
+                                                                    
+
+                                                                //  ) )
+                                                                       
+                                                                
+
                                                             <Button
                                                                 sx={{ mt: 0, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                                                 onClick={() => {
@@ -699,6 +808,9 @@ const CoursePage = () => {
                                                                 Click anywhere to continue
                                                             </Alert>
                                                         </Backdrop>
+
+
+                                                                 
 
 
                                                     </Grid>
@@ -824,26 +936,28 @@ const CoursePage = () => {
                                 </Button>
 
                             }
-                            <StyledMenu
-                                id="demo-customized-menu"
-                                MenuListProps={{
-                                    'aria-labelledby': 'demo-customized-button',
-                                }}
-                                anchorEl={anchorEl}
-                                open={open2}
-                                onClose={handleClose2}
+                            
+                            {/*Report pop*/}
 
-                            >
-
-
-
-
-                                <Typography >
+                                 <Dialog onClose={handleClose2} open={open2}
+                                sx={{
+                                    "& .MuiDialog-container": {
+                                        "& .MuiPaper-root": {
+                                            width: "100%",
+                                            maxWidth: "700px",
+                                        },
+                                    },
+                                    display: "flex", flexDirection: "column"
+                                }}>
+                                    
+                                <DialogTitle align='center' display={"flex"} flexDirection={"column"} alignItems={"center"}>
+                              
                                     Report a problem
-                                </Typography>
-                                <Divider />
-                                <Typography
-                                >
+                                   
+                                </DialogTitle>
+
+                                 <Divider />
+                                <Typography  sx={{ml:2}}>
                                     <RadioGroup
                                         //aria-labelledby="demo-radio-buttons-group-label"
                                         // name="controlled-radio-buttons-group"
@@ -858,6 +972,11 @@ const CoursePage = () => {
                                     </RadioGroup>
                                 </Typography>
 
+
+                                <TextField id="standard-basic" label="what is your problem?" //variant="standard"
+                                    sx={{ m1: 5 ,mb:2}}
+                                    onChange={handleReportDescription} />
+
                                 <Typography >
                                     <Button variant="contained" size="small"
                                         sx={{ mb: 0.5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
@@ -867,12 +986,27 @@ const CoursePage = () => {
                                         Done
                                     </Button>
 
+
+
+                                    <Backdrop
+
+sx={{  color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+open={openRM}
+onClick={handleCloseRM}
+>
+<Alert sx={{ tabSize: 'l' ,mt: -50 }} severity={severity} >
+    <AlertTitle>{reportMessage}</AlertTitle>
+    Click anywhere to continue
+</Alert>
+</Backdrop>
+
+
                                 </Typography>
 
+                               
 
-
-
-                            </StyledMenu>
+                               
+                            </Dialog>
 
 
                             {/*RATE THE COURSE POPUP DIALOGUE*/}
@@ -964,8 +1098,8 @@ const CoursePage = () => {
                                 </Alert>
                             </Backdrop>
 
-
-                            <Backdrop
+                               {/* report alert */}
+                            {/* <Backdrop
 
                                 sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
                                 open={openRM}
@@ -975,8 +1109,24 @@ const CoursePage = () => {
                                     <AlertTitle>{reportMessage}</AlertTitle>
                                     Click anywhere to continue
                                 </Alert>
-                            </Backdrop>
+                            </Backdrop> */}
+
+
+
+<Backdrop
+
+sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+open={opendidRateDelete}
+onClick={handleClosedid}
+>
+<Alert sx={{ width: '400px' }} severity='success'   >
+    <AlertTitle>Rating for this instructor has been deleted</AlertTitle>
+    Click anywhere to continue
+</Alert>
+          </Backdrop>
                         </div>
+
+
                     }
 
 

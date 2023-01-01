@@ -531,8 +531,9 @@ userRouter.get('/checkRequestedAccess', async (req,res) => {
 
 userRouter.post('/reportCourse', async (req, res) => {
     try {
-        const { courseId, userId , problem } = req.query
-        const reported = await userController.ReportCourse( userId,courseId,problem);
+        const { courseId, userId , problem ,description} = req.query
+        //console.log(description);
+        const reported = await userController.ReportCourse( userId,courseId,problem,description);
         res.status(200).json({message:'Done'})
     }
     catch (err) {

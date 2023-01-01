@@ -762,9 +762,40 @@ const instructorController = {
 
 },
 
+async didRatedInst (instructorId , userId ,deleteR)
+{try {
 
 
-async rateInstructor (instructorId , userId , ratingNumber, ratingText){
+    if(deleteR == 'true'){
+
+        await Account.findOneAndUpdate({_id : instructorId}, {"$pull": {"review" : {id: userId}}})
+        return false;
+    }
+    
+    else{
+
+       
+   const found = await Account.findOne({'$and': [
+        { _id : instructorId  },
+        { review: { $elemMatch: { id: userId } } }
+    ]}).catch(()=> {return false;})
+
+    if (found){
+
+        return true;
+    }
+    else return false;
+}
+
+}
+catch(err){
+    console.log(err)
+    if (err instanceof DomainError) { throw err; }
+    throw new DomainError('error internally', 500);
+}  
+
+},
+async rateInstructor (instructorId , userId , ratingNumber, ratingText ){
 try {
 
 
@@ -781,6 +812,9 @@ try {
     
     await Account.findOneAndUpdate({_id : instructorId}, {"$pull": {"review" : {id: query.id}}})
 
+
+
+   
     const result = await Account.findOneAndUpdate({ _id : instructorId},
         {   "$push": { "review": query }  },
         { "new": true, "upsert": true })

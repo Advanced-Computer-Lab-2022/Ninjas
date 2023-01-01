@@ -863,7 +863,7 @@ async viewProgress({ userId,courseId }) {
 },
 
 
-async ReportCourse( userId,courseId, problem ) {
+async ReportCourse( userId,courseId, problem ,description) {
  try{
     const user = await Account.findOne({ _id: userId }, { type: 1 }).catch(() => {
         throw new DomainError("Wrong Id", 400)
@@ -877,7 +877,7 @@ async ReportCourse( userId,courseId, problem ) {
     throw new DomainError("you already reported", 401);
   }
 
-   const report = await Report.create( {accountId: userId,courseId, problem });
+   const report = await Report.create( {accountId: userId,courseId, problem , description});
    return "Done";
 }
 catch(err){
@@ -1048,6 +1048,17 @@ async getCourse({ courseId, userType, userId }) {
             response.currency = "";
             response.factor = 1;
         }
+        console.log('enteeeerr')
+        
+var EXgrades=  await UserExercise.find({
+    accountId: userId 
+}, { userGrade: 1, gradePercentage: 1, "exercises.totalGrade": 1 , "exercises._id": 1 })
+
+
+     response.EXgrades= EXgrades;
+
+
+
 
         return response;
     } catch(error) {
