@@ -50,11 +50,16 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ReactPlayer from 'react-player/youtube'
 import { useEffect } from 'react';
 import TraineeNav from '../nav/TraineeNav';
-import InstructorNav from '../nav/InstructorNav'
+import InstructorNav from '../nav/InstructorNav';
+import TextField from '@mui/material/TextField';
+import { setbar } from '../nav/TraineeNav';
 const traineeNav = {};
 
 export  var searchtemp = null;
-
+function setSearchtemp (x){
+    searchtemp =x
+    
+}
 function valuetext(value) {
   return value;
 }
@@ -146,7 +151,7 @@ const Search = styled('div')(({ theme }) => ({
   }));
 
 const drawerWidth = 240;
-const SearchInstructor = () => {
+const Temp = () => {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
@@ -199,9 +204,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const [ready, setReady] = React.useState(false);
 const params = new URLSearchParams(window.location.search);
 const userId = params.get('userId');
-const username = params.get('username');
-const [search, setSearch] = React.useState('');
-
+const [search, setSearch] = React.useState( params.get('search'));
+setSearchtemp(search);
 //setSearch( params.get('search')); //search el mktob fl text box
 
 
@@ -217,22 +221,26 @@ const [anchorEl, setAnchorEl] = React.useState(null);
   const [openSubject, setOpenSubject] = React.useState(false);
   const [openRating, setOpenRating] = React.useState(false);
   const [openPrice, setOpenPrice] = React.useState(false);
-   const [subject, setSubject] = React.useState('');
+   const [subject, setSubject] = React.useState(null);
    const [rating, setRating] = React.useState(null);
    const [expanded, setExpanded] = React.useState(false);
-   const [minOn, setMinOn] = React.useState(false);
-   const [maxOn, setMaxOn] = React.useState(false);
-   const [MinV, setMinV] = React.useState(0);
-   const [MaxV, setMaxV] = React.useState(99999999999);
+   const [expandedf, setExpandedf] = React.useState(false);
+   const [minOn, setMinOn] = React.useState(true);
+   const [maxOn, setMaxOn] = React.useState(true);
+   const [MinV, setMinV] = React.useState(null);
+   const [MaxV, setMaxV] = React.useState(null);
    const [result, setResult] = React.useState([]);
-   const [maxtemp, setMaxtemp] = React.useState('');
-   const [mintemp, setMintemp] = React.useState('');
-   
-
+   const [maxtemp, setMaxtemp] = React.useState(null);
+   const [mintemp, setMintemp] = React.useState(null);
+   const [price, setPrice] = React.useState(false);
+   const [inst, setinst] = React.useState(true);
 
    const handleChange = (panel) => (event, isExpanded) => {
      setExpanded(isExpanded ? panel : false);
    };
+   const handleChangef = (panel) => (event, isExpanded) => {
+    setExpandedf(isExpanded ? panel : false);
+  };
  
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -254,10 +262,17 @@ const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleSearch = (event) => {
     setSearch(event.target.value)
-   // setSearchtemp(event.target.value);
+    setSearchtemp(event.target.value);
     
   };
 
+  const handlePrice = (event) => {
+    if (MinV == ''){setMinV(null);
+       setMintemp(null)}
+    if (MaxV == ''){setMaxV(null);
+       setMaxtemp(null)}
+   setPrice(!price)
+  }
 
   const handleMinV = (event) => {
     if ((minOn)){
@@ -344,35 +359,23 @@ const theme = useTheme();
   };
 
   
-  
   async function getResult () {
     console.log('funccccc')
    
-      await axios.get(`http://localhost:8000/SearchInst?search=${search}`)
-          .then(res => setSearchResult(res.data))
-          .catch((error) => {   if (error.response.status === 401) //you didn't login
+      await axios.get(`http://localhost:8000/search?userId=${userId}&subject=${subject}&minPrice=${mintemp}&maxPrice=${maxtemp}&rating=${rating}&title=${search}&instructor=${inst}`)
+          .then(res => {setSearchResult(res.data.data)
+         // console.log(res.data.data)
+        }
+          )
+          .catch((error) => {  
+            if (error.response.status === 401) //you didn't login
           window.location.href='/';
             else alert(error.response.data.message)})
-          //console.log(Search)
+         
          // const c = searchResult.currency
         
           
     }
-
-
-    async function getResultFilter () {
-        console.log('funccccc')
-       
-          await axios.get(`http://localhost:8000/filter?subject=${subject}&minPrice=${mintemp}&maxPrice=${maxtemp}&search=${search}`)
-              .then(res => setSearchResult(res.data))
-              .catch((error) => {   if (error.response.status === 401) //you didn't login
-              window.location.href='/';
-                else alert(error.response.data.message)})
-              //console.log(Search)
-             // const c = searchResult.currency
-            
-              
-        }
 
 
   const [searchResult, setSearchResult] = React.useState(getResult)
@@ -385,17 +388,13 @@ const theme = useTheme();
 
   useEffect(() => 
   {
+    console.log('////min w max')
+    console.log(MinV);
+    console.log(MaxV);
     setReady(false);
    getResult ();
    }
-  ,[search]) 
-
-  useEffect(() => 
-  {
-    setReady(false);
-   getResultFilter ();  /********************/
-   }
-  ,[subject,minOn,maxOn,mintemp,maxtemp]) 
+  ,[subject,price,rating,search]) 
   
   useEffect(() => {
   
@@ -415,8 +414,23 @@ const theme = useTheme();
    
     <ThemeProvider theme={mdTheme} >
       <Box sx={{ display: 'flex'   }}>
+
+       
         <CssBaseline />
-          <InstructorNav post={traineeNav}/>
+
+        { searchResult.userType == 'GUEST' && 
+          <TraineeNav post={traineeNav}/>}
+
+        { searchResult.userType == 'CORPORATE_TRAINEE' && 
+          <TraineeNav post={traineeNav}/>}
+
+        { searchResult.userType == 'INDIVIDUAL_TRAINEE' && 
+          <TraineeNav post={traineeNav}/>}
+
+        { searchResult.userType == 'INSTRUCTOR' && 
+          <InstructorNav post={traineeNav}/>}
+
+
  {/* box dh bta3 el body bta3t el page */}
         {
                         !ready &&
@@ -434,6 +448,8 @@ const theme = useTheme();
 
                     }
                     
+                   
+                    
                      {  ready && 
        
         <Box
@@ -448,13 +464,13 @@ const theme = useTheme();
         >
           <Toolbar />
 
+          
+{/* 
           <Toolbar>
           <Container maxWidth="lg" sx={{ mt: 0, mb: 0 ,mr: 0 , ml: 0 }}  >
             <Grid container spacing={0}>
 
-                 {/* filters */}
-       {/* el filter */}
-
+    
       
        <Button id="demo-customized-button"
         aria-controls={open2 ? 'demo-customized-menu' : undefined}
@@ -471,19 +487,6 @@ const theme = useTheme();
       <ListItemText primary="Filter " />
     </Button>
 
-    <Search  >
-            <SearchIconWrapper>
-              <SearchIcon />
-            </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-             defaultValue = {search}
-              //onChange={(e) => setSearch(e.target.value)}
-              onKeyPress={handleKeypress}
-              
-            />
-          </Search>
 
     
     <StyledMenu
@@ -526,9 +529,36 @@ const theme = useTheme();
         </AccordionDetails>
       </Accordion>
 
-        
         </MenuItem>
-        { searchResult.userType != 'CORPORATE_TRAINEE' && <Divider sx={{ my: 0.5 }} />}
+        <Divider sx={{ my: 0.5 }} />
+        <MenuItem  disableRipple>
+       
+        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+          Rating
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          
+          <Rating
+                                        name="simple-controlled"
+                                     
+                                        value = {rating}
+                                        //precision={0.005}
+                                        onChange={handleRating}
+                                    />
+                
+        </AccordionDetails>
+      </Accordion>
+         
+          
+        </MenuItem> */}
+        {/* { searchResult.userType != 'CORPORATE_TRAINEE' && <Divider sx={{ my: 0.5 }} />}
         { searchResult.userType != 'CORPORATE_TRAINEE' &&  <MenuItem  disableRipple>
         
         <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
@@ -554,12 +584,12 @@ const theme = useTheme();
                         onClick={handlMinON}
                     >
           <FormControlLabel  control={<Radio />}  checked={minOn} />    {/* h3mlha on click */ }
-          </RadioGroup>
+          {/* </RadioGroup>
           
           minimum
           </Typography>
         
-{/* changeable default value */}
+
         <Slider
   aria-label="Temperature"
   defaultValue={0}
@@ -584,7 +614,7 @@ const theme = useTheme();
                         onClick={handlMaxON}
                     >
           <FormControlLabel  control={<Radio />} checked={maxOn}   />    {/* h3mlha on click */ }
-          maximum
+          {/* maximum
           </RadioGroup>
           </Typography>
         
@@ -607,8 +637,8 @@ const theme = useTheme();
                 
         </AccordionDetails>
       </Accordion>
-         </MenuItem>}
-      </StyledMenu>
+         </MenuItem>}  */} 
+      {/* </StyledMenu>
 
      
             </Grid>
@@ -617,11 +647,242 @@ const theme = useTheme();
 
           </Container>
          
-          </Toolbar>
+          </Toolbar> */}
          
-        <Toolbar >
-          <Grid container spacing={2} sx={{ ml: 1 , mt:0.5 , mb:2}} style={{ gap: 20 }}>
 
+
+
+
+        <Toolbar>
+          <Box sx={{mt:0 ,ml:-5}} bgcolor='#CAF0F8' color='black'>
+         <Search   >
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+             defaultValue = {searchtemp}
+            
+            // variant='contained'
+              //onChange={(e) => setSearch(e.target.value)}
+              onKeyPress={handleKeypress}
+              
+            />
+          </Search>
+          </Box>
+       </Toolbar >
+
+<Toolbar>
+          <Grid container spacing={2} sx={{ ml: 1 , mt:0 , mb:2}} style={{ gap: 20 }}>
+
+          <Box 
+sx={{ml:-5}}
+width='16.5%'>
+                    <Box
+                     display="flex"
+                     flexDirection="column"
+                     sx={{
+                         overflow: "hidden",
+                         overflowY: "scroll",
+                     }}
+                     alignItems="left"
+                      
+                     //minWidth={'50%'}
+                     height='430px'
+                    >
+                       
+ {/* <Button id="demo-customized-button"
+        aria-controls={open2 ? 'demo-customized-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open2 ? 'true' : undefined}
+        variant="text"
+        disableElevation
+        onClick={handleClick}
+        //endIcon={<KeyboardArrowDownIcon />}
+        sx={{ color: 'black'}}> */}
+
+<Accordion expanded={expandedf === 'panelf'  } onChange={handleChangef('panelf')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+      
+       
+          <Typography sx={{// width: '33%',
+           flexShrink: 0 }}>
+          < IoFilterSharp/>&nbsp;&nbsp; Filter
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          
+          {/* hna kol el filters */}
+
+          <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+            Subject
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Toolbar>
+          <RadioGroup
+                        //aria-labelledby="demo-radio-buttons-group-label"
+                       // name="controlled-radio-buttons-group"
+                        onChange={ handleSubject}
+                        onClick={handleSubject}
+                    >
+                      
+                        <FormControlLabel value={'CS'} control={<Radio />} label={'CS'} checked={subject == 'CS'} />
+                        <FormControlLabel value={'English'} control={<Radio />} label={'English'} checked={subject == 'English'} />
+                        <FormControlLabel value={'Math'} control={<Radio />} label={'Math'} checked={subject == 'Math'} />
+                       
+
+                    </RadioGroup>
+                    </Toolbar>
+        </AccordionDetails>
+      </Accordion>
+
+        
+        <Divider sx={{ my: 0.5 }} />
+       
+          {/* nkml */}
+        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+          Rating
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          
+          <Rating
+                                        name="simple-controlled"
+                                     
+                                        value = {rating}
+                                        //precision={0.005}
+                                        onChange={handleRating}
+                                    />
+                
+        </AccordionDetails>
+      </Accordion>
+         
+          
+        
+        { searchResult.userType != 'CORPORATE_TRAINEE' && <Divider sx={{ my: 0.5 }} />}
+        { searchResult.userType != 'CORPORATE_TRAINEE' &&  
+        
+        <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+         <Typography sx={{ width: '33%', flexShrink: 0 }}>
+          Price
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+
+
+      
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+<Button
+variant="contained" sx={{ color: 'white',  borderColor: '#03045E' }} 
+onClick={handlePrice}
+>
+  Apply price
+</Button>
+          {/* <RadioGroup
+                        //aria-labelledby="demo-radio-buttons-group-label"
+                       // name="controlled-radio-buttons-group"
+                        onChange={ handlMinON}
+                        onClick={handlMinON}
+                    >
+          <FormControlLabel  control={<Radio />}  checked={minOn} />  
+          </RadioGroup> */}
+          
+          minimum
+          </Typography>
+        
+
+          <TextField
+          id="outlined-helperText"
+          //label="minimum price"
+          defaultValue={MinV}
+          onBlur={handleMinV}
+        />
+
+{/* changeable default value */}
+        {/* <Slider
+  aria-label="Temperature"
+  defaultValue={0}
+  value = {MinV}
+  onChange={handleMinV}
+  getAriaValueText={valuetext}
+  valueLabelDisplay="auto"
+  step={200}
+  marks
+  min={0}
+  max={1000}
+/> */}
+
+
+
+
+<Typography sx={{ width: '33%', flexShrink: 0 }}>
+
+          maximum
+        
+          </Typography>
+          <TextField
+          id="outlined-helperText"
+          //label="minimum price"
+          defaultValue={MaxV}
+          onBlur={handleMaxV}
+          ></TextField>
+          
+
+{/*    <Slider */}
+{/* //   aria-label="Temperature"
+//   defaultValue={0}
+//   value = {MaxV}
+//   onChange={handleMaxV}
+//   getAriaValueText={valuetext}
+//   valueLabelDisplay="auto"
+//   step={500}
+//   marks
+//   min={0}
+//   max={5000}
+// />
+                 */}
+      
+         
+                
+        </AccordionDetails>
+      </Accordion>
+         }
+
+
+
+
+                
+        </AccordionDetails>
+      </Accordion>
+
+
+    {/* </Button> */}
+    </Box>
+
+    </Box>
 
 
             
@@ -643,17 +904,28 @@ const theme = useTheme();
 
                     }
 
+
+
+
+
+<Grid container spacing={0} 
+//sx={{ ml: 1 , mt:0.5 , mb:2}}
+ style={{ gap: 15 }}
+ //alignItems="right"
+ width = '85%'
+>
 {searchResult && searchResult.courses.length != 0 && searchResult.courses.map((course) => (
 
 <Card  sx={{ display: 'flex' ,'&:hover': {    backgroundColor: '#90E0EF',
- },   backgroundColor: '#CAF0F8' }} style={{width:"48%", height:"250px"}} 
+ },   backgroundColor: '#CAF0F8' }} style={ { width:"49%",
+  height:"250px"}} 
 onClick={()=>{window.location.href=`course/${course._id}`}} >
 {(!course.videoLink) &&
  <CardMedia
  allow="autoPlay"
  controls={true}
          component="img"
-      sx={{ width: 280 }}
+      sx={{ width: '49%' }}
     
       // //style={{ width: 150, height: 200 }}
          src={previewPic}
@@ -710,7 +982,7 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
             price : {course.price}  {searchResult.currency}
             </Typography>}
 
-            <Typography variant="h6" color="inherit"style={{width:'210'}} >
+            <Typography variant="h6" color="inherit"style={{width:'210px'}} >
             subject : {course.subject} 
             </Typography>
 
@@ -728,9 +1000,10 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
       </CardContent>
       
     </Card> ))}
+   </Grid>
    
-                    
-    </Grid>
+</Grid>
+  
     </Toolbar>
 
         </Box>
@@ -749,5 +1022,5 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
 
 
 } 
-export default SearchInstructor;
+export default Temp;
 
