@@ -678,7 +678,7 @@ const theme = useTheme();
 
           <Box 
 sx={{ml:-5}}
-width='16.5%'>
+width='16%'>
                     <Box
                      display="flex"
                      flexDirection="column"
