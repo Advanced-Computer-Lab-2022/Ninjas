@@ -808,7 +808,8 @@ const CoursePage = () => {
                                                 <br></br>
                                                 <Typography> This subtitle's total hours: {subtitle.hours} </Typography>
                                                 <br></br>
-                                                <Typography
+                                                { subtitle.videoTitles &&
+                                                    <Typography
                                                     sx={{
                                                         alignItems: 'center',
                                                         '&:hover': {
@@ -819,6 +820,8 @@ const CoursePage = () => {
                                                 >
                                                     <PlayCircleIcon color='#03045E' /> {subtitle.videoTitles.title}: {subtitle.videoTitles.description}
                                                 </Typography>
+                                                }
+                                                
 
                                                 {subtitle.exercises.map((exercise) => (
                                                     <Grid container spacing={0}>
