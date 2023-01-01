@@ -13,6 +13,10 @@ const requestAccessSchema = new Schema({
         type: Schema.Types.ObjectId,
         required: true
     },
+    corporateName:{
+        type: String,
+        //required true
+    }
 
 
 

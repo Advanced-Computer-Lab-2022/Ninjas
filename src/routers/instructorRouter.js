@@ -454,8 +454,8 @@ instructorRouter.put('/addAnotherQuestion', async (req, res) => {
     
     const session = sessionDetails.getSession(req.session.id);
     const instructorId = session.userId;
-    //const subtitleId = req.query.subtitleId;
-    // const courseId = req.query.courseId;
+    const subtitleId = req.query.subtitleId;
+    const courseId = req.query.courseId;
     const exerciseId = req.query.exerciseId;
     const questionText =  req.body.questionText;
     const choice1 =  req.body.choice1;
@@ -467,7 +467,7 @@ instructorRouter.put('/addAnotherQuestion', async (req, res) => {
 
 
     const s = await instructorController.addAnotherQuestion
-    ({ instructorId, exerciseId, questionText, choice1, choice2, choice3, choice4, correctAnswer, totalCredit });
+    ({ instructorId, courseId, subtitleId, exerciseId, questionText, choice1, choice2, choice3, choice4, correctAnswer, totalCredit });
     if (!s){
        res.status(500).send("notCreated");
   }

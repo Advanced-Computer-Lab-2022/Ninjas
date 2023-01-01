@@ -44,6 +44,30 @@ import PropTypes from 'prop-types';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 
+// import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+// // or for Day.js
+//import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+// // or for Luxon
+// import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+// // or for Moment.js
+// import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+
+//import { DatePicker } from '@mui/x-date-pickers-pro/DatePicker';
+// or
+//import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+// or
+//import { DatePicker } from '@mui/x-date-pickers-pro';
+// or
+//import { DatePicker } from '@mui/x-date-pickers';
+
+// function App({ children }) {
+//   return (
+//     <LocalizationProvider dateAdapter={AdapterDayjs}>
+//       {children}
+//     </LocalizationProvider>
+//   );}
+
+
 const  change2 =()=>{
   window.location.href=`/AdminViewReports`
 }
@@ -191,24 +215,52 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
   const [open, setOpen] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
   const handleClose = async () => {
     const response = await axios.put(`http://localhost:8000/admin/setPromotion`,
-    { selectedCourses: selects, promotion })
+    { selectedCourses: selects, 
+      promotion: promotion,
+      startDate: startDay,
+      startMonth: startMonth,
+      startYear: startYear,
+      endDate: endDay,
+      endMonth: endMonth,
+      endYear: endYear  
+     })
     .catch(err=>console.log(err))
 
     if (response.status === 200)
     {
       window.location.href='/AdminSetPromo';
+      setOpen(false)
+
     }
-    setOpen(false)
+    else{
+    setOpen(false);
+    setOpen2(true);
+  }
   };
+
+  const handleClose2 = async () => {
+    window.location.href='/AdminSetPromo';
+    setOpen2(false);
+  };
+  
 
   const [selects, setSelected] = useState([]);
   const [promotion, setPromotion] = useState('');
+  const [startDay, setStartDay] = useState('');
+  const [startMonth, setStartMonth] = useState('');
+  const [endDay, setEndDay] = useState('');
+  const [endMonth, setEndMonth] = useState('');
+  const [startYear, setStYear] = useState('');
+  const [endYear, setEnYear] = useState('');
+
 
 
   const [courses, setCourses] = useState(async () => {
@@ -216,6 +268,12 @@ const mdTheme = createTheme();
         .then(res => { setCourses(res.data)})
         .catch((error) => alert(error.response.data.message))
 })
+
+// const [courses2, setCourses2] = useState(async () => {
+//   await axios.get(`http://localhost:8000/admin/getAllCoursesss2`)
+//       .then(res => { setCourses2(res.data)})
+//       .catch((error) => alert(error.response.data.message))
+// })
 
 const [ready, setReady] = useState(false);
 useEffect(() => {
@@ -234,6 +292,28 @@ const handleChangeCourse = (newSelected,checked) => {
 }
 const handleChangePromotion = (event) => {
   setPromotion(event.target.value);
+}
+
+const handleChangeStDay = (event) => {
+  setStartDay(event.target.value);
+}
+
+const handleChangeStMonth = (event) => {
+  setStartMonth(event.target.value);
+}
+const handleChangeEDay = (event) => {
+  setEndDay(event.target.value);
+}
+
+const handleChangeEMonth = (event) => {
+  setEndMonth(event.target.value);
+}
+
+const handleChangeStYear = (event) => {
+  setStYear(event.target.value);
+}
+const handleChangeEnYear = (event) => {
+  setEnYear(event.target.value);
 }
 
 const handleClickOpen = () => {
@@ -318,10 +398,21 @@ useEffect( () => {
              color="#03045E"
              glutterBottom
             >Please specify promotion amount and select course(s)</Typography>
-            <TextField  label="Promotion" sx={{ml: 20}}  id="promo" variant="outlined" onChange={(event)=>{handleChangePromotion(event)}}/>
+            <TextField  label="Promotion" sx={{ml: 20, mb:2}}  id="promo" variant="outlined" onChange={(event)=>{handleChangePromotion(event)}}/>
+            <br></br>
+            <TextField  label="Start Day" sx={{ml: 20, mb:2}}  id="day" variant="outlined" onChange={(event)=>{handleChangeStDay(event)}}/>
+            <TextField  label="Start Month" sx={{ml: 2, mb:2}}  id="month" variant="outlined" onChange={(event)=>{handleChangeStMonth(event)}}/>
+            <TextField  label="Start Year" sx={{ml: 2, mb:2}}  id="month" variant="outlined" onChange={(event)=>{handleChangeStYear(event)}}/>
+
+            {/* <TextField  label="Start Year" sx={{ml: 2, mb:2}}  id="year" variant="outlined" onChange={(event)=>{handleChangeYear(event)}}/> */}
+            <br></br>
+            <TextField  label="End Day" sx={{ml: 20}}  id="day" variant="outlined" onChange={(event)=>{handleChangeEDay(event)}}/>
+            <TextField  label="End Month" sx={{ml: 2}}  id="month" variant="outlined" onChange={(event)=>{handleChangeEMonth(event)}}/>
+            <TextField  label="End Year" sx={{ml: 2, mt:0}}  id="year" variant="outlined" onChange={(event)=>{handleChangeEnYear(event)}}/>
+
             <Button  variant="contained"  sx={{ color: 'white', backgroundColor: '#03045E', borderColor: '#03045E', ml:4, mt:1 }} onClick={() =>
                   handleClickOpen()}>Set Promotion</Button>
-
+            
         </Box>
 <main>
 <Container sx={{ py: 8 }} >
@@ -336,14 +427,14 @@ useEffect( () => {
                   <CardContent sx={{ flexGrow: 1 }}>
                  
                     <Typography gutterBottom variant="h5" component="h2" sx={{ color: '#03045E', fontWeight:'bold'}}>
-                       {card.title}<Checkbox
+                       {card.t}<Checkbox
                       onChange={(event)=>
                       { 
                         event.target.checked? setSelected([...selects, card._id]) : setSelected(selects.filter( c => c!==(card._id)))
                       }}/>
                       </Typography>
                     <Typography >
-                    Subject: {card.subject}
+                    Subject: {card.s}
                     </Typography>
                     {/* <Typography>
                     Summary: {card.summary}
@@ -352,14 +443,14 @@ useEffect( () => {
                     {card.rating}
                     </Typography> */}
                     <Typography >
-                    Price: {card.price}
+                    Price: {card.p}
                     </Typography>
                     {/* <Typography id="courseId" >
                       {card._id}
                     </Typography> */}
                     <Typography id="status" align="center" size="small" 
                     sx={{ color: 'white', backgroundColor: '#00B4D8', fontWeight: 'bold', mt:2 }}>
-                        {card.promoted}</Typography>
+                        {card.prom}</Typography>
 
   <BootstrapDialog
         onClose={handleClose}
@@ -383,6 +474,29 @@ useEffect( () => {
           </Button>
         </DialogActions>
       </BootstrapDialog>
+
+      {/* <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Sorry you can't promote already promoted course(s)
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => {handleClose2()}}>
+            OK
+          </Button>
+        </DialogActions>
+      </BootstrapDialog> */}
                   </CardContent>
                   <CardActions>
                     
