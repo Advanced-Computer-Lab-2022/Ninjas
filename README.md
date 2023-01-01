@@ -17,10 +17,10 @@ This project uses standard JavaScript code style. [ESLint](https://eslint.org/) 
 
 ## Screenshots
 ### The homepage from the individual trainee's perspective
-![image](https://user-images.githubusercontent.com/110330655/210178256-c9315d27-0350-4015-b80e-b103a88e2af3.png)
+![image](https://user-images.githubusercontent.com/110330655/210178248-c1cbc478-1400-4395-a368-717ffefd1e49.png)
 
 ### The course page from the trainees' perspective
-![image](https://user-images.githubusercontent.com/110330655/210178248-c1cbc478-1400-4395-a368-717ffefd1e49.png)
+![image](https://user-images.githubusercontent.com/110330655/210178256-c9315d27-0350-4015-b80e-b103a88e2af3.png)
 
 ### Watching a subtitle video inside the course page
 ![image](https://user-images.githubusercontent.com/110330655/210178283-b74cee19-eeb7-447f-940d-ebf79af5e739.png)
