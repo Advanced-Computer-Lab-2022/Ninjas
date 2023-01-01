@@ -83,7 +83,7 @@ This project uses standard JavaScript code style. [ESLint](https://eslint.org/) 
 ## Code Example
 
 ### How the code works
-![](@attachment/Clipboard_2023-01-01-17-17-02.png)
+![image](https://user-images.githubusercontent.com/110330655/210178337-9f3f2b57-c7a7-4f79-9401-3568985c049b.png)
 
 ## An example of the code
 #### Our backend follows the model-router-controller `MRC` pattern.
