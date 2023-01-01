@@ -231,7 +231,7 @@ const mdTheme = createTheme();
   };
 
   const handleClose = async () => {
-    window.location.href=`/InstructorCrEx?courseId=${courseId}&subtitleId=${subtitleId}`; //proceed to create exercise
+    window.location.href=`/InstructorCreateEx2?courseId=${courseId}&subtitleId=${subtitleId}`; //proceed to create exercise
     setOpen(false);
   };
   const handleClose2 = async () => {

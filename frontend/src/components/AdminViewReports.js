@@ -300,7 +300,7 @@ const handleClickOpen = (reportId) => {
                        
               <Tabs sx={{color:'white', mt:2}} aria-label="basic tabs example">
                 <Tab label="Reports" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change2()}}/>
-                <Tab label="Refund Requests" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change2=3()}}/>
+                <Tab label="Refund Requests" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change3()}}/>
                 <Tab label="Access Course Requests" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change4()}}/>
                 <Tab label="Courses Promotion" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change5()}}/>
                 <Tab label="Add User" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change6()}}/>
@@ -356,7 +356,47 @@ const handleClickOpen = (reportId) => {
                     }
           <Container sx={{ py: 1, mt:1}} >
           {/* End hero unit */}
-          <Typography sx={{ color: '#03045E', fontWeight: 'bold', mb: 2}}>Unseen Reports</Typography>
+          <Typography sx={{ color: '#03045E', fontWeight: 'bold', mb: 2}}>Follow Ups</Typography>
+          <Grid container spacing={4} >
+            {ready && reports[3].map((card) => (
+              <Grid item key={k+1} xs={10} sm={7} md={4}>
+                <Card 
+                  sx={{ height: '100%', display: 'flex', flexDirection: 'column' , align:'center' ,backgroundColor:'#CAF0F8'}}
+                >
+                
+                  <CardContent sx={{ flexGrow: 1 , align: 'center' }}>
+                  <Typography sx={{ color: '#03045E', fontWeight: 'bold' , align: 'center', mb: 2 }}>Report</Typography>
+                  <Typography sx={{ color: '#03045E'}}>User Email: {card.uname} </Typography>
+                    <Typography sx={{ color: '#03045E', mb:2}}>Course: {card.cname}</Typography>
+                    <Typography sx={{ color: '#03045E', mb:2}}>Problem: {card.prob}</Typography>
+                    <Typography sx={{ color: '#03045E', mb:2}}>Problem Description: {card.des}</Typography>
+
+
+                  {/* <Button sx={{ backgroundColor: '#03045E' , color:'#CAF0F8', align: 'center' }} onClick={() =>
+                  viewUnseen(card._id)}>View</Button> */}
+
+                  <br></br>
+
+                  <box>
+              <FormControl>
+  <RadioGroup sx={{ml:8 }} aria-labelledby="demo-radio-buttons-group-label" defaultValue="female" name="radio-buttons-group">
+    <FormControlLabel value="PENDING" control={<Radio />} label="Pending" 
+    onChange={(event)=>{handleChangeProgress(event)}}/>
+    <FormControlLabel value="RESOLVED" control={<Radio />} label="Resolved" 
+    onChange={(event)=>{handleChangeProgress(event)}}/>
+   </RadioGroup>
+   </FormControl>
+   <Button sx={{ backgroundColor: '#03045E' , color:'#CAF0F8', align: 'center', mt:6, ml:4 }} onClick={() =>
+                  handleClickOpen(card.rid)}>Confirm</Button>   
+    </box>
+                   
+                  </CardContent>
+                 
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+          <Typography sx={{ color: '#03045E', fontWeight: 'bold', mb: 2, mt:2}}>Unseen Reports</Typography>
           <Grid container spacing={4} >
             {ready && reports[1].map((card) => (
               <Grid item key={k+1} xs={10} sm={7} md={4}>
@@ -369,7 +409,7 @@ const handleClickOpen = (reportId) => {
                   <Typography sx={{ color: '#03045E'}}>User Email: {card.uname} </Typography>
                     <Typography sx={{ color: '#03045E', mb:2}}>Course: {card.cname}</Typography>
                   <Button sx={{ backgroundColor: '#03045E' , color:'#CAF0F8', align: 'center' }} onClick={() =>
-                  viewUnseen(card._id)}>View</Button>
+                  viewUnseen(card.rid)}>View</Button>
                    
                   </CardContent>
                  
@@ -391,6 +431,7 @@ const handleClickOpen = (reportId) => {
                     <Typography sx={{ color: '#03045E'}}>User Email: {card.uname} </Typography>
                     <Typography sx={{ color: '#03045E'}}>Course: {card.cname}</Typography>
                     <Typography sx={{ color: '#03045E'}}>Problem: {card.prob}</Typography>
+                    <Typography sx={{ color: '#03045E'}}>Problem Description: {card.des}</Typography>
                     <Typography align="center" sx={{ color: '#00B4D8', backgroundColor:'white', fontWeight:'bold', mt:2}}>
                       {card.prog}</Typography>
                    
@@ -405,7 +446,7 @@ const handleClickOpen = (reportId) => {
    </RadioGroup>
    </FormControl>
    <Button sx={{ backgroundColor: '#03045E' , color:'#CAF0F8', align: 'center', mt:6, ml:4 }} onClick={() =>
-                  handleClickOpen(card._id)}>Confirm</Button>   
+                  handleClickOpen(card.rid)}>Confirm</Button>   
     </box>
    <BootstrapDialog
         onClose={handleClose}

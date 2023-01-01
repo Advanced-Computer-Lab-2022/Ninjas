@@ -30,7 +30,7 @@ const reportSchema = new Schema({
     progress:  {
         type:String,
         enum: ['RESOLVED', 'PENDING','INITIAL'],
-        default:'PENDING',
+        default:'INITIAL',
         required: true
        
 
@@ -49,6 +49,10 @@ const reportSchema = new Schema({
         type : Boolean,
         default:false,
 
+    },
+    problemDescription:{
+        type: String
+        //required : true
     }
 
 })

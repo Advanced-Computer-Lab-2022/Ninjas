@@ -205,6 +205,43 @@ const instructorController = {
 
     },
 
+    async addDiscount2({
+
+        courseId, discount, startDate, endDate
+    }) {
+        try {
+            // if(courseId=="" || discount=="" || discountDuration==""){
+            //     throw new DomainError("All fields must be filled", 400)
+            // }
+            const course = await Course.findOne({ _id: courseId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+            if(course.promoted == 'Not Promoted'){
+                /////////////recheck it and do its route same as set promo 
+                throw new DomainError("Discount Duration must be within 0 to 12 months", 400)
+            }
+
+
+
+            await Course.updateOne({ _id: courseId }, { discount: discount });
+            await Course.updateOne({ _id: courseId }, { discountDuration: discountDuration });
+
+
+
+
+        }
+        catch (err) {
+            if (err instanceof DomainError) throw err;
+            else
+            throw new DomainError('error internally', 500);
+        }
+
+    },
+
+
+
+
     async viewInstReview({
 
         userId
@@ -508,7 +545,6 @@ const instructorController = {
             
             await Subtitle.updateOne({_id: subtitleId}, {$push: { exercises: NewExercise }});
             // const sub = await Subtitle.findOne({_id: subtitleId})
-
             // await Course.updateOne({_id: courseId}, {$pop: { subtitles: sub }});
             // await Course.updateOne({_id: courseId}, {$push: { subtitles: sub }});
 
@@ -521,6 +557,10 @@ const instructorController = {
                 }
 
             }
+
+            await Course.updateOne({ _id: courseId, "subtitles._id": subtitleId }, {
+                $push: { "subtitles.$.exercises" : NewExercise }
+            });
 
 
             console.log(NewExercise._id);
@@ -540,9 +580,13 @@ const instructorController = {
     },
 
 
-    async addAnotherQuestion ({instructorId, exerciseId, questionText, choice1, choice2, choice3, choice4, correctAnswer, totalCredit}){
+    async addAnotherQuestion ({instructorId, courseId, subtitleId, exerciseId, questionText, choice1, choice2, choice3, choice4, correctAnswer, totalCredit}){
 
         try {
+
+            
+
+           // this.addQuestion2( {questionText, choice1, choice2, choice3, choice4, correctAnswer, totalCredit});
 
             const thisInstructor = await Account.findOne({ _id: instructorId }).catch(() => {
                 throw new DomainError("Wrong Id", 400)
@@ -568,17 +612,40 @@ const instructorController = {
                 throw new DomainError("Wrong Id", 400)
             });
 
+            console.log(thisEx2);
+
+            await Course.updateOne({ _id: courseId, "subtitles._id": subtitleId }, {
+                $pull: { "subtitles.$.exercises" : thisEx2 }
+            });
+
             thisEx2.questions.push(Newquestion);
+            console.log(thisEx2);
+
             let newGrade = thisEx2.totalGrade + Newquestion.totalCredit;
             await Exercise.updateOne({_id: exerciseId}, {totalGrade: newGrade});
             await Exercise.updateOne({_id: exerciseId}, {$push: { questions: Newquestion }});
+
+            await Course.updateOne({ _id: courseId, "subtitles._id": subtitleId }, {
+                $push: { "subtitles.$.exercises" : thisEx2 }
+            });
 
             //thisEx2.totalGrade = thisEx2.totalGrade + Newquestion.totalCredit;
             // await Exercise.updateOne({_id: exerciseId}, {$push: {questions, Newquestion}});
             // let newGrade = thisEx.totalGrade + Newquestion.totalCredit;
             // await Exercise.updateOne({_id: exerciseId}, {totalGrade: newGrade});
-        
 
+        //     await Course.updateOne({ _id: courseId, "subtitles._id": subtitleId, "exercises._id": exerciseId }, {
+        //         $push: { "subtitles.$.exercises.$.questions" : Newquestion }
+        //     });
+ 
+            //  await Course.updateOne({ _id: courseId, "subtitles._id": subtitleId, "subtitles.exercises._id": exerciseId }, {
+            //      $push: { "subtitles.exercises.$.questions" : Newquestion }
+            //  });
+            const thisCourse = await Course.findOne({ _id: courseId }).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });
+
+        console.log(thisCourse)
 
         return Newquestion;
 
@@ -586,6 +653,8 @@ const instructorController = {
             if (err._message && err._message == 'Course validation failed') { 
                 console.log(err);
                 throw new DomainError('validation Error', 400); }
+                console.log(err);
+
             throw new DomainError('error internally', 500);
 
 
@@ -907,81 +976,81 @@ try {
         }
     },
 
-    // async addQuestion2({ questionText, mcq1,mcq2,mcq3,mcq4, correctAnswer, totalCredit}) {
+    async addQuestion2({ questionText, mcq1,mcq2,mcq3,mcq4, correctAnswer, totalCredit}) {
 
-    //      try {
-    //         console.log(questionText,mcq1,mcq2,mcq3,mcq4,correctAnswer,totalCredit);
-    //         const newQuestion = new question({
-    //          questionText: questionText,
-    //          mcqs:[mcq1,mcq2,mcq3,mcq4],
-    //          correctAnswer: correctAnswer,
-    //          totalCredit: totalCredit
+         try {
+            console.log(questionText,mcq1,mcq2,mcq3,mcq4,correctAnswer,totalCredit);
+            const newQuestion = new question({
+             questionText: questionText,
+             mcqs:[mcq1,mcq2,mcq3,mcq4],
+             correctAnswer: correctAnswer,
+             totalCredit: totalCredit
  
-    //         })
-    //         newQuestion.save()
-    //         questionArray.push(newQuestion)
+            })
+            newQuestion.save()
+            questionArray.push(newQuestion)
  
          
-    //      } catch (err) {
-    //          if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
-    //          throw new DomainError('error internally', 500);
+         } catch (err) {
+             if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+             throw new DomainError('error internally', 500);
  
  
-    //      }
+         }
  
  
-    //  },
+     },
 
-    async addQuestion2({exerciseTitle, subtitleId, questionText, mcq1,mcq2,mcq3,mcq4, correctAnswer, totalCredit}) {
+    // async addQuestion2({exerciseTitle, subtitleId, questionText, mcq1,mcq2,mcq3,mcq4, correctAnswer, totalCredit}) {
 
-        try {
-           let c = "";
-           console.log(questionText,mcq1,mcq2,mcq3,mcq4,correctAnswer,totalCredit);
-           if(correctAnswer == "Choice 1"){
-               c = mcq1;
-           }
-           else{
-               if( correctAnswer == "Choice 2"){
-                   c = mcq2;
-               }
-               else{
-                   if(correctAnswer == "Choice 3"){
-                       c = mcq3;
-                   }
-                   else{
-                       c = mcq4;
+    //     try {
+    //        let c = "";
+    //        console.log(questionText,mcq1,mcq2,mcq3,mcq4,correctAnswer,totalCredit);
+    //        if(correctAnswer == "Choice 1"){
+    //            c = mcq1;
+    //        }
+    //        else{
+    //            if( correctAnswer == "Choice 2"){
+    //                c = mcq2;
+    //            }
+    //            else{
+    //                if(correctAnswer == "Choice 3"){
+    //                    c = mcq3;
+    //                }
+    //                else{
+    //                    c = mcq4;
 
-                   }
-               }
-           }
-           const newQuestion = new question({
-            questionText: questionText,
-            mcqs:[mcq1,mcq2,mcq3,mcq4],
-            correctAnswer: c,
-            totalCredit: totalCredit
+    //                }
+    //            }
+    //        }
+    //        const newQuestion = new question({
+    //         questionText: questionText,
+    //         mcqs:[mcq1,mcq2,mcq3,mcq4],
+    //         correctAnswer: c,
+    //         totalCredit: totalCredit
 
-           })
-           newQuestion.save()
-           questionArray.push(newQuestion);
+    //        })
+    //        newQuestion.save()
+    //        questionArray.push(newQuestion);
 
-           const newExercise = new Exercise({
-               exerciseTitle: exerciseTitle,
-               subtitleId:subtitleId,
-               totalGrade: totalCredit,
-              })
-           newExercise.questions.push(newQuestion);
-           return newExercise;
+    //        const newExercise = new Exercise({
+    //            exerciseTitle: exerciseTitle,
+    //            subtitleId:subtitleId,
+    //            totalGrade: totalCredit,
+    //           })
+    //        newExercise.questions.push(newQuestion);
+    //        return newExercise;
 
         
-        } catch (err) {
-            if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
-            throw new DomainError('error internally', 500);
+    //     } catch (err) {
+    //         if (err._message && err._message == 'Course validation failed') { throw new DomainError('validation Error', 400); }
+    //         throw new DomainError('error internally', 500);
 
 
-        }
+    //     }
 
 
-    },
+    // },
 
      async addVideo({ subtitleId, title, link, description}) {
 
@@ -1097,12 +1166,14 @@ try {
 
             for(var i=0; i<courses.length; i++){
                 if(courses[i].instructors[0]._id.toString() == userId.toString()){
-                    myMoney = ((courses[i].price*courses[i].students.length) - (0.13*courses[i].price*courses[i].students.length));
+                    myMoney = myMoney + (((courses[i].price*courses[i].students.length) - (0.13*courses[i].price*courses[i].students.length)));
 
                 }
 
             }
-           // await Account.updateOne({_id:userId}, {wallet: myMoney});
+            if(theUser.type == 'INSTRUCTOR'){
+               await Account.updateOne({_id:userId}, {wallet: myMoney});
+        }
            //I guess we should have a new schema of instructor with owedMoney or even a field in account called
            //owed money other than wallet as difference is wallet money i can use now but owed is money i should
            //get but have not got it yet...We need this field so that when admin refunds money to student it is
