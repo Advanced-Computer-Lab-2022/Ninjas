@@ -9,11 +9,27 @@ Online learning websites indeed allow the future generations to access the best 
 
 ## Build Status
 
+On the 2nd of January 2023, the project will be completed and **not** deployed. Most if not all of the errors are handled in the code; users should not worry about anything going wrong on their part. In the unlikely event, if a problem occurs, feel free to file a ticket and the bug shall be fixed as soon as possible.
+
 ## Code Style
 
 This project uses standard JavaScript code style. [ESLint](https://eslint.org/) can be a huge aid in following the standard format.
 
 ## Screenshots
+### The homepage from the individual trainee's perspective
+![image](https://user-images.githubusercontent.com/110330655/210178256-c9315d27-0350-4015-b80e-b103a88e2af3.png)
+
+### The course page from the trainees' perspective
+![image](https://user-images.githubusercontent.com/110330655/210178248-c1cbc478-1400-4395-a368-717ffefd1e49.png)
+
+### Watching a subtitle video inside the course page
+![image](https://user-images.githubusercontent.com/110330655/210178283-b74cee19-eeb7-447f-940d-ebf79af5e739.png)
+
+### The instructors' side menu
+![image](https://user-images.githubusercontent.com/110330655/210178301-c4e6d822-96d9-4528-8337-f8d32f467bcf.png)
+
+## The admins' dashboard (homepage)
+![image](https://user-images.githubusercontent.com/110330655/210178222-03a99e9e-e550-4d40-8170-8c379f4aa774.png)
 
 ## Tech/Framework used
 
@@ -64,7 +80,260 @@ This project uses standard JavaScript code style. [ESLint](https://eslint.org/) 
 11. Certificates of course completion are both emailed and downloadable from the website! :medal_sports:
   This is to allow the trainees to re-download their certificates in case they suddenly lost access to them.
 
-## Code Examples
+## Code Example
+
+### How the code works
+![](@attachment/Clipboard_2023-01-01-17-17-02.png)
+
+## An example of the code
+#### Our backend follows the model-router-controller `MRC` pattern.
+
+This is how a user can get all the course details using it's ID in the database.
+- The model (Course schema)
+
+```js
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+const { accountSchema } = require('./account');
+const { exerciseSchema } = require('./exercise');
+const { ratingSchema } = require('./rating');
+const { subtitleSchema } = require('./subtitle');
+//these imported models will be used in the schema
+
+const coursesSchema = new Schema({
+    subject: {
+        type: String,
+        required: true
+    },
+    rating: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 5
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    totalHours: {
+        type: Number,
+        required: true
+    },
+    summary: {
+        type: String,
+        required: true
+    },
+    title: {
+        type: String,
+        required: true
+    },
+    instructors: {
+        type: [accountSchema],
+        default: []
+
+    },
+    subtitles: {
+        type: [subtitleSchema],
+        default: []
+
+    },
+    exercises: {
+        type: [exerciseSchema]
+    },
+    discount: {
+        type: Number,
+        default: 0,
+        min: 0,
+        max: 100,
+    },
+    reviews: {
+        type: [ratingSchema],
+        default: []
+    },
+    startDate:{
+        type: Date,
+        required: false
+    },
+    discountDuration:{
+        type: Date,
+        required: false
+    },
+    videoLink:{
+        type:String,
+        required:true
+    },
+    students: {
+        type: [Schema.Types.ObjectId],
+        required: false
+
+    },
+    certificate: {
+        type: String,
+        default: 'generalCertificate.pdf'
+    },
+    promoted: {
+        type: String,
+        enum: ['Promoted', 'Not Promoted'],
+        required: false
+    }
+})
+
+```
+
+- The router
+```js
+userRouter.get('/course/:id', async (req, res) => {
+    try {
+
+        const session = sessionDetails.getSession(req.session.id);
+        //the current user session. If this session is not available then the user is not logged in
+        //therefore they should not be allowed to view any details
+        if (!session) {
+            return res.status(400).json({ message:"you did not login" });
+        }
+
+        //we get the course ID provided in the request parameters
+        const courseId = req.params.id;
+        const { userId, type: userType } = session;
+
+        //according to the user type, we display specific course details 
+        const course = await userController.getCourse({ courseId, userType, userId });
+
+        //we return the status OK and the whole course object to the frontend to deal with it
+        res.status(200).json(course);
+    } catch (error) {
+        //this catches any errors that are thrown during compile time, and returns them in the response data to prevent system breakdowns.
+        res.status(error.code).json({ message: error.message });
+    }
+})
+```
+
+- The controller
+
+```js
+async getCourse({ courseId, userType, userId }) {
+    try {
+        let course;
+        let curr;
+
+        //we find the user's country to know the currency that should be displayed in the frontend page
+        const { country } = await Account.findOne({ _id: userId }, { country:1 })
+
+        //corporate trainees should not be able to see the price
+        if (userType == 'CORPORATE_TRAINEE') {
+            course = await Course.findOne({ _id: courseId }, { price: 0 });
+        }
+        else {
+            course = await Course.findOne({ _id: courseId });
+            curr = countryPriceDetails.get(country);
+        }
+
+        //if there was no courses found in the database with this ID, we tell the frontend application that they may have entered the ID incorrectly.
+        if (course === null) {
+            throw new DomainError("Course not found.", 400);
+        }
+
+        //if there is currently a discount that should've been expired
+        if (course.discountDuration && Date.now() > course.discountDuration) { 
+            //update the local course object
+            course.discountDuration = null;
+            course.discount = 0;
+
+            //update the value in the DB
+            await Course.updateOne({ _id: courseId }, { discountDuration: null, discount:0 });
+        }
+
+        const response = { course }
+
+        //append the currency, to be displayed if needed
+        //the factor is the amount of money needed of this currency type to get 1 USD. This will be used later in the course price calculations
+        if (curr) {
+            response.currency = curr.currency;
+            response.factor = curr.factor;
+        }
+        else {
+            response.currency = "";
+            response.factor = 1;
+        }
+        //return the response to the router to send it to the frontend
+        return response;
+    } catch(error) {
+        //catches any compile time errors to prevent system breakdown
+        //internal errors indicate a server-side issue
+        if (error instanceof DomainError) throw error;
+        else
+        throw new DomainError("internal error", 500);
+    }
+}
+
+```
+
+- The frontend page
+The code to this page is relatively huge due to the countless details of the course. We will be showing here a snippet of the frontend page code.
+you can check out `CoursePage.js for full details`
+
+```js
+const CoursePage = () => {
+
+    //endpoint code
+    const { id: courseId } = useParams();
+    const [currency, setCurrency] = useState("");
+    const [factor, setFactor] = useState(0);
+    const [price, setPrice] = useState(0);
+    const [userProgress, setProgress] = useState(0);
+    const[EXgrades,setEXgrades]=useState(null)
+    const [course, setCourses] = useState(async () => {
+        await axios.get(`http://localhost:8000/course/${courseId}`)
+            .then(res => {
+                console.log(res.data)
+                setCourses(res.data.course);
+                setCurrency(res.data.currency);
+                setFactor(res.data.factor);
+                setEXgrades(res.data.Exgrades);
+            })
+            .catch((error) => {
+                console.log(error)
+                if (error.response.data.message === "you did not login")
+                    window.location.href = '/';
+            })
+    })
+
+    return (
+      //.... some elements are here
+                         <div>
+                                  <Paper
+                                sx={{
+                                    position: 'relative',
+                                    color: '#000',
+                                    backgroundRepeat: 'no-repeat',
+                                    backgroundPosition: 'right',
+                                    backgroundImage: `url(${img})`,
+                                    backgroundSize: '20%',
+
+                                }}
+                            >
+                                <Typography component="h1" variant="h3" color="inherit">
+                                    Subject: {course.subject}
+                                </Typography>
+                                <Typography variant="h4" color="inherit">
+                                    Title: {course.title}
+                                </Typography>
+                                <Rating defaultValue={course.rating} precision={0.1} readOnly />
+                                <Typography variant="h6"> <WatchLaterOutlinedIcon /> Total Hours: {course.totalHours} </Typography>
+                                <Typography variant="h6"> <GroupsOutlinedIcon />  Number of Students: {course.students.length} </Typography>
+                                <Typography variant="h6"> <BoyOutlinedIcon />
+                                    Taught by {course.instructors[0].firstName} {course.instructors[0].lastName}
+                                    <br></br>
+                                    //........some buttons for rating this instructor
+                                </Typography>
+                            </Paper>
+
+                            //..the rest of the code goes here
+                        </div>
+    )
+}
+```
+
 
 ## Installation
 
