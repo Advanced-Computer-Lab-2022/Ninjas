@@ -502,9 +502,27 @@ instructorRouter.get('/instructor/:id', async (req, res) => {
   }
 })
 
+
+
+instructorRouter.get('/didRateInstructor',async(req,res) => {
+  try{
+const {instructorId,userId, deleteR}= req.query
+  const result = await instructorController.didRatedInst (instructorId , userId ,deleteR)
+  res.status(200).json({rated: result});
+  }
+  catch(err){
+    console.log(err)
+    if (err instanceof DomainError) {
+      res.status(err.code).json({message: err.message})
+    } else {
+      res.status(500).json({ err });
+    }
+  }
+})
+
 instructorRouter.put('/rateInstructor',async(req,res) => {
   try{
-const {instructorId,userId, ratingNumber, ratingText}= req.query
+const {instructorId,userId, ratingNumber, ratingText }= req.query
   await instructorController.rateInstructor(instructorId,userId, ratingNumber, ratingText)
   res.status(200).json({Done: true});
   }

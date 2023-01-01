@@ -243,7 +243,7 @@ if (e.key === 'Enter') {
             />
           </Search>}
           {!bar &&
-            <Button variant="contained" sx={{ color: 'black',  bgcolor: '#CAF0F8' }} onClick={() => window.location.href='/temp'}>Courses</Button>
+            <Button variant="contained" sx={{ color: 'black',  bgcolor: '#CAF0F8' }} onClick={() => window.location.href='/temp'}>All courses</Button>
           }
           &nbsp;&nbsp;
           <box>
