@@ -732,6 +732,14 @@ instructorRouter.get('/owedMoney', async (req, res) =>{
 
 })
 
-
+instructorRouter.get('/averageExerciseGrade', async(req, res) => {
+  try {
+    const { courseId } = req.query;
+    const averageGrades = await instructorController.averageExerciseGrade({ courseId });
+    res.status(200).json(averageGrades)
+  } catch(error) {
+    res.status(error.code).json({ message: error.message });
+  }
+})
 
 module.exports = instructorRouter;

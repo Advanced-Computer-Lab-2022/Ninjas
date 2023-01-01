@@ -35,6 +35,7 @@ import DownloadIcon from '@mui/icons-material/Download';
 import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import BoyOutlinedIcon from '@mui/icons-material/BoyOutlined';
+import GradingIcon from '@mui/icons-material/Grading';
 const instructorNav = {};
 const traineeNav = {};
 function LinearProgressWithLabel(props) {
@@ -237,7 +238,10 @@ const CoursePage = () => {
     const [reqAccess, setReqAccess] = useState(false);
     const requestedAccess = async () => {
         const response = await axios.get(`http://localhost:8000/checkRequestedAccess?userId=${user._id}&courseId=${course._id}`)
-            .catch((error) => console.log(error.response.data.message));
+            .catch((error) => {
+                if (error.response.data.message === "you did not login")
+                    window.location.href = '/';
+            });
 
         if (response.status == 200)
             setReqAccess(true);
@@ -247,7 +251,10 @@ const CoursePage = () => {
     //when the corporate trainee clicks request access, this endpoint should be called.
     const requestCourseAccess = async () => {
         const response = await axios.post(`http://localhost:8000/requestAccess?userId=${user._id}&courseId=${course._id}`)
-            .catch((error) => console.log(error.response.data.message));
+            .catch((error) => {
+                if (error.response.data.message === "you did not login")
+                    window.location.href = '/';
+            });
 
         if (response.status == 200) //just refresh the page
             window.location.reload();
@@ -256,7 +263,10 @@ const CoursePage = () => {
     const [deletedMyRating, setDelete] = useState(false);
     const deleteCourseRating = async () => {
         const response = await axios.post(`http://localhost:8000/deleteCourseRating?userId=${user._id}&courseId=${course._id}`)
-            .catch((error) => console.log(error.response.data.message));
+            .catch((error) => {
+                if (error.response.data.message === "you did not login")
+                    window.location.href = '/';
+            });
 
         if (response.status == 200) //just refresh the page
         {
@@ -459,8 +469,51 @@ const CoursePage = () => {
         console.log(EXgrades)
     }
 
+    //for the instructor, check the average exercise grades
+    const [avgGrades, setAvgGrades] = useState(async () => {
+        const response = await axios.get(`http://localhost:8000/averageExerciseGrade?courseId=${courseId}`)
+            .catch((error) => {
+                if (error.response.data.message === "you did not login")
+                    window.location.href = '/';
+            })
+
+        if (response.status === 200)
+            setAvgGrades(response.data);
+
+    })
+
+    //check if the user has saw the exercise answers
+    const [exerciseHistory, setExerciseHistory] = useState([])
+    const checkExerciseHistory = async () => {
+        const response = await axios.get(`http://localhost:8000/exerciseHistory?courseId=${courseId}&userId=${user._id}`)
+            .catch((error) => {
+                if (error.response.data.message === "you did not login")
+                    window.location.href = '/';
+            })
+
+        if (response.status === 200) {
+            console.log(response.data)
+            setExerciseHistory(response.data);
+        }
+    }
+
+    const sawTheAnswers = (exerciseId) => {
+        const saw = exerciseHistory.filter(ex => ex.exercises[0]._id.toString() === exerciseId.toString());
+        //if he didn't solve the exercise return false
+        if (saw.length === 0)
+            return false;
+
+        return saw[0].viewedAnswers;
+    }
+
+    const [youSaw, setYouSaw] = useState(false);
+    const handleSawAns = () => {
+        setYouSaw(!youSaw)
+    }
+
+
     useEffect(() => {
-        if (course._id && user._id) {
+        if (course._id && user._id && avgGrades.length > 0) {
             //result of the backend request is ready
             console.log(course);
             setReady(true);
@@ -469,6 +522,9 @@ const CoursePage = () => {
             getTheGrade();
             //check if this user is registered 
             setRegistered(isRegistered());
+
+            //check the exercise history to know whether the trainee solved this exercise before
+            checkExerciseHistory();
 
             //check if requested refund
             requestedTheRefund();
@@ -490,7 +546,7 @@ const CoursePage = () => {
             if (progress)
                 setProgress(progress.currentProgress);
         }
-    }, [course])
+    }, [course, avgGrades])
 
 
     return (
@@ -605,7 +661,7 @@ const CoursePage = () => {
                                 
                                 {/*dealing with the course price*/}
 
-                                {( ['GUEST','INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered) ) &&
+                                {(['GUEST', 'INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered)) &&
                                     course.discount > 0 &&
                                     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
                                         <Typography variant="subtitle1">
@@ -620,7 +676,7 @@ const CoursePage = () => {
                                         </Typography>
                                     </div>
                                 }
-                                { (['GUEST','INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered)) && course.discount ===0 &&
+                                {(['GUEST', 'INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered)) && course.discount === 0 &&
                                     <Typography variant="subtitle1">
                                         This course currently costs {price} {currency}
                                     </Typography>
@@ -762,12 +818,20 @@ const CoursePage = () => {
                                                                 },
                                                                 width: '85%'
                                                             }}
-                                                            onClick={registered ?
-                                                                () => window.location.href = `/solveExercise?userId=${user._id}&userType=${user.type}&courseId=${course._id}&exerciseId=${exercise._id}&subtitleId=${subtitle._id}`
-                                                                : null}
+                                                            onClick={
+                                                                registered && !sawTheAnswers(exercise._id) ?
+                                                                    () => window.location.href = `/solveExercise?userId=${user._id}&userType=${user.type}&courseId=${course._id}&exerciseId=${exercise._id}&subtitleId=${subtitle._id}`
+                                                                    : registered && sawTheAnswers(exercise._id) ? handleSawAns : null}
+
                                                         >
                                                             <MenuBookIcon color='#03045E' /> Exercise: {exercise.title}
+                                                            {
+                                                                registered && user.type === 'INSTRUCTOR' && avgGrades.length > 0 &&
+                                                                <Typography sx={{ ml: '60%', mt: '-5%' }}>
+                                                                    <GradingIcon /> Average Grade: {avgGrades.filter(gr => gr.exerciseId === exercise._id.toString())[0].avgGrade} / {exercise.totalGrade}
 
+                                                                </Typography>
+                                                            }
 
                                                         </Typography>
 
@@ -794,6 +858,7 @@ const CoursePage = () => {
                                                                 view my grade
                                                             </Button>
                                                         }
+
 
 
                                                         {/* //henaaaaa */}
@@ -1124,6 +1189,19 @@ onClick={handleClosedid}
     Click anywhere to continue
 </Alert>
           </Backdrop>
+                            {/* tells the user that they already saw the answers */}
+                            <Backdrop
+
+                                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                open={youSaw}
+                                onClick={handleSawAns}
+                            >
+                                <Alert sx={{ width: '400px' }} severity='info' icon={false}  >
+                                    <AlertTitle>You saw this exercise's answers!</AlertTitle>
+                                    you can not re-solve exercises after seeing their correct answers.
+                                    Click anywhere to continue
+                                </Alert>
+                            </Backdrop>
                         </div>
 
 
