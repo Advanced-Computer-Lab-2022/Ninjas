@@ -50,12 +50,16 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ReactPlayer from 'react-player/youtube'
 import { useEffect } from 'react';
 import TraineeNav from '../nav/TraineeNav';
-import InstructorNav from '../nav/InstructorNav'
+import InstructorNav from '../nav/InstructorNav';
 import TextField from '@mui/material/TextField';
+import { setbar } from '../nav/TraineeNav';
 const traineeNav = {};
 
 export  var searchtemp = null;
-
+function setSearchtemp (x){
+    searchtemp =x
+    
+}
 function valuetext(value) {
   return value;
 }
@@ -147,7 +151,7 @@ const Search = styled('div')(({ theme }) => ({
   }));
 
 const drawerWidth = 240;
-const SearchInstructor = () => {
+const Temp = () => {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
@@ -200,9 +204,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const [ready, setReady] = React.useState(false);
 const params = new URLSearchParams(window.location.search);
 const userId = params.get('userId');
-const username = params.get('username');
-const [search, setSearch] = React.useState('');
-
+const [search, setSearch] = React.useState( params.get('search'));
+setSearchtemp(search);
 //setSearch( params.get('search')); //search el mktob fl text box
 
 
@@ -218,18 +221,19 @@ const [anchorEl, setAnchorEl] = React.useState(null);
   const [openSubject, setOpenSubject] = React.useState(false);
   const [openRating, setOpenRating] = React.useState(false);
   const [openPrice, setOpenPrice] = React.useState(false);
-   const [subject, setSubject] = React.useState('');
+   const [subject, setSubject] = React.useState(null);
    const [rating, setRating] = React.useState(null);
    const [expanded, setExpanded] = React.useState(false);
-   const [minOn, setMinOn] = React.useState(false);
-   const [maxOn, setMaxOn] = React.useState(false);
-   const [MinV, setMinV] = React.useState(0);
-   const [MaxV, setMaxV] = React.useState(99999999999);
-   const [result, setResult] = React.useState([]);
-   const [maxtemp, setMaxtemp] = React.useState('');
-   const [mintemp, setMintemp] = React.useState('');
    const [expandedf, setExpandedf] = React.useState(false);
+   const [minOn, setMinOn] = React.useState(true);
+   const [maxOn, setMaxOn] = React.useState(true);
+   const [MinV, setMinV] = React.useState(null);
+   const [MaxV, setMaxV] = React.useState(null);
+   const [result, setResult] = React.useState([]);
+   const [maxtemp, setMaxtemp] = React.useState(null);
+   const [mintemp, setMintemp] = React.useState(null);
    const [price, setPrice] = React.useState(false);
+   const [inst, setinst] = React.useState(true);
 
    const handleChange = (panel) => (event, isExpanded) => {
      setExpanded(isExpanded ? panel : false);
@@ -237,6 +241,7 @@ const [anchorEl, setAnchorEl] = React.useState(null);
    const handleChangef = (panel) => (event, isExpanded) => {
     setExpandedf(isExpanded ? panel : false);
   };
+ 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
     
@@ -257,9 +262,10 @@ const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleSearch = (event) => {
     setSearch(event.target.value)
-   // setSearchtemp(event.target.value);
+    setSearchtemp(event.target.value);
     
   };
+
   const handlePrice = (event) => {
     if (MinV == ''){setMinV(null);
        setMintemp(null)}
@@ -353,34 +359,23 @@ const theme = useTheme();
   };
 
   
-  
   async function getResult () {
     console.log('funccccc')
    
-      await axios.get(`http://localhost:8000/SearchInst?search=${search}`)
-          .then(res => setSearchResult(res.data))
-          .catch((error) => {   if (error.response.status === 401) //you didn't login
+      await axios.get(`http://localhost:8000/search?userId=${userId}&subject=${subject}&minPrice=${mintemp}&maxPrice=${maxtemp}&rating=${rating}&title=${search}&instructor=${inst}`)
+          .then(res => {setSearchResult(res.data.data)
+         // console.log(res.data.data)
+        }
+          )
+          .catch((error) => {  
+            if (error.response.status === 401) //you didn't login
           window.location.href='/';
             else alert(error.response.data.message)})
-          //console.log(Search)
+         
          // const c = searchResult.currency
         
           
     }
-
-
-    async function getResultFilter () {
-        console.log('funccccc')
-          await axios.get(`http://localhost:8000/filter?subject=${subject}&minPrice=${mintemp}&maxPrice=${maxtemp}&search=${search}`)
-              .then(res => setSearchResult(res.data))
-              .catch((error) => {   if (error.response.status === 401) //you didn't login
-              window.location.href='/';
-                else alert(error.response.data.message)})
-              //console.log(Search)
-             // const c = searchResult.currency
-            
-              
-        }
 
 
   const [searchResult, setSearchResult] = React.useState(getResult)
@@ -393,17 +388,13 @@ const theme = useTheme();
 
   useEffect(() => 
   {
+    console.log('////min w max')
+    console.log(MinV);
+    console.log(MaxV);
     setReady(false);
    getResult ();
    }
-  ,[search]) 
-
-  useEffect(() => 
-  {
-    setReady(false);
-   getResultFilter ();  /********************/
-   }
-  ,[subject,price]) 
+  ,[subject,price,rating,search]) 
   
   useEffect(() => {
   
@@ -422,194 +413,194 @@ const theme = useTheme();
   return (
    
     <ThemeProvider theme={mdTheme} >
-    <Box sx={{ display: 'flex'   }}>
+      <Box sx={{ display: 'flex'   }}>
 
-     
-      <CssBaseline />
-
-      { searchResult.userType == 'GUEST' && 
-        <TraineeNav post={traineeNav}/>}
-
-      { searchResult.userType == 'CORPORATE_TRAINEE' && 
-        <TraineeNav post={traineeNav}/>}
-
-      { searchResult.userType == 'INDIVIDUAL_TRAINEE' && 
-        <TraineeNav post={traineeNav}/>}
-
-      { searchResult.userType == 'INSTRUCTOR' && 
-        <InstructorNav post={traineeNav}/>}
-
-
-{/* box dh bta3 el body bta3t el page */}
-      {
-                      !ready &&
-                      <Box
-                      sx={{ml:'50%' , mt: 5}}
-                      component="main"
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                          minHeight="100vh"
-                      >
-                        
-                          <CircularProgress />
-                      </Box>
-
-                  }
-                  
-                 
-                  
-                   {  ready && 
-     
-      <Box
-        component="main"
-        sx={{
-          backgroundColor: '#FFFFFF',
-          flexGrow: 1,
-          height: '100vh',
-          overflow: 'auto',
-        }}
-        
-      >
-        <Toolbar />
-
-        
-{/* 
-        <Toolbar>
-        <Container maxWidth="lg" sx={{ mt: 0, mb: 0 ,mr: 0 , ml: 0 }}  >
-          <Grid container spacing={0}>
-
-  
-    
-     <Button id="demo-customized-button"
-      aria-controls={open2 ? 'demo-customized-menu' : undefined}
-      aria-haspopup="true"
-      aria-expanded={open2 ? 'true' : undefined}
-      variant="text"
-      disableElevation
-      onClick={handleClick}
-      endIcon={<KeyboardArrowDownIcon />}
-      sx={{ color: 'black', ml: -3 }}>
-    <ListItemIcon  sx={{ color: 'black', }}>
-      < IoFilterSharp/>
-    </ListItemIcon>
-    <ListItemText primary="Filter " />
-  </Button>
-
-
-  
-  <StyledMenu
-      id="demo-customized-menu"
-      MenuListProps={{
-        'aria-labelledby': 'demo-customized-button',
-      }}
-      anchorEl={anchorEl}
-      open={open2}
-      onClose={handleClose}
-    >
-      <MenuItem  disableRipple>
-        
-      <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1bh-content"
-        id="panel1bh-header"
-      >
-        <Typography sx={{ width: '33%', flexShrink: 0 }}>
-          Subject
-        </Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <Toolbar>
-        <RadioGroup
-                      //aria-labelledby="demo-radio-buttons-group-label"
-                     // name="controlled-radio-buttons-group"
-                      onChange={ handleSubject}
-                      onClick={handleSubject}
-                  >
-                    
-                      <FormControlLabel value={'CS'} control={<Radio />} label={'CS'} checked={subject == 'CS'} />
-                      <FormControlLabel value={'English'} control={<Radio />} label={'English'} checked={subject == 'English'} />
-                      <FormControlLabel value={'Math'} control={<Radio />} label={'Math'} checked={subject == 'Math'} />
-                     
-
-                  </RadioGroup>
-                  </Toolbar>
-      </AccordionDetails>
-    </Accordion>
-
-      </MenuItem>
-      <Divider sx={{ my: 0.5 }} />
-      <MenuItem  disableRipple>
-     
-      <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1bh-content"
-        id="panel1bh-header"
-      >
-        <Typography sx={{ width: '33%', flexShrink: 0 }}>
-        Rating
-        </Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        
-        <Rating
-                                      name="simple-controlled"
-                                   
-                                      value = {rating}
-                                      //precision={0.005}
-                                      onChange={handleRating}
-                                  />
-              
-      </AccordionDetails>
-    </Accordion>
        
-        
-      </MenuItem> */}
-      {/* { searchResult.userType != 'CORPORATE_TRAINEE' && <Divider sx={{ my: 0.5 }} />}
-      { searchResult.userType != 'CORPORATE_TRAINEE' &&  <MenuItem  disableRipple>
+        <CssBaseline />
+
+        { searchResult.userType == 'GUEST' && 
+          <TraineeNav post={traineeNav}/>}
+
+        { searchResult.userType == 'CORPORATE_TRAINEE' && 
+          <TraineeNav post={traineeNav}/>}
+
+        { searchResult.userType == 'INDIVIDUAL_TRAINEE' && 
+          <TraineeNav post={traineeNav}/>}
+
+        { searchResult.userType == 'INSTRUCTOR' && 
+          <InstructorNav post={traineeNav}/>}
+
+
+ {/* box dh bta3 el body bta3t el page */}
+        {
+                        !ready &&
+                        <Box
+                        sx={{ml:'50%' , mt: 5}}
+                        component="main"
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight="100vh"
+                        >
+                          
+                            <CircularProgress />
+                        </Box>
+
+                    }
+                    
+                   
+                    
+                     {  ready && 
+       
+        <Box
+          component="main"
+          sx={{
+            backgroundColor: '#FFFFFF',
+            flexGrow: 1,
+            height: '100vh',
+            overflow: 'auto',
+          }}
+          
+        >
+          <Toolbar />
+
+          
+{/* 
+          <Toolbar>
+          <Container maxWidth="lg" sx={{ mt: 0, mb: 0 ,mr: 0 , ml: 0 }}  >
+            <Grid container spacing={0}>
+
+    
       
-      <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1bh-content"
-        id="panel1bh-header"
-      >
-       <Typography sx={{ width: '33%', flexShrink: 0 }}>
-        Price
-        </Typography>
-      </AccordionSummary>
-      <AccordionDetails>
+       <Button id="demo-customized-button"
+        aria-controls={open2 ? 'demo-customized-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open2 ? 'true' : undefined}
+        variant="text"
+        disableElevation
+        onClick={handleClick}
+        endIcon={<KeyboardArrowDownIcon />}
+        sx={{ color: 'black', ml: -3 }}>
+      <ListItemIcon  sx={{ color: 'black', }}>
+        < IoFilterSharp/>
+      </ListItemIcon>
+      <ListItemText primary="Filter " />
+    </Button>
 
 
     
-        <Typography sx={{ width: '33%', flexShrink: 0 }}>
+    <StyledMenu
+        id="demo-customized-menu"
+        MenuListProps={{
+          'aria-labelledby': 'demo-customized-button',
+        }}
+        anchorEl={anchorEl}
+        open={open2}
+        onClose={handleClose}
+      >
+        <MenuItem  disableRipple>
+          
+        <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+            Subject
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Toolbar>
+          <RadioGroup
+                        //aria-labelledby="demo-radio-buttons-group-label"
+                       // name="controlled-radio-buttons-group"
+                        onChange={ handleSubject}
+                        onClick={handleSubject}
+                    >
+                      
+                        <FormControlLabel value={'CS'} control={<Radio />} label={'CS'} checked={subject == 'CS'} />
+                        <FormControlLabel value={'English'} control={<Radio />} label={'English'} checked={subject == 'English'} />
+                        <FormControlLabel value={'Math'} control={<Radio />} label={'Math'} checked={subject == 'Math'} />
+                       
 
-        <RadioGroup
-                      //aria-labelledby="demo-radio-buttons-group-label"
-                     // name="controlled-radio-buttons-group"
-                      onChange={ handlMinON}
-                      onClick={handlMinON}
-                  >
-        <FormControlLabel  control={<Radio />}  checked={minOn} />    {/* h3mlha on click */ }
-        {/* </RadioGroup>
+                    </RadioGroup>
+                    </Toolbar>
+        </AccordionDetails>
+      </Accordion>
+
+        </MenuItem>
+        <Divider sx={{ my: 0.5 }} />
+        <MenuItem  disableRipple>
+       
+        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+          Rating
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          
+          <Rating
+                                        name="simple-controlled"
+                                     
+                                        value = {rating}
+                                        //precision={0.005}
+                                        onChange={handleRating}
+                                    />
+                
+        </AccordionDetails>
+      </Accordion>
+         
+          
+        </MenuItem> */}
+        {/* { searchResult.userType != 'CORPORATE_TRAINEE' && <Divider sx={{ my: 0.5 }} />}
+        { searchResult.userType != 'CORPORATE_TRAINEE' &&  <MenuItem  disableRipple>
         
-        minimum
-        </Typography>
-      
+        <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+         <Typography sx={{ width: '33%', flexShrink: 0 }}>
+          Price
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
 
-      <Slider
-aria-label="Temperature"
-defaultValue={0}
-value = {MinV}
-onChange={handleMinV}
-getAriaValueText={valuetext}
-valueLabelDisplay="auto"
-step={200}
-marks
-min={0}
-max={1000}
+
+      
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+
+          <RadioGroup
+                        //aria-labelledby="demo-radio-buttons-group-label"
+                       // name="controlled-radio-buttons-group"
+                        onChange={ handlMinON}
+                        onClick={handlMinON}
+                    >
+          <FormControlLabel  control={<Radio />}  checked={minOn} />    {/* h3mlha on click */ }
+          {/* </RadioGroup>
+          
+          minimum
+          </Typography>
+        
+
+        <Slider
+  aria-label="Temperature"
+  defaultValue={0}
+  value = {MinV}
+  onChange={handleMinV}
+  getAriaValueText={valuetext}
+  valueLabelDisplay="auto"
+  step={200}
+  marks
+  min={0}
+  max={1000}
 />
 
 
@@ -617,209 +608,231 @@ max={1000}
 
 <Typography sx={{ width: '33%', flexShrink: 0 }}>
 <RadioGroup
-                      //aria-labelledby="demo-radio-buttons-group-label"
-                     // name="controlled-radio-buttons-group"
-                      onChange={ handlMaxON}
-                      onClick={handlMaxON}
-                  >
-        <FormControlLabel  control={<Radio />} checked={maxOn}   />    {/* h3mlha on click */ }
-        {/* maximum
-        </RadioGroup>
-        </Typography>
-      
+                        //aria-labelledby="demo-radio-buttons-group-label"
+                       // name="controlled-radio-buttons-group"
+                        onChange={ handlMaxON}
+                        onClick={handlMaxON}
+                    >
+          <FormControlLabel  control={<Radio />} checked={maxOn}   />    {/* h3mlha on click */ }
+          {/* maximum
+          </RadioGroup>
+          </Typography>
+        
 
-      <Slider
-aria-label="Temperature"
-defaultValue={0}
-value = {MaxV}
-onChange={handleMaxV}
-getAriaValueText={valuetext}
-valueLabelDisplay="auto"
-step={500}
-marks
-min={0}
-max={5000}
+        <Slider
+  aria-label="Temperature"
+  defaultValue={0}
+  value = {MaxV}
+  onChange={handleMaxV}
+  getAriaValueText={valuetext}
+  valueLabelDisplay="auto"
+  step={500}
+  marks
+  min={0}
+  max={5000}
 />
-              
-    
-       
-              
-      </AccordionDetails>
-    </Accordion>
-       </MenuItem>}  */} 
-    {/* </StyledMenu>
+                
+      
+         
+                
+        </AccordionDetails>
+      </Accordion>
+         </MenuItem>}  */} 
+      {/* </StyledMenu>
 
-   
-          </Grid>
+     
+            </Grid>
 
-          
-
-        </Container>
-       
-        </Toolbar> */}
-       
-
-
-
-
-      <Toolbar>
-        <Box sx={{mt:0 ,ml:-5}} bgcolor='#CAF0F8' color='black'>
-       <Search   >
-          <SearchIconWrapper>
-            <SearchIcon />
-          </SearchIconWrapper>
-          <StyledInputBase
-            placeholder="Search…"
-            inputProps={{ 'aria-label': 'search' }}
-           defaultValue = {searchtemp}
-          
-          // variant='contained'
-            //onChange={(e) => setSearch(e.target.value)}
-            onKeyPress={handleKeypress}
             
-          />
-        </Search>
-        </Box>
-     </Toolbar >
+
+          </Container>
+         
+          </Toolbar> */}
+         
+
+
+
+
+        <Toolbar>
+          <Box sx={{mt:0 ,ml:-5}} bgcolor='#CAF0F8' color='black'>
+         <Search   >
+            <SearchIconWrapper>
+              <SearchIcon />
+            </SearchIconWrapper>
+            <StyledInputBase
+              placeholder="Search…"
+              inputProps={{ 'aria-label': 'search' }}
+             defaultValue = {searchtemp}
+            
+            // variant='contained'
+              //onChange={(e) => setSearch(e.target.value)}
+              onKeyPress={handleKeypress}
+              
+            />
+          </Search>
+          </Box>
+       </Toolbar >
 
 <Toolbar>
-        <Grid container spacing={2} sx={{ ml: 1 , mt:0 , mb:2}} style={{ gap: 20 }}>
+          <Grid container spacing={2} sx={{ ml: 1 , mt:0 , mb:2}} style={{ gap: 20 }}>
 
-        <Box 
+          <Box 
 sx={{ml:-5}}
 width='16.5%'>
-                  <Box
-                   display="flex"
-                   flexDirection="column"
-                   sx={{
-                       overflow: "hidden",
-                       overflowY: "scroll",
-                   }}
-                   alignItems="left"
-                    
-                   //minWidth={'50%'}
-                   height='430px'
-                  >
-                     
-{/* <Button id="demo-customized-button"
-      aria-controls={open2 ? 'demo-customized-menu' : undefined}
-      aria-haspopup="true"
-      aria-expanded={open2 ? 'true' : undefined}
-      variant="text"
-      disableElevation
-      onClick={handleClick}
-      //endIcon={<KeyboardArrowDownIcon />}
-      sx={{ color: 'black'}}> */}
+                    <Box
+                     display="flex"
+                     flexDirection="column"
+                     sx={{
+                         overflow: "hidden",
+                         overflowY: "scroll",
+                     }}
+                     alignItems="left"
+                      
+                     //minWidth={'50%'}
+                     height='430px'
+                    >
+                       
+ {/* <Button id="demo-customized-button"
+        aria-controls={open2 ? 'demo-customized-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open2 ? 'true' : undefined}
+        variant="text"
+        disableElevation
+        onClick={handleClick}
+        //endIcon={<KeyboardArrowDownIcon />}
+        sx={{ color: 'black'}}> */}
 
 <Accordion expanded={expandedf === 'panelf'  } onChange={handleChangef('panelf')}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1bh-content"
-        id="panel1bh-header"
-      >
-    
-     
-        <Typography sx={{// width: '33%',
-         flexShrink: 0 }}>
-        < IoFilterSharp/>&nbsp;&nbsp; Filter
-        </Typography>
-      </AccordionSummary>
-      <AccordionDetails>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+      
+       
+          <Typography sx={{// width: '33%',
+           flexShrink: 0 }}>
+          < IoFilterSharp/>&nbsp;&nbsp; Filter
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          
+          {/* hna kol el filters */}
+
+          <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+            Subject
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <Toolbar>
+          <RadioGroup
+                        //aria-labelledby="demo-radio-buttons-group-label"
+                       // name="controlled-radio-buttons-group"
+                        onChange={ handleSubject}
+                        onClick={handleSubject}
+                    >
+                      
+                        <FormControlLabel value={'CS'} control={<Radio />} label={'CS'} checked={subject == 'CS'} />
+                        <FormControlLabel value={'English'} control={<Radio />} label={'English'} checked={subject == 'English'} />
+                        <FormControlLabel value={'Math'} control={<Radio />} label={'Math'} checked={subject == 'Math'} />
+                       
+
+                    </RadioGroup>
+                    </Toolbar>
+        </AccordionDetails>
+      </Accordion>
+
         
-        {/* hna kol el filters */}
-
-        <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1bh-content"
-        id="panel1bh-header"
-      >
-        <Typography sx={{ width: '33%', flexShrink: 0 }}>
-          Subject
-        </Typography>
-      </AccordionSummary>
-      <AccordionDetails>
-        <Toolbar>
-        <RadioGroup
-                      //aria-labelledby="demo-radio-buttons-group-label"
-                     // name="controlled-radio-buttons-group"
-                      onChange={ handleSubject}
-                      onClick={handleSubject}
-                  >
-                    
-                      <FormControlLabel value={'CS'} control={<Radio />} label={'CS'} checked={subject == 'CS'} />
-                      <FormControlLabel value={'English'} control={<Radio />} label={'English'} checked={subject == 'English'} />
-                      <FormControlLabel value={'Math'} control={<Radio />} label={'Math'} checked={subject == 'Math'} />
-                     
-
-                  </RadioGroup>
-                  </Toolbar>
-      </AccordionDetails>
-    </Accordion>
-
-      
-      <Divider sx={{ my: 0.5 }} />
-     
-        {/* nkml */}
-      
+        <Divider sx={{ my: 0.5 }} />
+       
+          {/* nkml */}
+        <Accordion expanded={expanded === 'panel2'} onChange={handleChange('panel2')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
+          Rating
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          
+          <Rating
+                                        name="simple-controlled"
+                                     
+                                        value = {rating}
+                                        //precision={0.005}
+                                        onChange={handleRating}
+                                    />
+                
+        </AccordionDetails>
+      </Accordion>
+         
+          
         
-      
-      { searchResult.userType != 'CORPORATE_TRAINEE' && <Divider sx={{ my: 0.5 }} />}
-      { searchResult.userType != 'CORPORATE_TRAINEE' &&  
-      
-      <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1bh-content"
-        id="panel1bh-header"
-      >
-       <Typography sx={{ width: '33%', flexShrink: 0 }}>
-        Price
-        </Typography>
-      </AccordionSummary>
-      <AccordionDetails>
+        { searchResult.userType != 'CORPORATE_TRAINEE' && <Divider sx={{ my: 0.5 }} />}
+        { searchResult.userType != 'CORPORATE_TRAINEE' &&  
+        
+        <Accordion expanded={expanded === 'panel3'} onChange={handleChange('panel3')}>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon />}
+          aria-controls="panel1bh-content"
+          id="panel1bh-header"
+        >
+         <Typography sx={{ width: '33%', flexShrink: 0 }}>
+          Price
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
 
 
-    
-        <Typography sx={{ width: '33%', flexShrink: 0 }}>
+      
+          <Typography sx={{ width: '33%', flexShrink: 0 }}>
 <Button
 variant="contained" sx={{ color: 'white',  borderColor: '#03045E' }} 
 onClick={handlePrice}
 >
-Apply price
+  Apply price
 </Button>
-        {/* <RadioGroup
-                      //aria-labelledby="demo-radio-buttons-group-label"
-                     // name="controlled-radio-buttons-group"
-                      onChange={ handlMinON}
-                      onClick={handlMinON}
-                  >
-        <FormControlLabel  control={<Radio />}  checked={minOn} />  
-        </RadioGroup> */}
+          {/* <RadioGroup
+                        //aria-labelledby="demo-radio-buttons-group-label"
+                       // name="controlled-radio-buttons-group"
+                        onChange={ handlMinON}
+                        onClick={handlMinON}
+                    >
+          <FormControlLabel  control={<Radio />}  checked={minOn} />  
+          </RadioGroup> */}
+          
+          minimum
+          </Typography>
         
-        minimum
-        </Typography>
-      
 
-        <TextField
-        id="outlined-helperText"
-        //label="minimum price"
-        defaultValue={MinV}
-        onBlur={handleMinV}
-      />
+          <TextField
+          id="outlined-helperText"
+          //label="minimum price"
+          defaultValue={MinV}
+          onBlur={handleMinV}
+        />
 
 {/* changeable default value */}
-      {/* <Slider
-aria-label="Temperature"
-defaultValue={0}
-value = {MinV}
-onChange={handleMinV}
-getAriaValueText={valuetext}
-valueLabelDisplay="auto"
-step={200}
-marks
-min={0}
-max={1000}
+        {/* <Slider
+  aria-label="Temperature"
+  defaultValue={0}
+  value = {MinV}
+  onChange={handleMinV}
+  getAriaValueText={valuetext}
+  valueLabelDisplay="auto"
+  step={200}
+  marks
+  min={0}
+  max={1000}
 /> */}
 
 
@@ -827,16 +840,16 @@ max={1000}
 
 <Typography sx={{ width: '33%', flexShrink: 0 }}>
 
-        maximum
-      
-        </Typography>
-        <TextField
-        id="outlined-helperText"
-        //label="minimum price"
-        defaultValue={MaxV}
-        onBlur={handleMaxV}
-        ></TextField>
+          maximum
         
+          </Typography>
+          <TextField
+          id="outlined-helperText"
+          //label="minimum price"
+          defaultValue={MaxV}
+          onBlur={handleMaxV}
+          ></TextField>
+          
 
 {/*    <Slider */}
 {/* //   aria-label="Temperature"
@@ -850,46 +863,46 @@ max={1000}
 //   min={0}
 //   max={5000}
 // />
-               */}
-    
-       
-              
-      </AccordionDetails>
-    </Accordion>
-       }
+                 */}
+      
+         
+                
+        </AccordionDetails>
+      </Accordion>
+         }
 
 
 
 
-              
-      </AccordionDetails>
-    </Accordion>
+                
+        </AccordionDetails>
+      </Accordion>
 
 
-  {/* </Button> */}
-  </Box>
+    {/* </Button> */}
+    </Box>
 
-  </Box>
+    </Box>
 
 
-          
+            
 {/* trial   hyt3ml hna for loop */}
 
 {
-                      ready && searchResult.courses.length == 0 &&
-                      <Box
-                      sx={{ml:'33%' , mt:-7}}
-                      component="main"
-                          display="flex"
-                          justifyContent="center"
-                          alignItems="center"
-                          minHeight="100vh"
-                      >
-                        
-                        <img  style={{ width: 380, height: 300 }} src={noResult} alt="no results" />
-                      </Box>
+                        ready && searchResult.courses.length == 0 &&
+                        <Box
+                        sx={{ml:'33%' , mt:-7}}
+                        component="main"
+                            display="flex"
+                            justifyContent="center"
+                            alignItems="center"
+                            minHeight="100vh"
+                        >
+                          
+                          <img  style={{ width: 380, height: 300 }} src={noResult} alt="no results" />
+                        </Box>
 
-                  }
+                    }
 
 
 
@@ -897,118 +910,117 @@ max={1000}
 
 <Grid container spacing={0} 
 //sx={{ ml: 1 , mt:0.5 , mb:2}}
-style={{ gap: 15 }}
-//alignItems="right"
-width = '85%'
+ style={{ gap: 15 }}
+ //alignItems="right"
+ width = '85%'
 >
 {searchResult && searchResult.courses.length != 0 && searchResult.courses.map((course) => (
 
 <Card  sx={{ display: 'flex' ,'&:hover': {    backgroundColor: '#90E0EF',
-},   backgroundColor: '#CAF0F8' }} style={ { width:"49%",
-height:"250px"}} 
+ },   backgroundColor: '#CAF0F8' }} style={ { width:"49%",
+  height:"250px"}} 
 onClick={()=>{window.location.href=`course/${course._id}`}} >
 {(!course.videoLink) &&
-<CardMedia
-allow="autoPlay"
-controls={true}
-       component="img"
-    sx={{ width: '49%' }}
-  
-    // //style={{ width: 150, height: 200 }}
-       src={previewPic}
-      alt="Preview"
-    > 
+ <CardMedia
+ allow="autoPlay"
+ controls={true}
+         component="img"
+      sx={{ width: '49%' }}
+    
+      // //style={{ width: 150, height: 200 }}
+         src={previewPic}
+        alt="Preview"
+      > 
 
-</CardMedia> }
+  </CardMedia> }
 {/*if video hntl30 else hntl3 sora*/}
 {(course.videoLink) &&
-<ReactPlayer url={course.videoLink}
-                      controls={true}
-                       alt="preview"
-                      allow='autoplay'
-                       width= '280px'
-                       height = 'relative' 
-                      /> 
+ <ReactPlayer url={course.videoLink}
+                        controls={true}
+                         alt="preview"
+                        allow='autoplay'
+                         width= '280px'
+                         height = 'relative' 
+                        /> 
 }  
-  
-       {/* <Box
-      sx={{
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        right: 80,
-        left: 0,
-      }}
-    /> */}
-     <CardContent sx={{ flex: '1 0 auto' }}>
-    <Grid container>
-      <Grid item md={0}>
-        <Box
-          sx={{
-            position: 'relative',
-            p: { xs: 0, md: 0 },
-            pr: { md: 0 },
-          }}
-        >
-         
-          <Typography  component="h5" variant="h5" color="inherit" style={{width:'210px'}} >
-            {course.title}
-          
-          </Typography>
-          <Rating
-                                readOnly={true}
-                                      value = {course.rating}
-                                      precision={0.1}
-                                  />
+    
+         {/* <Box
+        sx={{
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          right: 80,
+          left: 0,
+        }}
+      /> */}
+       <CardContent sx={{ flex: '1 0 auto' }}>
+      <Grid container>
+        <Grid item md={0}>
+          <Box
+            sx={{
+              position: 'relative',
+              p: { xs: 0, md: 0 },
+              pr: { md: 0 },
+            }}
+          >
+           
+            <Typography  component="h5" variant="h5" color="inherit" style={{width:'210px'}} >
+              {course.title}
+            
+            </Typography>
+            <Rating
+                                  readOnly={true}
+                                        value = {course.rating}
+                                        precision={0.1}
+                                    />
 
-          <Typography variant="h6" color="inherit" style={{width:'210px'}}>
-          total hours : {course.totalHours}
-          </Typography>
-          
-          { searchResult.userType != 'CORPORATE_TRAINEE' &&  <Typography variant="h6" color="inherit"style={{width:'210px'}} >
-          price : {course.price}  {searchResult.currency}
-          </Typography>}
+            <Typography variant="h6" color="inherit" style={{width:'210px'}}>
+            total hours : {course.totalHours}
+            </Typography>
+            
+            { searchResult.userType != 'CORPORATE_TRAINEE' &&  <Typography variant="h6" color="inherit"style={{width:'210px'}} >
+            price : {course.price}  {searchResult.currency}
+            </Typography>}
 
-          <Typography variant="h6" color="inherit"style={{width:'210px'}} >
-          subject : {course.subject} 
-          </Typography>
+            <Typography variant="h6" color="inherit"style={{width:'210px'}} >
+            subject : {course.subject} 
+            </Typography>
 
 {/*el link msh byban fy 7agat*/}
-          {/* <Typography >
-           <Link variant="subtitle1" onClick={()=>{window.location.href=`course/${course._id}` }}
-          >   {/*href view course   hselo w a5ly el card bttdas */}
-            {/* Lets explore */}
-          {/*</Link>
-          </Typography> */}
-          
-        </Box>
+            {/* <Typography >
+             <Link variant="subtitle1" onClick={()=>{window.location.href=`course/${course._id}` }}
+            >   {/*href view course   hselo w a5ly el card bttdas */}
+              {/* Lets explore */}
+            {/*</Link>
+            </Typography> */}
+            
+          </Box>
+        </Grid>
       </Grid>
-    </Grid>
-    </CardContent>
-    
-  </Card> ))}
- </Grid>
- 
-</Grid>
-
-  </Toolbar>
-
-      </Box>
-}
-    </Box>
-        
-      {/* //box for search results */}
+      </CardContent>
+      
+    </Card> ))}
+   </Grid>
    
-     {/* End of box */}
-
-
-  </ThemeProvider>
+</Grid>
   
+    </Toolbar>
+
+        </Box>
+}
+      </Box>
+          
+        {/* //box for search results */}
+     
+       {/* End of box */}
+
+
+    </ThemeProvider>
     
   );
 
 
 
 } 
-export default SearchInstructor;
+export default Temp;
 

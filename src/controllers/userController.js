@@ -174,7 +174,7 @@ const userController = {
 
             if (subject == 'null' &&
                 rating == 'null' && title == 'null' &&
-                instructor == '') {
+                instructor == 'null') {
 
                 courses = await Course.find()
             } else {
@@ -186,7 +186,7 @@ const userController = {
                 } }, { rating: { 
                     '$lte': (rating)
                 } }]}) }
-                if (title != 'null') {
+                if (title != 'null' && instructor == 'null') {
                     
                     queryArray.push(
 
@@ -205,7 +205,22 @@ const userController = {
                 ]}
                 )
                 }
+                if (title != 'null' && instructor != 'null') {
+                    
+                    queryArray.push(
 
+                       { '$or': [  
+                        { subject: { '$regex': '.*' +  title + '.*', '$options': 'i' } },
+                    { title: { '$regex': '.*' +  title + '.*', '$options': 'i' } }
+                
+                ]}
+                )
+                }
+                if (instructor != 'null' && userId!=null ){
+                    queryArray.push({ instructors: {  $elemMatch: {
+                         _id: userId
+                    } } });
+                }
 
                 courses = await Course.find({
                     '$and': queryArray
