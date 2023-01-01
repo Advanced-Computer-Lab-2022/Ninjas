@@ -13,11 +13,12 @@ const adminCreateAccountsController =
 {
    async adminCreateAccounts({ username, password, firstName, lastName, email, gender, type }) {
       try {
-        const salt = await bcrypt.genSalt();
-            //hashes pw
-        const hashedPassword = await bcrypt.hash(password, salt);
-         const notUnique = await Account.findOne({ username });
-         console.log(notUnique)
+           const salt = await bcrypt.genSalt();
+           const hashedPassword = await bcrypt.hash(password, salt);
+           console.log(hashedPassword);
+           console.log(hashedPassword);
+        const notUnique = await Account.findOne({ username });
+        console.log(notUnique)
 
          if (!notUnique) {
             const saved = await Account.create(
@@ -276,9 +277,24 @@ const adminCreateAccountsController =
 
      
         try{
+            let c = [];
             const theCourses = await Course.find();
-            return theCourses;
-                 
+            let p = 0;
+            for(var z =0; z<theCourses.length ; z++){
+                const t = theCourses[z].title;
+                const s = theCourses[z].subject;
+                if(theCourses[z].promoted == 'Promoted' && theCourses[z].startDate < Date.now() && theCourses[z].discountDuration < Date.now()){
+                    p = theCourses[z].price - theCourses[z].price*theCourses[z].discount ;        
+                }
+                else{
+                    p = theCourses[z].price ; 
+                }
+                const prom = theCourses[z].promoted
+            //return theCourses;
+            c.push({t,s,p,prom})
+
+        }
+        return c; 
         }
         catch(err){
             throw new DomainError('error internally', 500);
@@ -306,53 +322,70 @@ const adminCreateAccountsController =
       },
    
       async setPromotion({selectedCourses, promotion, startDay, endDay, startMonth, endMonth ,startYear, endYear}){ //All courses
-        // try{
-        //     let c = [];
-        //     let flag = 0;
-        //     let newPrice = 0;
-        //     //let duration = 0;
+        //discountDuration end date
+        //startDate
+        let stDate="";
+        let endate="";
+        console.log(startMonth)
+        let c = [];
 
-        //     //Date startDate = 
+        if ( parseInt(startMonth) < 10)
+        startMonth = "0"+startMonth;
+        if ( parseInt(endMonth) < 10)
+        endMonth = "0"+endMonth;
+        if ( parseInt(startDay) < 10)
+        startDay = "0"+startDay;
+        if ( parseInt(endDay) < 10)
+        endDay = "0"+endDay;
+        
+        console.log(startMonth);
+        console.log(endMonth);
 
-            
+        stDate = startYear + "-" + startMonth + "-"+ startDay;
+        endate = endYear + "-" + endMonth + "-"+ endDay;
 
-            
-           
-        //     for(var i=0; i<selectedCourses.length; i++){
+        let startDate1 = new Date(startYear,startMonth,startDay,8,00,00,000)
+        let endDate1 = new Date(endYear,endMonth,endDay,8,00,00,000)
 
-        //        const theCourse = await Course.findOne({_id: selectedCourses[i]}).catch(() => {
-        //            throw new DomainError("Wrong Id", 400)
-        //         });;
-        //         if(theCourse.promoted == 'Not Promoted'){
-        //             if(startDat)
-        //             //current  timeeee
-        //            c.push(theCourse);
-        //         }
-        //         else{
-        //             flag = 1;
-        //             break;
-        //         }
+console.log(startDate1);
+console.log(endDate1);
 
-        //     }
-        //     for(var j =0; j<c.length; j++){
 
-        //         if(flag == 0){
+        if(startDate1 < endDate1){
+            if(promotion > 0){
+                for(var j=0; j<selectedCourses ; j++){
+                    if(selectedCourses[j].promoted == 'Not Promoted' ){
+                        let title = selectedCourses[j].title;
+                        let subject = selectedCourses[j].subject;
+                        let price = selectedCourses[j].price - selectedCourses[j].price * (promotion/100);
+                        let prom = 'Promoted';
 
-        //             newPrice = c[j].price - c[j].price * (promotion/100);
-        //             await Course.updateOne({_id: c[j]._id}, {promoted: 'Promoted'});
-        //             // this.getAllCoursesss();
-        //             return flag   
-        //         }
-        //         else{
-        //             return flag
-        //         }
-        // }          
-            
-        // }
-        // catch(err){
-        //     throw new DomainError('error internally', 500);
- 
-        // }
+                        c.push({title, subject, price, prom});
+
+                    }
+                    else{
+                        if(selectedCourses[j].startDate > startDate1 && selectedCourses[j].startDate < endDate1 ){
+                            //throw new doman error already promoted
+                            throw new DomainError("Course is already promoted", 400)
+                        }
+                    
+
+                    }
+                }
+                return c;
+            }
+             else{
+                 //you can not promote by -ve number
+                 throw new DomainError("Promotion can not be negative number", 400)
+
+              }
+        }
+        else{
+            //wrong dates
+            throw new DomainError("Wrong dates", 400)
+
+        }
+
       },
    
 

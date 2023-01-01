@@ -223,7 +223,15 @@ const mdTheme = createTheme();
 
   const handleClose = async () => {
     const response = await axios.put(`http://localhost:8000/admin/setPromotion`,
-    { selectedCourses: selects, promotion })
+    { selectedCourses: selects, 
+      promotion: promotion,
+      startDate: startDay,
+      startMonth: startMonth,
+      startYear: startYear,
+      endDate: endDay,
+      endMonth: endMonth,
+      endYear: endYear  
+     })
     .catch(err=>console.log(err))
 
     if (response.status === 200)
@@ -250,7 +258,8 @@ const mdTheme = createTheme();
   const [startMonth, setStartMonth] = useState('');
   const [endDay, setEndDay] = useState('');
   const [endMonth, setEndMonth] = useState('');
-  const [year, setYear] = useState('');
+  const [startYear, setStYear] = useState('');
+  const [endYear, setEnYear] = useState('');
 
 
 
@@ -300,8 +309,11 @@ const handleChangeEMonth = (event) => {
   setEndMonth(event.target.value);
 }
 
-const handleChangeYear = (event) => {
-  setYear(event.target.value);
+const handleChangeStYear = (event) => {
+  setStYear(event.target.value);
+}
+const handleChangeEnYear = (event) => {
+  setEnYear(event.target.value);
 }
 
 const handleClickOpen = () => {
@@ -390,13 +402,13 @@ useEffect( () => {
             <br></br>
             <TextField  label="Start Day" sx={{ml: 20, mb:2}}  id="day" variant="outlined" onChange={(event)=>{handleChangeStDay(event)}}/>
             <TextField  label="Start Month" sx={{ml: 2, mb:2}}  id="month" variant="outlined" onChange={(event)=>{handleChangeStMonth(event)}}/>
-            <TextField  label="Start Year" sx={{ml: 2, mb:2}}  id="month" variant="outlined" onChange={(event)=>{handleChangeStMonth(event)}}/>
+            <TextField  label="Start Year" sx={{ml: 2, mb:2}}  id="month" variant="outlined" onChange={(event)=>{handleChangeStYear(event)}}/>
 
             {/* <TextField  label="Start Year" sx={{ml: 2, mb:2}}  id="year" variant="outlined" onChange={(event)=>{handleChangeYear(event)}}/> */}
             <br></br>
             <TextField  label="End Day" sx={{ml: 20}}  id="day" variant="outlined" onChange={(event)=>{handleChangeEDay(event)}}/>
             <TextField  label="End Month" sx={{ml: 2}}  id="month" variant="outlined" onChange={(event)=>{handleChangeEMonth(event)}}/>
-            <TextField  label="End Year" sx={{ml: 2, mt:0}}  id="year" variant="outlined" onChange={(event)=>{handleChangeYear(event)}}/>
+            <TextField  label="End Year" sx={{ml: 2, mt:0}}  id="year" variant="outlined" onChange={(event)=>{handleChangeEnYear(event)}}/>
 
             <Button  variant="contained"  sx={{ color: 'white', backgroundColor: '#03045E', borderColor: '#03045E', ml:4, mt:1 }} onClick={() =>
                   handleClickOpen()}>Set Promotion</Button>
@@ -415,14 +427,14 @@ useEffect( () => {
                   <CardContent sx={{ flexGrow: 1 }}>
                  
                     <Typography gutterBottom variant="h5" component="h2" sx={{ color: '#03045E', fontWeight:'bold'}}>
-                       {card.title}<Checkbox
+                       {card.t}<Checkbox
                       onChange={(event)=>
                       { 
                         event.target.checked? setSelected([...selects, card._id]) : setSelected(selects.filter( c => c!==(card._id)))
                       }}/>
                       </Typography>
                     <Typography >
-                    Subject: {card.subject}
+                    Subject: {card.s}
                     </Typography>
                     {/* <Typography>
                     Summary: {card.summary}
@@ -431,14 +443,14 @@ useEffect( () => {
                     {card.rating}
                     </Typography> */}
                     <Typography >
-                    Price: {card.price}
+                    Price: {card.p}
                     </Typography>
                     {/* <Typography id="courseId" >
                       {card._id}
                     </Typography> */}
                     <Typography id="status" align="center" size="small" 
                     sx={{ color: 'white', backgroundColor: '#00B4D8', fontWeight: 'bold', mt:2 }}>
-                        {card.promoted}</Typography>
+                        {card.prom}</Typography>
 
   <BootstrapDialog
         onClose={handleClose}
@@ -463,7 +475,7 @@ useEffect( () => {
         </DialogActions>
       </BootstrapDialog>
 
-      <BootstrapDialog
+      {/* <BootstrapDialog
         onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open}
@@ -484,7 +496,7 @@ useEffect( () => {
             OK
           </Button>
         </DialogActions>
-      </BootstrapDialog>
+      </BootstrapDialog> */}
                   </CardContent>
                   <CardActions>
                     

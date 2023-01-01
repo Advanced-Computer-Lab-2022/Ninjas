@@ -307,14 +307,14 @@ adminRouter.put('/setPromotion', async (req, res) => {
     const endMonth = req.body.endMonth;
     const endYear = req.body.endYear;
 
-    const f = await adminCreateAccountsController.setPromotion({selectedCourses, promotion, startDate,startMonth,startYear, endDate, endMonth, endYear});
-    if(f == 0){
-      res.status(200).send();
-    }
-    else{
-      res.status(500).send();
+    const f = await adminCreateAccountsController.setPromotion({selectedCourses, promotion, startDate, startMonth, startYear, endDate, endMonth, endYear});
+    //if(f == 0){
+      res.status(200).send(f);
+    //}
+    //else{
+     // res.status(500).send();
 
-    }
+    //}
 }
 
 catch (err) {
