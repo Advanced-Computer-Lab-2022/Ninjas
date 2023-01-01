@@ -82,8 +82,8 @@ This project uses standard JavaScript code style. [ESLint](https://eslint.org/) 
 
 ## Code Example
 
-### How the code works
-![image](https://user-images.githubusercontent.com/110330655/210178337-9f3f2b57-c7a7-4f79-9401-3568985c049b.png)
+### How the code of the project works
+![image](https://user-images.githubusercontent.com/110330655/210180071-33bd791e-c8c2-4347-b83b-b8a97e0f6a51.png)
 
 ## An example of the code
 #### Our backend follows the model-router-controller `MRC` pattern.
