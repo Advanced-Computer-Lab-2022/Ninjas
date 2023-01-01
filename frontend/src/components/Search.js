@@ -233,6 +233,7 @@ const [anchorEl, setAnchorEl] = React.useState(null);
    const [maxtemp, setMaxtemp] = React.useState(null);
    const [mintemp, setMintemp] = React.useState(null);
    const [price, setPrice] = React.useState(false);
+   const [inst, setinst] = React.useState(null);
 
    const handleChange = (panel) => (event, isExpanded) => {
      setExpanded(isExpanded ? panel : false);
@@ -361,13 +362,16 @@ const theme = useTheme();
   async function getResult () {
     console.log('funccccc')
    
-      await axios.get(`http://localhost:8000/search?userId=${userId}&subject=${subject}&minPrice=${mintemp}&maxPrice=${maxtemp}&rating=${rating}&title=${search}&instructor=`)
-          .then(res => setSearchResult(res.data.data))
+      await axios.get(`http://localhost:8000/search?userId=${userId}&subject=${subject}&minPrice=${mintemp}&maxPrice=${maxtemp}&rating=${rating}&title=${search}&instructor=${inst}`)
+          .then(res => {setSearchResult(res.data.data)
+         // console.log(res.data.data)
+        }
+          )
           .catch((error) => {  
             if (error.response.status === 401) //you didn't login
           window.location.href='/';
             else alert(error.response.data.message)})
-          //console.log(Search)
+         
          // const c = searchResult.currency
         
           
@@ -404,7 +408,7 @@ const theme = useTheme();
     }
   }, [searchResult])
 
-console.log(searchResult.userType)
+//console.log(searchResult.userType)
 
   return (
    
@@ -674,7 +678,7 @@ console.log(searchResult.userType)
 
           <Box 
 sx={{ml:-5}}
-width='16.5%'>
+width='16%'>
                     <Box
                      display="flex"
                      flexDirection="column"
