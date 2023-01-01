@@ -221,6 +221,8 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
 const [open, setOpen] = React.useState(false);
+const [open2, setOpen2] = React.useState(false);
+
 const toggleDrawer = () => {
  setOpen(!open);
   };
@@ -230,6 +232,12 @@ const toggleDrawer = () => {
     console.log(requestId)
     setRequestId(requestId)
     setOpen(true);
+  };
+
+  const handleClickOpen2 = (requestId) => {
+    console.log(requestId)
+    setRequestId(requestId)
+    setOpen2(true);
   };
   const handleClose = async () => {
     console.log(requestId);
@@ -241,6 +249,18 @@ const toggleDrawer = () => {
       window.location.href='/AdminAccessCourse';
     }
     setOpen(false);  
+};
+
+const handleClose2 = async () => {
+  console.log(requestId);
+  const response = await axios.get(`http://localhost:8000/admin/rejectCorporateRequest?requestId=${requestId}`)
+  .catch(err=>console.log(err))
+
+  if (response.status === 200)
+  {
+    window.location.href='/AdminAccessCourse';
+  }
+  setOpen2(false);  
 };
 
   const [requests, setRequests] = useState(async () => {
@@ -351,7 +371,9 @@ useEffect(() => {
                   <CardContent sx={{ flexGrow: 1 }}>
                 
                     <Typography sx={{ color: '#03045E'}}>User Email: {card.uname} </Typography>
-                    <Typography sx={{ color: '#03045E'}}>Course ID: {card.cname}</Typography>
+                    <Typography sx={{ color: '#03045E'}}>Course: {card.cname}</Typography>
+                    <Typography sx={{ color: '#03045E'}}>Company Name: {card.company}</Typography>
+
                     
                   <br></br>
                     <box>
@@ -359,7 +381,7 @@ useEffect(() => {
                   handleClickOpen(card._id)}>Grant Access</Button>
                   &nbsp;&nbsp;&nbsp;
                   <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E' }} onClick={() =>
-                  handleClickOpen(card._id)}>Deny Access</Button>
+                  handleClickOpen2(card._id)}>Deny Access</Button>
             </box>
            
             <BootstrapDialog
@@ -380,6 +402,29 @@ useEffect(() => {
         <DialogActions>
           <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
           onClick={() => handleClose()}>
+            YES
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+
+      <BootstrapDialog
+        onClose={handleClose2}
+        aria-labelledby="customized-dialog-title"
+        open={open2}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose2}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Are you sure you want to deny acess to this corporate trainee ?
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => {handleClose2()}}>
             YES
           </Button>
         </DialogActions>

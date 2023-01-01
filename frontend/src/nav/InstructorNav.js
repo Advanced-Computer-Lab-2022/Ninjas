@@ -42,6 +42,9 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import Grid from '@mui/material/Grid';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {TextField} from "@mui/material";
+import DialogContent from '@mui/material/DialogContent';
+
+
 
 function stringToColor(string) {
   let hash = 0;
@@ -316,6 +319,8 @@ const change = async ()=>{
 
 
   const [open, setOpen] = React.useState(false);
+  const [open9, setOpen9] = React.useState(false);
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -336,6 +341,73 @@ const viewMyCourses = async () => {
 const CreateCourses = async () => {
   window.location.href='/InstructorCreate';
 }
+const OwedMoney = async () => {
+        const response = await axios.get(`http://localhost:8000/owedMoney`).catch( (error) => alert(error.response.data.message)) 
+        console.log(response.data)
+        if(response.status===200){
+
+          if(response.data < 0){
+            let m = "You should pay this amount of money due to refunded courses";
+            let m2 = "Do you want to pay back this balance from your bank account";
+            let b = "pay back";
+            setBtnText(b);
+            setMessage2(m2);
+            setMessage(m);
+          }
+          else{
+            let c = "Here is your current balance";
+            let c2 = "Do you want to add this balance to your bank account";
+            let bt = "add to account";
+            setBtnText(bt);
+            setMessage2(c2);
+            setMessage(c); 
+          }
+
+          setMoney(response.data);
+          setOpen9(true);
+          
+        }
+      
+      
+      }
+const handleClose9 = async () => {
+        setOpen9(false);
+};
+
+const payOradd = async () => {
+  const response = await axios.get(`http://localhost:8000/payOradd`).catch( (error) => alert(error.response.data.message)) 
+  console.log(response.data)
+  if(response.status===200){
+
+    // if(response.data < 0){
+    //   let m = "You should pay this amount of money due to refunded courses";
+    //   let m2 = "Do you want to pay back this balance from your bank account";
+    //   let b = "pay back";
+    //   setBtnText(b);
+    //   setMessage2(m2);
+    //   setMessage(m);
+    // }
+    // else{
+    //   let c = "Here is your current balance";
+    //   let c2 = "Do you want to add this balance to your bank account";
+    //   let bt = "add to account";
+    //   setBtnText(bt);
+    //   setMessage2(c2);
+    //   setMessage(c); 
+    // }
+
+    // setMoney(response.data);
+    // setOpen9(true);
+    
+  }
+
+
+}
+
+const handleChangeCreditCard = (event) => {
+  setCreditCard(event.target.value)
+}
+
 const [user,setUser] = React.useState(async () => {
   await axios.get('http://localhost:8000/userBySession')
   .then(res => setUser(res.data))
@@ -347,8 +419,13 @@ const [user,setUser] = React.useState(async () => {
 const[newEmail,setNewEmail]=useState(user.email);
 const[biography,setBiography]=useState(user.biography);
 const[oldPassword,setOldPassword]=useState('');
+const[money,setMoney]=useState('');
+const[message,setMessage]=useState('');
+const[message2,setMessage2]=useState('');
+const[btnText,setBtnText]=useState('');
 const[newPassword,setNewPassword]=useState('');
 const[confirmPassword,setConfirmPassword]=useState('');
+const[creditCard,setCreditCard]=useState('');
 const [ready, setReady] = useState(false);
 useEffect(() => {
     if (user._id) {
@@ -467,7 +544,7 @@ if (e.key === 'Enter') {
             <ListItemIcon>
           <Wallet sx={{color:'black' }} />
           </ListItemIcon>
-          <ListItemText primary='Wallet'/>
+          <ListItemText primary='Wallet' onClick={OwedMoney}/>
           </ListItemButton>
           <ListItemButton onClick={handleClickOpen}>
             <ListItemIcon>
@@ -732,6 +809,42 @@ if (e.key === 'Enter') {
           <ListItemText primary='Report'/>
           </ListItemButton>
           </List>
+
+          <BootstrapDialog
+        onClose={handleClose9}
+        aria-labelledby="customized-dialog-title"
+        open={open9}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose9}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Owed Money
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+        <Typography gutterBottom>{message}</Typography>
+        <Typography>Balance: {money}</Typography>
+          <Typography>
+            {message2}
+          </Typography>
+          <TextField
+                  required
+                  fullWidth
+                  name="Credit Card"
+                  label="Credit Card Number"
+                  type="Credit Card"
+                  id="CreditCard"
+                  onChange={(event)=>{handleChangeCreditCard(event)}}
+                />
+                <Button onClick={() => {payOradd()}}>{btnText}</Button> 
+        </DialogContent>
+        <DialogActions>
+          {/* <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => {handleClose()}}>
+            
+          </Button> */}
+         
+        </DialogActions>
+      </BootstrapDialog>
 
         </Drawer>
       </Box>

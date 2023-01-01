@@ -667,7 +667,7 @@ const userController = {
         }
 
     },
-    async payForCourse({userId, courseId, coursePrice}){ //from wallet needs testing//////////////////
+    async payForCourse({userId, courseId}){ //from wallet needs testing//////////////////
         try{
             const theUser = await Account.findOne({_id: userId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
@@ -676,9 +676,11 @@ const userController = {
                 throw new DomainError("Wrong Id", 400)
             });;
             if(theUser.type == 'INDIVIDUAL TRAINEE'){
-                if(coursePrice == thisCourse.price){
-                    await Course.updateOne({_id: courseId}, {$push: { students: userId}});
-                   await Course.updateOne({_id:courseId} ,{ $push: { students: userId }})
+                if(theUser.wallet >= thisCourse.price){
+                   await Course.updateOne({_id: courseId}, {$push: { students: userId}});
+                   let newWallet = theUser.wallet - thisCourse.price;
+                   await Account.updateOne({_id: userId} ,{wallet: newWallet});
+
 
                 }
                 // if(theUser.wallet > 0 && theUser.wallet>=thisCourse.price){

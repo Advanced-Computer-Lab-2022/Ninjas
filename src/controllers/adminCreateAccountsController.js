@@ -5,6 +5,7 @@ const  Report  = require("../models/report");
 const  RefundRequest  = require("../models/refundRequest");
 const RequestAccess = require("../models/requestAccess");
 const {  } = require("../models/refundRequest");
+const { DesktopTimePicker } = require("@mui/x-date-pickers");
 
 //const { request } = require("express");
 
@@ -12,12 +13,15 @@ const adminCreateAccountsController =
 {
    async adminCreateAccounts({ username, password, firstName, lastName, email, gender, type }) {
       try {
+        const salt = await bcrypt.genSalt();
+            //hashes pw
+        const hashedPassword = await bcrypt.hash(password, salt);
          const notUnique = await Account.findOne({ username });
          console.log(notUnique)
 
          if (!notUnique) {
             const saved = await Account.create(
-                { username: username, password: password, firstName: firstName, 
+                { username: username, password: hashedPassword, firstName: firstName, 
                 lastName: lastName, email: email, gender: gender, type: type });
 
             return true;
@@ -53,6 +57,7 @@ const adminCreateAccountsController =
         //let cname = ""; //unseen
         //let uname = ""; //unseen
         let resReport3 = []; //resolved
+        let resReport4 = []; //resolved
 
          const Reports = await Report.find();
          for(var i=0; i<Reports.length ; i++){
@@ -61,46 +66,94 @@ const adminCreateAccountsController =
                     
                     const theUser = await Account.findOne({_id: Reports[i].accountId});
                     const theCourse = await Course.findOne({_id: Reports[i].courseId});
-                    console.log(theCourse);
-                    console.log(theUser.email);
+                    //console.log(theCourse);
+                    //console.log(theUser.email);
                     const u = theUser.email;
                     const c = theCourse.title;
                     const p = Reports[i].problem;
                     const pr = 'RESOLVED';
-                    console.log({u, c,p , pr});
+                    const rid = Reports[i]._id;
 
-                    // console.log(u);
-                    // console.log(c);
-                    // console.log(p);
-                    resReport3.push({u,c,p,pr});
+                    console.log({u, c,p , pr, rid});
+                    resReport3.push({u,c,p,pr, rid});
+                    console.log("1111111111111");
+                    console.log(resReport3);
                 }
                 else{
+                    if(Reports[i].followUp == false){
                     const theUser = await Account.findOne({_id: Reports[i].accountId});
                     const theCourse = await Course.findOne({_id: Reports[i].courseId});
                     const uname = theUser.email;
                     const cname = theCourse.title;
                     const prob = Reports[i].problem;
                     const prog = Reports[i].progress;
+                    const des = Reports[i].problemDescription;
+                    const rid = Reports[i]._id;
 
 
-                    resReport1.push({uname, cname, prob, prog});
+                    resReport1.push({uname, cname, prob, prog, des, rid});
+
+                    console.log("222222222222222");
+                    console.log(resReport1);
+
+                
+                }
+                    else{
+                        const theUser = await Account.findOne({_id: Reports[i].accountId});
+                        const theCourse = await Course.findOne({_id: Reports[i].courseId});
+                        const uname = theUser.email;
+                        const cname = theCourse.title;
+                        const prob = Reports[i].problem;
+                        const des = Reports[i].problemDescription;
+                        const rid = Reports[i]._id;
+                        resReport4.push({uname, cname, prob, des, rid});
+
+                    console.log("3333333333333");    
+                    console.log(resReport4)
+                    }
+
+                    }
                 }
 
-            }
             else{
+
+                if(Reports[i].followUp == false){
 
                 const theUser = await Account.findOne({_id: Reports[i].accountId});
                 const theCourse = await Course.findOne({_id: Reports[i].courseId});
                 const uname = theUser.email;
                 const cname = theCourse.title;
+                const rid = Reports[i]._id;
+
                 console.log(uname)
                 console.log(cname)
-                resReport2.push({uname, cname});
+                resReport2.push({uname, cname, rid});
+            
+                console.log("444444444444");
+                console.log(resReport2);
+            }
+
+                else{
+                    const theUser = await Account.findOne({_id: Reports[i].accountId});
+                    const theCourse = await Course.findOne({_id: Reports[i].courseId});
+                    const uname = theUser.email;
+                    const cname = theCourse.title;
+                    const rid = Reports[i]._id;
+    
+                    console.log(uname)
+                    console.log(cname)
+                    resReport4.push({uname, cname, prob, des, rid});
+
+                    console.log("55555555555555");
+                    console.log(resReport4);
+
+                }
             }
          }
          resReport.push(resReport1);
          resReport.push(resReport2);
          resReport.push(resReport3);
+         resReport.push(resReport4);
 
 
          return resReport;
@@ -108,7 +161,11 @@ const adminCreateAccountsController =
 
      
      } catch (err) {
-         if (err._message && err._message == 'Account validation failed') { throw new DomainError('validation Error', 400); }
+         if (err._message && err._message == 'Account validation failed') { 
+            
+            throw new DomainError('validation Error', 400); }
+
+            console.log(err);
          throw new DomainError('error internally', 500);}
 
      },
@@ -165,15 +222,20 @@ const adminCreateAccountsController =
 
 
 
-      async updateWallet({userId}){ //refunded courses
+      async updateWallet({userId, instructorId}){ //refunded courses
 
          let newWallet = 0;
+         let newWallet2 = 0;
+
          let temp = [];
       //   newWallet = theUser.wallet + (0.5* theUser.refundedCourses[i].price); 
 
 
         try{
             const theUser = await Account.findOne({_id: userId}).catch(() => {
+                throw new DomainError("Wrong Id", 400)
+            });;
+            const theInstructor = await Account.findOne({_id: instructorId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });;
             console.log(theUser);
@@ -186,9 +248,14 @@ const adminCreateAccountsController =
 
              }
              for(var j=0; j<temp.length; j++){
-                newWallet = theUser.wallet + (0.5* temp[j].price); 
+                newWallet = newWallet + (0.5* temp[j].price);
+ 
              }
-             await Account.updateOne({_id:userId}, {wallet: newWallet });
+             let newWallet11 = theUser.wallet + newWallet;
+             let newWallet22 = theInstructor.wallet - newWallet;
+
+             await Account.updateOne({_id:userId}, {wallet: newWallet11 });
+             await Account.updateOne({_id:instructorId}, {wallet: newWallet22 });
              await Account.updateOne({_id:userId}, {refundedCourses: []});
 
              
@@ -218,32 +285,74 @@ const adminCreateAccountsController =
  
         }
       },
-   
-      async setPromotion({selectedCourses, promotion}){ //All courses
+
+      async getAllCoursesss2(){ //All courses
+
+     
         try{
             let c = [];
-            let newPrice = 0;
-            for(var i=0; i<selectedCourses.length; i++){
-
-               const theCourse = await Course.findOne({_id: selectedCourses[i]}).catch(() => {
-                   throw new DomainError("Wrong Id", 400)
-                });;
-               c.push(theCourse);
+            const theCourses = await Course.find();
+            for(var j=0; j<theCourses.length; j++){
+                c.push(theCourses[i]._id);
 
             }
-            for(var j =0; j<c.length; j++){
-
-            newPrice = c[j].price - c[j].price * (promotion/100);
-            await Course.updateOne({_id: c[j]._id}, {price: newPrice} );
-            await Course.updateOne({_id: c[j]._id}, {promoted: 'Promoted'} );
-           // this.getAllCoursesss();  
-        }          
-            
+            return c;
+                 
         }
         catch(err){
             throw new DomainError('error internally', 500);
  
         }
+      },
+   
+      async setPromotion({selectedCourses, promotion, startDay, endDay, startMonth, endMonth ,startYear, endYear}){ //All courses
+        // try{
+        //     let c = [];
+        //     let flag = 0;
+        //     let newPrice = 0;
+        //     //let duration = 0;
+
+        //     //Date startDate = 
+
+            
+
+            
+           
+        //     for(var i=0; i<selectedCourses.length; i++){
+
+        //        const theCourse = await Course.findOne({_id: selectedCourses[i]}).catch(() => {
+        //            throw new DomainError("Wrong Id", 400)
+        //         });;
+        //         if(theCourse.promoted == 'Not Promoted'){
+        //             if(startDat)
+        //             //current  timeeee
+        //            c.push(theCourse);
+        //         }
+        //         else{
+        //             flag = 1;
+        //             break;
+        //         }
+
+        //     }
+        //     for(var j =0; j<c.length; j++){
+
+        //         if(flag == 0){
+
+        //             newPrice = c[j].price - c[j].price * (promotion/100);
+        //             await Course.updateOne({_id: c[j]._id}, {promoted: 'Promoted'});
+        //             // this.getAllCoursesss();
+        //             return flag   
+        //         }
+        //         else{
+        //             return flag
+        //         }
+        // }          
+            
+        // }
+        // catch(err){
+        //     throw new DomainError('error internally', 500);
+ 
+        // }
       },
    
 
@@ -290,9 +399,10 @@ const adminCreateAccountsController =
             throw new DomainError("Wrong Id", 400)
         });;
         const theCourse = await Course.findOne({_id: theRefund.courseId});
+        const instructorId = theCourse.instructors[0]._id;
         await Account.updateOne({_id:theRefund.accountId}, {$push: { refundedCourses: theCourse }});
         await RefundRequest.remove({_id: refundRequestid});
-        this.updateWallet({userId: theRefund.accountId});
+        this.updateWallet({userId: theRefund.accountId, instructorId});
         return this.viewRefundRequest();
       }
       catch(err){
@@ -356,9 +466,11 @@ const adminCreateAccountsController =
       if(theUser.type == 'CORPORATE_TRAINEE'){ 
         const uname = theUser.email;
         const theCourse = await Course.findOne({_id: Requests[i].courseId});
-        const cname = theCourse.title
+        const cname = theCourse.title;
+        const company = Requests[i].corporateName;
+
         
-         newRec.push({uname, cname});
+         newRec.push({uname, cname, company});
          
   }}
      return newRec;
@@ -388,6 +500,34 @@ const adminCreateAccountsController =
              throw new DomainError("Wrong Id", 400)
           });;
         await Course.updateOne({_id: thisCourse.id}, {$push: { students : thisUser.id }});
+        await RequestAccess.remove({_id: requestId});
+        return this.viewCorporateRequest();
+
+     
+       
+    }
+    catch(err){
+        throw new DomainError('error internally', 500);
+
+
+    }
+ 
+   },
+
+   async rejectCorporateRequest({requestId}){
+ 
+    
+    try{
+        const theRequest = await RequestAccess.findOne({_id: requestId}).catch(() => {
+            throw new DomainError("Wrong Id", 400)
+        });;
+        const thisCourse = await Course.findOne({_id: theRequest.courseId}).catch(() => {
+             throw new DomainError("Wrong Id", 400)
+          });;
+         const thisUser = await Account.findOne({_id: theRequest.accountId}).catch(() => {
+             throw new DomainError("Wrong Id", 400)
+          });;
+       // await Course.updateOne({_id: thisCourse.id}, {$push: { students : thisUser.id }});
         await RequestAccess.remove({_id: requestId});
         return this.viewCorporateRequest();
 
