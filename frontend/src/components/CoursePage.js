@@ -36,6 +36,8 @@ import WatchLaterOutlinedIcon from '@mui/icons-material/WatchLaterOutlined';
 import GroupsOutlinedIcon from '@mui/icons-material/GroupsOutlined';
 import BoyOutlinedIcon from '@mui/icons-material/BoyOutlined';
 import GradingIcon from '@mui/icons-material/Grading';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import AssignmentLateIcon from '@mui/icons-material/AssignmentLate';
 const instructorNav = {};
 const traineeNav = {};
 function LinearProgressWithLabel(props) {
@@ -482,8 +484,8 @@ const CoursePage = () => {
 
     })
 
-    //check if the user has saw the exercise answers
-    const [exerciseHistory, setExerciseHistory] = useState([])
+    //The user's history of the course exercises
+    const [exerciseHistory, setExerciseHistory] = useState([]);
     const checkExerciseHistory = async () => {
         const response = await axios.get(`http://localhost:8000/exerciseHistory?courseId=${courseId}&userId=${user._id}`)
             .catch((error) => {
@@ -497,6 +499,7 @@ const CoursePage = () => {
         }
     }
 
+    //checks whether the user solved a specific exercise
     const sawTheAnswers = (exerciseId) => {
         const saw = exerciseHistory.filter(ex => ex.exercises[0]._id.toString() === exerciseId.toString());
         //if he didn't solve the exercise return false
@@ -504,6 +507,15 @@ const CoursePage = () => {
             return false;
 
         return saw[0].viewedAnswers;
+    }
+
+    const solvedThisExercise = (exerciseId) => {
+        const solved = exerciseHistory.filter(ex => ex.exercises[0]._id.toString() === exerciseId.toString());
+        //if he didn't solve the exercise return zero
+        if (solved.length === 0)
+        return "Not Solved Yet.";
+        else
+        return solved[0].userGrade;
     }
 
     const [youSaw, setYouSaw] = useState(false);
@@ -796,7 +808,8 @@ const CoursePage = () => {
                                                 <br></br>
                                                 <Typography> This subtitle's total hours: {subtitle.hours} </Typography>
                                                 <br></br>
-                                                <Typography
+                                                { subtitle.videoTitles &&
+                                                    <Typography
                                                     sx={{
                                                         alignItems: 'center',
                                                         '&:hover': {
@@ -807,6 +820,8 @@ const CoursePage = () => {
                                                 >
                                                     <PlayCircleIcon color='#03045E' /> {subtitle.videoTitles.title}: {subtitle.videoTitles.description}
                                                 </Typography>
+                                                }
+                                                
 
                                                 {subtitle.exercises.map((exercise) => (
                                                     <Grid container spacing={0}>
@@ -816,7 +831,7 @@ const CoursePage = () => {
                                                                 '&:hover': {
                                                                     backgroundColor: '#CAF0F8',
                                                                 },
-                                                                width: '85%'
+                                                                width: '95%'
                                                             }}
                                                             onClick={
                                                                 registered && !sawTheAnswers(exercise._id) ?
@@ -827,39 +842,24 @@ const CoursePage = () => {
                                                             <MenuBookIcon color='#03045E' /> Exercise: {exercise.title}
                                                             {
                                                                 registered && user.type === 'INSTRUCTOR' && avgGrades.length > 0 &&
-                                                                <Typography sx={{ ml: '60%', mt: '-5%' }}>
+                                                                <Typography sx={{ ml: '65%', mt: '-5%' }}>
                                                                     <GradingIcon /> Average Grade: {avgGrades.filter(gr => gr.exerciseId === exercise._id.toString())[0].avgGrade} / {exercise.totalGrade}
 
                                                                 </Typography>
                                                             }
-
-                                                        </Typography>
-
-                                                        {registered && user.type != 'INSTRUCTOR' &&
-                                                                //  EXgrades.map((record) => (
-                                                                //   {record.exercises[0]._id == exercise._id &&
-                                                                //     <Typography>
-                                                                //     here
-                                                                // </Typography>
-                                                                //   }
-                                                                    
-
-                                                                //  ) )
-                                                                       
-                                                                
-
-                                                            <Button
-                                                                sx={{ mt: 0, align: 'right', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                                                onClick={() => {
-                                                                    setExerciseId(exercise._id);
-                                                                    setFlagG(true);
-                                                                }}
-                                                            >
-                                                                view my grade
-                                                            </Button>
-                                                        }
-
-
+                                                            {
+                                                                registered && user.type !== 'INSTRUCTOR' && solvedThisExercise(exercise._id) !== "Not Solved Yet." &&
+                                                                <Typography sx={{ ml: '70%', mt: '-5%' }}>
+                                                                    <AssignmentTurnedInIcon /> You got {solvedThisExercise(exercise._id)} out of {exercise.totalGrade}.
+                                                                </Typography>
+                                                            }
+                                                            {
+                                                                registered && user.type !== 'INSTRUCTOR' && solvedThisExercise(exercise._id) === "Not Solved Yet." &&
+                                                                <Typography sx={{ ml: '70%', mt: '-5%' }}>
+                                                                    <AssignmentLateIcon /> Not solved yet.
+                                                                </Typography>
+                                                            }
+                                                            </Typography>
 
                                                         {/* //henaaaaa */}
                                                         <Backdrop
