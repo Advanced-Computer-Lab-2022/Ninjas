@@ -21,25 +21,35 @@ const cookieParser = require("cookie-parser");
 const session = require('express-session');
 const userController = require("./controllers/userController");
 
-app.use(cors()) 
 app.use(express.json());
 app.use(cookieParser());
+  //time is in SECONDS
+  const maxAge = 30 * 24 * 60 * 60;
+
 app.use(session({
   secret: process.env.TOKEN,
   resave: false,
-  cookie: { secure: false },
+  httpOnly: false,
+  cookie: {
+    maxAge: maxAge * 1000
+  },
   saveUninitialized: false,
 }))
 
 
-
+app.use(
+  cors({
+    credentials: true,
+    origin: 'http://localhost:3000',
+    optionsSuccessStatus: 200,
+  })
+);
 const port = process.env.PORT || "8000";
 //login and signup do not require an authenticated user
 
 app.get('/login', async (req, res) => {
   try {
       //should be changed in the evaluation
-      const maxAge = 3 * 24 * 60 * 60;
 
       console.log( 'entered');
       const { username, password } = req.query;
@@ -57,13 +67,9 @@ app.get('/login', async (req, res) => {
 
       sessionDetails.pushSession();
 
-
-      console.log(sessionDetails.getSession(req.session.id));
-
-
       //unique identifier for key-value table of cookies
       const key = username+'jwt';
-      res.cookie(key, token, { httpOnly: true, maxAge: maxAge * 1000 });
+      res.cookie(key, token, { httpOnly: false, secure: false, maxAge: maxAge * 1000 });
   
 
       res.status(200).json(user);
