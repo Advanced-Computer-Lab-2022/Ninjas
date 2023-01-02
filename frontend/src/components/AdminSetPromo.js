@@ -286,27 +286,6 @@ const handleChangePromotion = (event) => {
   setPromotion(event.target.value);
 }
 
-const handleChangeStDay = (event) => {
-  setStartDay(event.target.value);
-}
-
-const handleChangeStMonth = (event) => {
-  setStartMonth(event.target.value);
-}
-const handleChangeEDay = (event) => {
-  setEndDay(event.target.value);
-}
-
-const handleChangeEMonth = (event) => {
-  setEndMonth(event.target.value);
-}
-
-const handleChangeStYear = (event) => {
-  setStYear(event.target.value);
-}
-const handleChangeEnYear = (event) => {
-  setEnYear(event.target.value);
-}
 
 const handleClickOpen = () => {
   if (!startDate || selects.length === 0 || !endDate || !promotion || promotion <= 0)
