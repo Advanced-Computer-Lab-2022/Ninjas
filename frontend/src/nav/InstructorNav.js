@@ -454,7 +454,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 );
 
 const mdTheme = createTheme();
-  const [open2, setOpen2] = React.useState(false);
   const handleClickOpen = () => {
     setOpen2(true);
   };
@@ -559,7 +558,7 @@ const change = async ()=>{
     }
 
 
-
+    const [open2, setOpen2] = React.useState(false);
   const [open, setOpen] = React.useState(false);
   const [open9, setOpen9] = React.useState(false);
 
@@ -681,17 +680,17 @@ const[btnText,setBtnText]=useState('');
 const[newPassword,setNewPassword]=useState('');
 const[confirmPassword,setConfirmPassword]=useState('');
 const[creditCard,setCreditCard]=useState('');
-const [ready, setReady] = useState(false);
-useEffect(() => {
-    if (user._id) {
-        getCurrency();
-        setReady(true);
-        // setNewEmail(user.email);
-        // setBiography(user.biography);
+// const [ready, setReady] = useState(false);
+// useEffect(() => {
+//     if (user._id) {
+//         getCurrency();
+//         setReady(true);
+//         // setNewEmail(user.email);
+//         // setBiography(user.biography);
 
         
-    }
-}, [user])
+//     }
+// }, [user])
 
 const handleKeypress = e => {
   //it triggers by pressing the enter key
@@ -715,6 +714,12 @@ const handleChange = (event) => {
   console.log(event.target.value)
   //sets the country to the selected one
   setCountry(event.target.value);
+};
+
+const handleClickBack = () => {
+
+
+  setOpen2(true);
 };
 
   return (
@@ -819,20 +824,17 @@ const handleChange = (event) => {
           </ListItemIcon>
           <ListItemText primary='Settings'/>
           </ListItemButton>
-          {ready && 
-    <div>
-    
-      <BootstrapDialog
+          <BootstrapDialog
      PaperProps={{
         sx: {
           
-          height : '215%',
-          width :'100%'
+          height : '380px',
+          width :'470px'
         }
       }}
       fullWidth='true'
       //maxWidth='sm' 
-        onClose={handleClose}
+       // onClose={handleClose}
         aria-labelledby="customized-dialog-title"
         open={open2}
       >
@@ -842,83 +844,84 @@ const handleChange = (event) => {
         
          
         </BootstrapDialogTitle>
-
-{ open &&
+{/* 
+{!passwordSettings &&  !countrySettings  && open &&
 
         <div>
             <ListItemIcon>
-          <SettingsIcon sx={{color:'#757575',mt:-1,ml:0.5 }} />
-          <ListItemText primary='Account Settings' sx={{mt:-1,ml:1,color:'black' }}/>
+          <SettingsIcon sx={{color:'#757575' }} />
+          <ListItemText primary='Account Settings' sx={{color:'black' }}/>
           </ListItemIcon>
         <Grid
         alignItems="center"
         justify="center">
         <Stack direction="row" spacing={2} ml={25}>
       <Avatar
-        sx={{ bgcolor: '#03045E', width: 56, height: 56,ml:'20%',mt:-1  }}
+        sx={{ bgcolor: '#03045E', width: 56, height: 56,ml:'5%'  }}
         alt={user.firstName}
+        src="/broken-image.jpg"
       />
 
     </Stack>
     &nbsp;
-        <Typography  sx={{mt:-3,ml:'47%',color:'black' }}>
+        <Typography ml='45%'>
         {user.firstName} {user.lastName}
     </Typography>
     &nbsp;&nbsp;&nbsp;
     &nbsp;&nbsp;&nbsp;
+    <ButtonGroup
+        orientation="vertical"
+        aria-label="vertical outlined button group"
+        sx={{ width: '80%' , ml:3 }}
+      >
+
+    <Button key="two" sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E', borderRadius:0,border:"1px solid" }} onClick={()=> {handlePassword()}}>Password</Button>
+    <Button key="three" sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E', borderRadius:0,border:"1px solid" }}  onClick={()=> {handleCountry()}}>Country</Button>
+
+      </ButtonGroup>
       </Grid>
-      </div>}
-
- <Typography variant='body' sx={{mt:-2,ml:2}}>
-  Email
- </Typography>
-        <OutlinedInput 
-            onChange={(event)=>{handleChangeEmail(event)}}
-            sx={{mt:0 ,ml:2, mr:2}}
-            label="Email"
-            //defaultValue={newEmail}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton 
-                 
-                  aria-label="toggle password visibility"
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <CreateIcon /> : <CreateIcon />}
-                </IconButton>
-              </InputAdornment>
-            }
-
-          />
-         <DialogActions>
-        </DialogActions>
+      </div>} */}
 
 
 
-<Typography variant='body' sx={{mt:-1.5,ml:2}}>
-  Password
-</Typography>
+
+      <div>
+        <IconButton
+      aria-label="close"
+      onClick={handleClickBack}
+      sx={{
+        position: 'absolute',
+        right: 425,
+        top: 8,
+        color: (theme) => theme.palette.grey[500],
+          }}
+        >
+ <ArrowBackIosIcon/>
+ </IconButton>
+
+        <Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
+            Password
+        </Typography>
         <TextField
-        onBlur={(event)=>{handleChangeOldPassowrd(event)}}
+        onChange={(event)=>{handleChangeOldPassowrd(event)}}
           type='password'
-          sx={{ ml:2,mr:2}}
+          sx={{mt:2 , ml:5}}
           label="Old Password"
           id="old Passowrd"
           defaultValue=""
         />
          <TextField
-          onBlur={(event)=>{handleChangeNewPassword(event)}}
+          onChange={(event)=>{handleChangeNewPassword(event)}}
          type='password'
-         sx={{ml:2,mr:2}}
+         sx={{mt:1, ml:5}}
           label="New Passowrd"
           id="old Passowrd"
           defaultValue=""
         />
         <TextField
-         onBlur={(event)=>{handleChangeConfirmPassword(event)}}
+         onChange={(event)=>{handleChangeConfirmPassword(event)}}
         type='password'
-        sx={{ml:2,mr:2}}
+        sx={{ mt:1,ml:5}}
           label="Confrim New Passowrd"
           id="old Passowrd"
           defaultValue=""
@@ -927,83 +930,61 @@ const handleChange = (event) => {
    
 
            <DialogActions>
+
         </DialogActions>
-  <Typography variant='body' sx={{mt:-1.5,ml:2}}>
-  Country
-</Typography>
+      </div> 
 
-{/* <FormControl sx={{ width: '50%' }}>
-                <InputLabel id="country-select-label">Country</InputLabel>
-                <Select
-                    id="country-select"
-                    value={country}
-                    label="Country"
-                    onChange={handleChange}
-                    autoComplete= 'new-password'
-                >
-                    {
-                        countryEnums.map((country) => (
-                            <MenuItem value={country}>{country}</MenuItem>
-                        ))
-                    }
-                </Select>
-            </FormControl> */}
-{/* <Autocomplete
-      id="country-select-demo"
-      sx={{ width: 300 }}
-      options={countryEnums}
-      autoHighlight
-      getOptionLabel={ countryEnums.map((country) => (
-        {country}))}
 
-      renderOption={
-        countryEnums.map((country) => (
-            {country}
-        ))
+
+
+
+<div>
+<IconButton
+      aria-label="close"
+      onClick={handleClickBack}
+      sx={{
+        position: 'absolute',
+        right: 425,
+        top: 8,
+        color: (theme) => theme.palette.grey[500],
+          }}
+        >
+ <ArrowBackIosIcon/>
+ </IconButton>
+<Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
+            Country
+        </Typography>
+<OutlinedInput
+ sx={{mt:2 , ml:5}}
+    label="Password"
+    defaultValue={user.country}
+    endAdornment={
+      <InputAdornment position="end">
+        <IconButton 
+         
+          aria-label="toggle password visibility"
+          onMouseDown={handleMouseDownPassword}
+          edge="end"
+        >
+          {showPassword ? <CreateIcon /> : <CreateIcon />}
+        </IconButton>
+      </InputAdornment>
     }
-      
 
-    /> */}
+  />
    <DialogActions>
-        </DialogActions>
-
-<Typography variant='body' sx={{mt:-1.5,ml:2}}>
-  Biography
-</Typography>
-
-        <OutlinedInput
-         sx={{mr:2 , ml:2}}
-            label="Password"
-            defaultValue={biography}
-            onBlur={handleChangeBiography}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton 
-                 
-                  aria-label="toggle password visibility"
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <CreateIcon /> : <CreateIcon />}
-                </IconButton>
-              </InputAdornment>
-            }
-
-          />
-          <Button
-          variant="contained"
-          sx={{ mt:1,ml:49.25 ,width:'30%'}}
-          onClick={()=> {saveSettings()}}
-          >
-            Save Changes
-          </Button>
+          <Button sx={{mt:25 , ml:5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E'}} autoFocus 
           
-           <DialogActions>
+          >
+            Save changes
+          </Button>
         </DialogActions>
+</div> 
 
           
       </BootstrapDialog>
-      </div>}
+
+
           <ListItemButton onClick={()=>{window.location.href='/myReports'}}>
             <ListItemIcon>
           <ReportIcon sx={{color:'black' }} />
