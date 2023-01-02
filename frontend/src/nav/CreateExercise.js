@@ -22,6 +22,15 @@ import ListItem from "@mui/material/ListItem";
 import {useState,useEffect} from "react";
 import axios from "axios";
 import ButtonGroup from '@mui/material/ButtonGroup';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import CloseIcon from '@mui/icons-material/Close';
+import PropTypes from 'prop-types';
+import { styled} from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+import { Alert, AlertTitle, Backdrop } from '@mui/material';
 
 
 const instructorNav = {};
@@ -29,7 +38,43 @@ const instructorNav = {};
 
 
 const steps = ['Exercise Title', 'Add Questions'];
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
 
+function BootstrapDialogTitle(props) {
+  const { children, onClose, ...other } = props;
+
+  return (
+    <DialogTitle sx={{ m: 0, p: 2 }} {...other}>
+      {children}
+      {onClose ? (
+        <IconButton
+          aria-label="close"
+          onClick={onClose}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      ) : null}
+    </DialogTitle>
+  );
+}
+
+BootstrapDialogTitle.propTypes = {
+  children: PropTypes.node,
+  onClose: PropTypes.func.isRequired,
+};
 
 
 const theme = createTheme();
@@ -63,7 +108,15 @@ export default function Checkout() {
    const courseId = params.get('courseId')
    const subtitleId = params.get('subtitleId')
 
-   
+   const [open, setOpen] = React.useState(false);
+   const handleClickOpen = (reqIdInput) => {
+    setFirst2(1);
+    if(!questionText=='' && !mcq1=='' && !mcq2=='' && !mcq3=='' && !mcq4=='' && !totalCredit=='' && !correctAnswer=='' ){
+     setOpen(true);}
+   };
+   const handleClose = async () => {
+     setOpen(false);
+   };
     const handleChangeQuestionText = (event) => {
       setQuestionText(event.target.value);
   }
@@ -141,10 +194,15 @@ export default function Checkout() {
           setMcq4('');
           setTotalCredit('');
           setCorrectAnswer('');
+          setcheck1(false);
+    setcheck2(false);
+    setcheck3(false);
+    setcheck4(false);
           setFirst2(0);
       }
 
-    }}
+    }
+  }
   
     useEffect( () => {
       console.log(correctAnswer);
@@ -156,12 +214,43 @@ export default function Checkout() {
   }
 
   const change2 = async ()=>{
+
+    if(!questionText=='' && !mcq1=='' && !mcq2=='' && !mcq3=='' && !mcq4=='' && !totalCredit=='' && !correctAnswer=='' ){
+    const response=await axios.post(`http://localhost:8000/addQuestion2/`,{questionText:questionText , mcq1:mcq1,mcq2:mcq2,
+    mcq3:mcq3,mcq4:mcq4,correctAnswer:correctAnswer,totalCredit:totalCredit}
+   ).catch( (error) => alert(error.response.data.message))
+        console.log(response.data)
+    if(response.status===200){
+        setQuestionText('');
+        setMcq1('');
+        setMcq2('');
+        setMcq3('');
+        setMcq4('');
+        setTotalCredit('');
+        setCorrectAnswer('');
+        setcheck1(false);
+  setcheck2(false);
+  setcheck3(false);
+  setcheck4(false);
+        setFirst2(0);
+    }
+
+  }
+
   const response=await axios.post(`http://localhost:8000/createExercise/`,{courseId:courseId,subtitleId:subtitleId , title:title})
-  .catch( (error) => alert(error.response.data.message))
-      console.log(response.data)
-  if(response.status===200){
-      alert(response.data)
-  }}
+  .catch(error => {
+    if(error.response.status === 400) {
+
+    }
+})
+
+if (response.status === 200) {
+    setOpen(false);
+    setsuccess(true);
+}
+}
+
+const [exercisesuccess, setsuccess] = useState(false);
 
 
   return (
@@ -249,13 +338,54 @@ export default function Checkout() {
           <Button variant="contained" onClick={handleBack}  sx={{ mt:0,ml:70 }}>
                     Back
                   </Button>
-                  <Button variant="contained" onClick={()=> {change2()}} sx={{mt:-8,ml:108.5,width:'35%'}}>
+                  <Button variant="contained" onClick={handleClickOpen} sx={{mt:-8,ml:108.5,width:'35%'}}>
   Add Exercise
 </Button>
           <Button variant="contained" onClick={()=> {handleChangeChange()}} sx={{mt:-14,ml:80,width:'41%'}}>
               Add Another Question
         </Button>
+        <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+          <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Are you sure you want to add exercise. Action cannot be undone?
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose()}>
+            No
+          </Button>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={()=> {change2()}}>
+            Yes
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
 
+      <Backdrop
+                                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                                open={exercisesuccess}
+                                onClick={() => window.location.href=`course/${courseId}`}
+                            >
+                                <Alert sx={{ tabSize: 'l' }} severity="info">
+                                    { exercisesuccess &&
+                                        <div>
+                                            <AlertTitle>Exercise Added Successfully</AlertTitle>
+                                            Click anywhere to continue
+                                        </div>
+
+                                    }
+                                </Alert>
+                            </Backdrop>
 
 
           

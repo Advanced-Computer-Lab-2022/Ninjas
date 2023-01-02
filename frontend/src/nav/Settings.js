@@ -238,7 +238,7 @@ const handleChangeNewPassword = (event) => {
         
          
         </BootstrapDialogTitle>
-
+{/* 
 {!passwordSettings &&  !countrySettings  && open &&
 
         <div>
@@ -274,11 +274,10 @@ const handleChangeNewPassword = (event) => {
 
       </ButtonGroup>
       </Grid>
-      </div>}
+      </div>} */}
 
 
 
-      {passwordSettings && open &&
 
       <div>
         <IconButton
@@ -325,15 +324,13 @@ const handleChangeNewPassword = (event) => {
    
 
            <DialogActions>
-          <Button sx={{mt:8 , ml:5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E'}} autoFocus onClick={()=> {change3()}}>
-            Save changes
-          </Button>
+
         </DialogActions>
-      </div> }
+      </div> 
 
 
 
-{countrySettings && open &&
+
 
 <div>
 <IconButton
@@ -374,7 +371,7 @@ const handleChangeNewPassword = (event) => {
             Save changes
           </Button>
         </DialogActions>
-</div> }
+</div> 
 
           
       </BootstrapDialog>

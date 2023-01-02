@@ -76,7 +76,7 @@ function App() {
       <Route path='/iHome' element= {<InstructorHome/>} >  </Route>
       <Route path='/tHome' element= {<TraineeHome/>} > </Route>
       <Route path='/exercise' element= {<CreateExercise/>} > </Route>
-      <Route path='/settings' element= {<Settings2/>} > </Route>
+      <Route path='/settings' element= {<Settings/>} > </Route>
       <Route path='/settingsT' element= {<Settings/>} > </Route>
       <Route path='/ratings' element={<Ratings/>}></Route>
       <Route path='/enrolled' element={<TraineeCourse/>}></Route>

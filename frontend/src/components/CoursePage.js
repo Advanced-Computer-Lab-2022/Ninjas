@@ -710,9 +710,9 @@ const CoursePage = () => {
                                         </Typography>
                                         <Typography variant="subtitle1">
                                             From
-                                            <Text style={{ textDecorationLine: 'line-through' }}>  {price}     </Text>
+                                            <Text style={{ textDecorationLine: 'line-through' }}>  {price.toFixed(2)}     </Text>
 
-                                            <Text>   To {afterdiscount}  {currency} </Text>
+                                            <Text>   To {afterdiscount.toFixed(2)}  {currency} </Text>
 
                                         </Typography>
                                     </div>
@@ -720,7 +720,7 @@ const CoursePage = () => {
                                 {(['GUEST', 'INSTRUCTOR'].includes(user.type) || (user.type === 'INDIVIDUAL_TRAINEE' && !registered)) &&
                                  ( course.discount === 0 || (course.startDate && new Date(course.startDate) > new Date())) &&
                                     <Typography variant="subtitle1">
-                                        This course currently costs {price} {currency}
+                                        This course currently costs {price.toFixed(2)} {currency}
                                     </Typography>
                                 }
                                 {
@@ -1154,7 +1154,7 @@ const CoursePage = () => {
 
                                 <Button
                                     sx={{ alignSelf: 'center', width: '70%', mb: '5%', align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
-                                    onClick={() => window.location.href = `/checkout?courseId=${course._id}&price=${course.price}&instId=${course.instructors[0]._id}`}
+                                    onClick={() => window.location.href = `/checkout?courseId=${course._id}&price=${price}&instId=${course.instructors[0]._id}&courseName=${course.title}`}
                                 >
                                     Pay using credit card
                                 </Button>
