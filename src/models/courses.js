@@ -80,6 +80,7 @@ const coursesSchema = new Schema({
     promoted: {
         type: String,
         enum: ['Promoted', 'Not Promoted'],
+        default: 'Not Promoted',
         required: false
     }
 })

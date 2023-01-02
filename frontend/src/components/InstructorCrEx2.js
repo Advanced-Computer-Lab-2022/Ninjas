@@ -500,15 +500,15 @@ return (
         </DialogContent>
         <DialogActions>
           <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
-          onClick={() => handleClose5()}>
+          onClick={() =>{ handleClose5()}}>
             Another Course
           </Button>
           <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
-          onClick={() => handleClose6()}>
+          onClick={() => {handleClose6()}}>
             Another Subtitle
           </Button>
           <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
-          onClick={() => handleClose7()}>
+          onClick={() => {handleClose7()}}>
             Finish
           </Button>
         </DialogActions>

@@ -238,8 +238,22 @@ catch (err) {
     res.status(500).json({ err });
   }
 }
+})
 
+adminRouter.get('/rejectCorporateRequest', async (req, res) => {
+  try {
+    const requestId = req.query.requestId;
+    const results = await adminCreateAccountsController.rejectCorporateRequest({ requestId });
+    res.status(200).json(results);
+}
 
+catch (err) {
+  if (err instanceof DomainError) {
+    res.status(err.code).json({ code: err.code, message: err.message })
+  } else {
+    res.status(500).json({ err });
+  }
+}
 })
 
 
@@ -249,6 +263,26 @@ adminRouter.get('/getAllCoursesss', async (req, res) => {
     const courses = await adminCreateAccountsController.getAllCoursesss();
     res.status(200).json(courses);
 }
+
+
+catch (err) {
+  if (err instanceof DomainError) {
+    res.status(err.code).json({ code: err.code, message: err.message })
+  } else {
+    res.status(500).json({ err });
+  }
+}
+
+
+})
+
+adminRouter.get('/getAllCoursesss2', async (req, res) => {
+  try {
+
+    const courses = await adminCreateAccountsController.getAllCoursesss2();
+    res.status(200).json(courses);
+}
+
 
 catch (err) {
   if (err instanceof DomainError) {
