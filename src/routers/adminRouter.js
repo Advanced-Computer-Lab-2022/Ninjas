@@ -279,8 +279,8 @@ catch (err) {
 adminRouter.get('/getAllCoursesInst', async (req, res) => {
   try {
     const session = sessionDetails.getSession(req.session.id);
-    const userId = session.userId;
-    const courses = await adminCreateAccountsController.getAllCoursesInst({userId});
+    const username= session.username;
+    const courses = await adminCreateAccountsController.getAllCoursesInst({username});
     res.status(200).json(courses);
 }
 

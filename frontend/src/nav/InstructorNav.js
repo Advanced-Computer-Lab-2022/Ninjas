@@ -43,6 +43,7 @@ import Grid from '@mui/material/Grid';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import {TextField} from "@mui/material";
 import DialogContent from '@mui/material/DialogContent';
+import PercentIcon from '@mui/icons-material/Percent';
 
 
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
@@ -791,12 +792,27 @@ const handleClickBack = () => {
             <ListItemIcon>
           <MenuBookIcon sx={{color:'black' }} />
           </ListItemIcon>
-          <ListItemText primary='My Courses' onClick={viewMyCourses}/>
+
+          <ListItemText primary='My Course' onClick={viewMyCourses}/>
           </ListItemButton>
+
+          <ListItemButton onClick={() => window.location.href='/promotion'}>
+            <ListItemIcon>
+          <PercentIcon sx={{color:'black' }} />
+          </ListItemIcon>
+          <ListItemText primary='Set Discount'/>
+          </ListItemButton>
+
+
+
           <ListItemButton onClick={viewRatings} >
             <ListItemIcon>
           <StarIcon sx={{color:'black' }} />
           </ListItemIcon>
+   
+          
+
+          
           <ListItemText primary='My Reviews'/>
           </ListItemButton>
           <ListItemButton>
@@ -823,171 +839,13 @@ const handleClickBack = () => {
               </Grid>
             </ListItemButton>
           } 
-          <ListItemButton onClick={handleClickOpen}>
+          <ListItemButton onClick={()=>{window.location.href='/settings'}}>
             <ListItemIcon>
           <SettingsIcon sx={{color:'black' }} />
           </ListItemIcon>
           <ListItemText primary='Settings'/>
           </ListItemButton>
-          <BootstrapDialog
-     PaperProps={{
-        sx: {
-          
-          height : '380px',
-          width :'470px'
-        }
-      }}
-      fullWidth='true'
-      //maxWidth='sm' 
-       // onClose={handleClose}
-        aria-labelledby="customized-dialog-title"
-        open={open2}
-      >
-        
-        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
-      
-        
-         
-        </BootstrapDialogTitle>
-{/* 
-{!passwordSettings &&  !countrySettings  && open &&
 
-        <div>
-            <ListItemIcon>
-          <SettingsIcon sx={{color:'#757575' }} />
-          <ListItemText primary='Account Settings' sx={{color:'black' }}/>
-          </ListItemIcon>
-        <Grid
-        alignItems="center"
-        justify="center">
-        <Stack direction="row" spacing={2} ml={25}>
-      <Avatar
-        sx={{ bgcolor: '#03045E', width: 56, height: 56,ml:'5%'  }}
-        alt={user.firstName}
-        src="/broken-image.jpg"
-      />
-
-    </Stack>
-    &nbsp;
-        <Typography ml='45%'>
-        {user.firstName} {user.lastName}
-    </Typography>
-    &nbsp;&nbsp;&nbsp;
-    &nbsp;&nbsp;&nbsp;
-    <ButtonGroup
-        orientation="vertical"
-        aria-label="vertical outlined button group"
-        sx={{ width: '80%' , ml:3 }}
-      >
-
-    <Button key="two" sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E', borderRadius:0,border:"1px solid" }} onClick={()=> {handlePassword()}}>Password</Button>
-    <Button key="three" sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E', borderRadius:0,border:"1px solid" }}  onClick={()=> {handleCountry()}}>Country</Button>
-
-      </ButtonGroup>
-      </Grid>
-      </div>} */}
-
-
-
-
-      <div>
-        <IconButton
-      aria-label="close"
-      onClick={handleClickBack}
-      sx={{
-        position: 'absolute',
-        right: 425,
-        top: 8,
-        color: (theme) => theme.palette.grey[500],
-          }}
-        >
- <ArrowBackIosIcon/>
- </IconButton>
-
-        <Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
-            Password
-        </Typography>
-        <TextField
-        onChange={(event)=>{handleChangeOldPassowrd(event)}}
-          type='password'
-          sx={{mt:2 , ml:5}}
-          label="Old Password"
-          id="old Passowrd"
-          defaultValue=""
-        />
-         <TextField
-          onChange={(event)=>{handleChangeNewPassword(event)}}
-         type='password'
-         sx={{mt:1, ml:5}}
-          label="New Passowrd"
-          id="old Passowrd"
-          defaultValue=""
-        />
-        <TextField
-         onChange={(event)=>{handleChangeConfirmPassword(event)}}
-        type='password'
-        sx={{ mt:1,ml:5}}
-          label="Confrim New Passowrd"
-          id="old Passowrd"
-          defaultValue=""
-        />
-    
-   
-
-           <DialogActions>
-
-        </DialogActions>
-      </div> 
-
-
-
-
-
-<div>
-<IconButton
-      aria-label="close"
-      onClick={handleClickBack}
-      sx={{
-        position: 'absolute',
-        right: 425,
-        top: 8,
-        color: (theme) => theme.palette.grey[500],
-          }}
-        >
- <ArrowBackIosIcon/>
- </IconButton>
-<Typography variant="h5" sx={{mt:-2.5 , ml:5}}>
-            Country
-        </Typography>
-<OutlinedInput
- sx={{mt:2 , ml:5}}
-    label="Password"
-    defaultValue={user.country}
-    endAdornment={
-      <InputAdornment position="end">
-        <IconButton 
-         
-          aria-label="toggle password visibility"
-          onMouseDown={handleMouseDownPassword}
-          edge="end"
-        >
-          {showPassword ? <CreateIcon /> : <CreateIcon />}
-        </IconButton>
-      </InputAdornment>
-    }
-
-  />
-   <DialogActions>
-          <Button sx={{mt:25 , ml:5, color: 'black', backgroundColor: '#CAF0F8', borderColor: '#03045E'}} autoFocus 
-          
-          >
-            Save changes
-          </Button>
-        </DialogActions>
-</div> 
-
-          
-      </BootstrapDialog>
 
 
           <ListItemButton onClick={()=>{window.location.href='/myReports'}}>

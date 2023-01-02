@@ -32,7 +32,7 @@ import { createTheme, ThemeProvider , alpha} from '@mui/material/styles';
 import InstructorNav from './InstructorNav';
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import { Alert, AlertTitle, Backdrop } from '@mui/material';
-const instructorNav = {};
+const traineeNav = {};
 const countryEnums = [
   'Afghanistan',
   'AlandIslands',
@@ -483,7 +483,7 @@ export default function CustomizedDialogs() {
       <Box sx={{ display: 'flex'  }}>
         <CssBaseline />
 
-        <InstructorNav post={instructorNav}/>
+        <TraineeNav post={traineeNav}/>
                 
 
      
@@ -553,10 +553,10 @@ export default function CustomizedDialogs() {
         label="Email"
         type="Email"
         id="Email"
-        error={first==1 &&  !validateEmail(newEmail)}
-        helperText={first==1 && !validateEmail(newEmail) ? "Please enter a valid email." : null}
         defaultValue={newEmail}
-        onChange={(event)=>{handleChangeEmail(event)}}
+        InputProps={{
+            disabled: true,
+          }}
       />
     </Grid>
 
@@ -621,27 +621,14 @@ export default function CustomizedDialogs() {
                 </Select>
             </FormControl>
     </Grid>
-    <Grid item xs={10}>
-      <TextField 
-        required
-        fullWidth
-        error={first==1 && biography.length<20}
-        helperText={first==1 && biography.length<20? "Biography must be at least 20 characters" : null}
-        id="Biorgaphy"
-        label="Biography"
-        name="Biography"
-        defaultValue={biography}
-        onChange={(event)=>{handleChangeBiography(event)}}
-      />
-    </Grid>
-    <Grid item xs={5} sx={{ mt : 4}}>
 
-</Grid>
+
+
  
     </Grid>
    
 <box>
-      <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E', ml: 139 }} 
+      <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E', ml: 139,mt:2 }} 
       onClick={()=> {saveSettings()}}
       >
         Save Changes</Button>

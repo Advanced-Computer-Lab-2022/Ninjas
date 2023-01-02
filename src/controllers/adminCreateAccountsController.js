@@ -301,31 +301,36 @@ const adminCreateAccountsController =
  
         }
       },
-      async getAllCoursesInst({userId}){ //All courses
-
-     
+      async getAllCoursesInst({username}){ //All courses  
         try{
             let c = [];
             const theCourses = await Course.find();
             let p = 0;
             for(var z =0; z<theCourses.length ; z++){
-                if(theCourse[z].instructors._id==userId){
+                if(theCourses[z].instructors[0] && theCourses[z].instructors[0].username && theCourses[z].instructors[0].username == username){
+                    console.log("inside");
                 const t = theCourses[z].title;
                 const s = theCourses[z].subject;
                 if(theCourses[z].promoted == 'Promoted' && theCourses[z].startDate < Date.now() && theCourses[z].discountDuration < Date.now()){
-                    p = theCourses[z].price - theCourses[z].price*theCourses[z].discount ;        
+                    p = theCourses[z].price - theCourses[z].price*theCourses[z].discount ;    
+                    console.log("inside4");    
                 }
                 else{
                     p = theCourses[z].price ; 
+                    console.log("inside3");
                 }
                 const prom = theCourses[z].promoted
+                console.log("inside2");
             //return theCourses;
             c.push({t,s,p,prom})
+            console.log("inside1");
 
         }}
+        console.log(c);
         return c; 
         }
         catch(err){
+            console.log(err);
             throw new DomainError('error internally', 500);
  
         }

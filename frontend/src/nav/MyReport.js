@@ -201,7 +201,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
   const [reports, setReports] = useState(async () => {
-    await axios.get(`http://localhost:8000/viewReportedProblems`)
+    await axios.get(`http://localhost:8000/viewReportedProblems`) 
         .then(res => { setReports(res.data)})
         .catch((error) => alert(error.response.data.message))
 })
