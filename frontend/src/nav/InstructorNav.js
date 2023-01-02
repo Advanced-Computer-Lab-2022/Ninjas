@@ -606,7 +606,7 @@ const OwedMoney = async () => {
           }
 
           setMoney(response.data);
-          setOpen9(true);
+          //setOpen9(true);
           
         }
       
@@ -808,9 +808,14 @@ const handleChange = (event) => {
           </ListItemButton>
           {showAmount &&
             <ListItemButton
-              sx={{ backgroundColor:'#eeeeee'}}
+            
+              sx={{ backgroundColor:'#eeeeee', width:15}}
             >
-              Account balance: {user.wallet} {curr}
+              <Grid conatainer spacing={0} width='15' sx={{ml:-1}}>
+             <Typography> Account balance: </Typography>
+             <Typography>last month:100.7 {curr} </Typography> 
+              <Typography>This month:{parseInt(money,).toFixed(2)} {curr} </Typography> 
+              </Grid>
             </ListItemButton>
           } 
           <ListItemButton onClick={handleClickOpen}>

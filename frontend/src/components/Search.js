@@ -979,7 +979,7 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
             </Typography>
             
             { searchResult.userType != 'CORPORATE_TRAINEE' &&  <Typography variant="h6" color="inherit"style={{width:'210px'}} >
-            price : {course.price}  {searchResult.currency}
+            price : {course.price.toFixed(2)}  {searchResult.currency}
             </Typography>}
 
             <Typography variant="h6" color="inherit"style={{width:'210px'}} >

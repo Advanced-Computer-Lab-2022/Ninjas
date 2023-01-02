@@ -1156,20 +1156,21 @@ try {
     },
 
     async owedMoney({userId}){
-        let myMoney = 0;
+        
         try{
-
+            let myMoney = 0;
             const courses = await Course.find();
             const theUser = await Account.findOne({_id: userId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });;
 
             for(var i=0; i<courses.length; i++){
+                if (courses[i].instructors[0]){
                 if(courses[i].instructors[0]._id.toString() == userId.toString()){
                     myMoney = myMoney + (((courses[i].price*courses[i].students.length) - (0.13*courses[i].price*courses[i].students.length)));
 
                 }
-
+            }
             }
             if(theUser.type == 'INSTRUCTOR'){
                await Account.updateOne({_id:userId}, {wallet: myMoney});
@@ -1181,6 +1182,7 @@ try {
             return myMoney;
         }
         catch(err){
+            console.log(err);
             throw new DomainError('error internally', 500);
      
      
