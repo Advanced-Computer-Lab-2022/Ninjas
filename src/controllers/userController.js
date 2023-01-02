@@ -1150,8 +1150,8 @@ async deleteCourseRating({ userId, courseId }) {
         throw new DomainError("internal error", 500);
     }
 },
-async viewReportedProblems()  {
-    userId
+async viewReportedProblems({
+    userId})  {
     try {
       let resReport = [];
       let resReport1 = []; //seen
