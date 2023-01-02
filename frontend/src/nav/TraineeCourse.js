@@ -52,6 +52,20 @@ const traineeNav = {};
   
   const mdTheme = createTheme();
    
+  const onButtonClick = (e) => {
+    // using Java Script method to get PDF file
+    fetch(e).then(response => {
+        response.blob().then(blob => {
+            // Creating new object of PDF file
+            const fileURL = window.URL.createObjectURL(blob);
+            // Setting various property values
+            let alink = document.createElement('a');
+            alink.href = fileURL;
+            alink.download = e ;
+            alink.click();
+        })
+    })
+}
     
   
     return (
@@ -90,9 +104,8 @@ const traineeNav = {};
 
 {ready && course.map((course) => (
 
-<Card  sx={{ display: 'flex' ,'&:hover': {    backgroundColor: 'white',
- },   backgroundColor: 'white' }} style={{width:"48%", height:"250px"}} 
-onClick={()=>{window.location.href=`course/${course._id}`}} >
+<Card  sx={{ display: 'flex' ,   backgroundColor: 'white' }} style={{width:"48%", height:"280px"}} 
+ >
 
 {(course.videoLink) &&
  <ReactPlayer url={course.videoLink}
@@ -149,7 +162,20 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
             <br></br>
 
             { user.progress.filter( prog => prog.courseId.toString() === course._id.toString())[0].currentProgress === 100 &&
-              <Button onClick={() => window.location.href='#'}
+              <Button onClick={()=>{
+                if(course.certificate === 'englishCertificate.pdf'){
+                onButtonClick(englishCertificate)}
+                if(course.certificate === 'csCertificate.pdf' ){
+                  onButtonClick(csCertificate)
+                }
+                if(course.certificate === 'mathCertificate.pdf'){
+                  onButtonClick(mathCertificate)
+                }
+                if(course.certificate === 'generalCertificate.pdf'){
+                  onButtonClick(generalCertificate)
+                }
+
+              }}
               variant="contained" endIcon = {<DownloadIcon/>}
               sx={{color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
               >
@@ -177,7 +203,9 @@ onClick={()=>{window.location.href=`course/${course._id}`}} >
             
             
           </Box>
+          <Button onClick={()=>{window.location.href=`course/${course._id}`}}> to course</Button>
         </Grid>
+       
       </Grid>
       </CardContent>
       
