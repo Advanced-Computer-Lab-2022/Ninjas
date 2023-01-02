@@ -310,7 +310,7 @@ if (e.key === 'Enter') {
 </div>
 }  
 
-          <ListItemButton onClick={()=>{window.location.href='/settingsT'}}>
+          <ListItemButton onClick={()=>{window.location.href='/settings3'}}>
             <ListItemIcon>
           <SettingsIcon sx={{color:'black' }} />
           </ListItemIcon>

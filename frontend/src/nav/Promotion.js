@@ -28,7 +28,7 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import TextField from "@mui/material/TextField";
-import mainListItems from './listItems';
+import mainListItems from '../components/listItems';
 
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
@@ -43,7 +43,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import CloseIcon from '@mui/icons-material/Close';
 import PropTypes from 'prop-types';
-
+import InstructorNav from './InstructorNav';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 
@@ -70,7 +70,7 @@ import Tabs from '@mui/material/Tabs';
 //     </LocalizationProvider>
 //   );}
 
-
+const instructorNav = {};
 const  change2 =()=>{
   window.location.href=`/AdminViewReports`
 }
@@ -254,7 +254,7 @@ const mdTheme = createTheme();
 
 
   const [courses, setCourses] = useState(async () => {
-    await axios.get(`http://localhost:8000/admin/getAllCoursesss`)
+    await axios.get(`http://localhost:8000/admin/getAllCoursesInst`)
         .then(res => { setCourses(res.data)})
         .catch((error) => alert(error.response.data.message))
 })
@@ -306,51 +306,13 @@ useEffect( () => {
 
   return (
     <ThemeProvider theme={mdTheme}>
+    <CssBaseline />
       <Box sx={{ display: 'flex'  }}>
         <CssBaseline />
-        <AppBar position="absolute" >
-          <Toolbar 
-            sx={{
-              pr: '24px', // keep right padding when drawer closed
-              bgcolor: '#03045E'
-            }}
-          >
-          
-            <Typography
-              component="h1"
-              variant="h6"
-              bgcolor= '#03045E'
-              noWrap
-              sx={{ flexGrow: 1 }}
-            >
-              <img  style={{ width: 150, height: 60 }} src={logo} alt="React Image" />
-            </Typography >
-            <Box>
-            
-            </Box>
-                       
-              <Tabs sx={{color:'white', mt:2}} aria-label="basic tabs example">
-                <Tab label="Reports" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change2()}}/>
-                <Tab label="Refund Requests" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change3()}}/>
-                <Tab label="Access Course Requests" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change4()}}/>
-                <Tab label="Courses Promotion" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change5()}}/>
-                <Tab label="Add User" sx={{color:'#CAF0F8', ml:5}} onClick={()=> {change6()}}/>
-            
-              </Tabs>
-                    
-                      &nbsp;&nbsp;&nbsp;
-                      <box><Typography fontWeight={'bold'} sx={{ color: '#CAF0F8', ml:7}}>ADMIN</Typography></box>
-                      &nbsp;&nbsp;&nbsp;          
-                      <box>{mainListItems}</box>
 
-          <box>
+        <InstructorNav post={instructorNav}/>
+                
 
-<Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}>LOG OUT</Button>
-</box>
-&nbsp;&nbsp;&nbsp;
-          
-          </Toolbar>
-        </AppBar>
      
         <Box
           component="main"

@@ -922,9 +922,10 @@ console.log(err)
 },
  
 
-async ViewMyReports( userId ) {
+async ViewMyReports( {userId} ) {
     
    try{
+    console.log(userId)
       const reports = await Report.find( {accountId: userId}).catch((err) => {
         console.log(err);
         throw new DomainError("no reports", 400)

@@ -276,6 +276,26 @@ catch (err) {
 
 })
 
+adminRouter.get('/getAllCoursesInst', async (req, res) => {
+  try {
+    const session = sessionDetails.getSession(req.session.id);
+    const username= session.username;
+    const courses = await adminCreateAccountsController.getAllCoursesInst({username});
+    res.status(200).json(courses);
+}
+
+
+catch (err) {
+  if (err instanceof DomainError) {
+    res.status(err.code).json({ code: err.code, message: err.message })
+  } else {
+    res.status(500).json({ err });
+  }
+}
+
+
+})
+
 adminRouter.get('/getAllCoursesss2', async (req, res) => {
   try {
 

@@ -731,14 +731,14 @@ const CoursePage = () => {
                                         REGISTER NOW!
                                     </Button>
                                 }
-                                {
+                                {/* {
                                     user.type === "INSTRUCTOR" && registered &&
                                     <Button size='large' variant="contained"
                                         sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                         onClick={() => window.location.href = '#'}>
                                         Add discount
                                     </Button>
-                                }
+                                } */}
                                 {user.type === "CORPORATE_TRAINEE" && !registered && !reqAccess &&
                                     <Button
                                         sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}

@@ -100,7 +100,7 @@ userRouter.post('/selectCountry', async (req, res) => {
     try {
         const session = sessionDetails.getSession(req.session.id);
         const { userId, type } = session;
-        const selectedCountry = req.body.country;
+        const selectedCountry = req.body.selectedCountry;
         if (!selectedCountry || !userId) {
             return res.status(400).json({ message: "please provide the userID and the selected country." });
         }
