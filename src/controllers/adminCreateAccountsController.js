@@ -4,6 +4,7 @@ const { Course } = require("../models/courses");
 const  Report  = require("../models/report");
 const  RefundRequest  = require("../models/refundRequest");
 const RequestAccess = require("../models/requestAccess");
+const bcrypt = require('bcrypt')
 const {  } = require("../models/refundRequest");
 const { DesktopTimePicker } = require("@mui/x-date-pickers");
 
@@ -11,19 +12,21 @@ const { DesktopTimePicker } = require("@mui/x-date-pickers");
 
 const adminCreateAccountsController =
 {
-   async adminCreateAccounts({ username, password, firstName, lastName, email, gender, type }) {
+   async adminCreateAccounts({ username, password, firstName, lastName, email, gender, type, corporateName }) {
       try {
            const salt = await bcrypt.genSalt();
            const hashedPassword = await bcrypt.hash(password, salt);
-           console.log(hashedPassword);
-           console.log(hashedPassword);
+        //    console.log("Wowwww");
+        //    console.log(hashedPassword);
+        //    console.log("Wowwww");
+
         const notUnique = await Account.findOne({ username });
         console.log(notUnique)
 
          if (!notUnique) {
             const saved = await Account.create(
                 { username: username, password: hashedPassword, firstName: firstName, 
-                lastName: lastName, email: email, gender: gender, type: type });
+                lastName: lastName, email: email, gender: gender, type: type, corporateName: corporateName });
 
             return true;
          }
@@ -501,9 +504,11 @@ console.log(endDate1);
         const theCourse = await Course.findOne({_id: Requests[i].courseId});
         const cname = theCourse.title;
         const company = Requests[i].corporateName;
+        const reqId = Requests[i]._id;
+
 
         
-         newRec.push({uname, cname, company});
+         newRec.push({uname, cname, company, reqId});
          
   }}
      return newRec;

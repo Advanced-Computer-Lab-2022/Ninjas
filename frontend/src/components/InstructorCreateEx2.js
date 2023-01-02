@@ -43,6 +43,8 @@ export default function Checkout() {
   const[first,setFirst]=useState(0);
   const[titleErr,setTitleErr]=useState(false);
   const[open,setOpen]=useState(false);
+  const[open2,setOpen2]=useState(false);
+
 
 
   const handleNext = () => {
@@ -166,7 +168,8 @@ export default function Checkout() {
   .catch( (error) => alert(error.response.data.message))
       console.log(response.data)
   if(response.status===200){
-      alert(response.data)
+      //alert(response.data)
+      setOpen2(true);
   }}
 
   const handleChangeChange2 = async ()=>{
@@ -195,6 +198,9 @@ const handleClose6 = async () => {
   const handleClose8 = async () => {
     window.location.href='/SearchInstructor'; //proceed to create exercise
     setOpen(false);
+  };
+  const handleClose500 = async () => {
+    setOpen2(false);
   };
 
 
@@ -493,6 +499,31 @@ sx={{ mt: 3, ml: 1 }}>
                                 >
                                     Apply and Finish
                                 </Button> 
+                            </Dialog>
+
+                            <Dialog onClose={open2} open={open2}
+                                sx={{
+                                    "& .MuiDialog-container": {
+                                        "& .MuiPaper-root": {
+                                            width: "100%",
+                                            maxWidth: "700px",
+                                        },
+                                    },
+                                    display: "flex", flexDirection: "column"
+                                }}>
+                                <DialogTitle align='center' display={"flex"} flexDirection={"column"} alignItems={"center"}>
+
+                                    Exercise Created Successfully        
+                                </DialogTitle>
+
+                                 <Button
+                                    sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
+                                    onClick={() => handleClose500()}
+                                >
+                                    OK
+                                </Button>
+
+                               
                             </Dialog> 
       </Box>
       </Box>
