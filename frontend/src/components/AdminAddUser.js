@@ -205,6 +205,14 @@ const mdTheme = createTheme();
     setOpen(!open);
   };
 
+  const logout = async () => {
+    const response = await axios.post('http://localhost:8000/logout')
+    .catch(err => console.log(err));
+    
+    if(response.status===200)
+    window.location.href='/';
+  }
+
   const handleClose = async () => {
     window.location.href='/AdminAddUser';
     setOpen(false);
@@ -333,7 +341,7 @@ const handleChangeCorporate = (event) => {
 
           <box>
 
-          <Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}>LOG OUT</Button>
+          <Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }} onClick={logout}>LOG OUT</Button>
           </box>
           &nbsp;&nbsp;&nbsp;
          

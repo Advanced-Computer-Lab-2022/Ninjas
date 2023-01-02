@@ -34,6 +34,7 @@ import Tab from '@mui/material/Tab';
 // import {TabList} from '@mui/material/TabList';
 // import { TabPanel } from '@mui/lab';
 import Tabs from '@mui/material/Tabs';
+import axios from "axios";
 
 
 
@@ -161,6 +162,13 @@ const mdTheme = createTheme();
   const toggleDrawer = () => {
     setOpen(!open);
   };
+  const logout = async () => {
+    const response = await axios.post('http://localhost:8000/logout')
+    .catch(err => console.log(err));
+    
+    if(response.status===200)
+    window.location.href='/';
+  }
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -190,7 +198,7 @@ const mdTheme = createTheme();
           &nbsp;&nbsp;&nbsp;
           <box>{mainListItems}</box>
           <box>
-          <Button variant="outlined" sx={{ color: 'black', backgroundColor: '#CAF0F8',  borderColor: '#CAF0F8' }}>LOG OUT</Button>
+          <Button variant="outlined" sx={{ color: 'black', backgroundColor: '#CAF0F8',  borderColor: '#CAF0F8' }} onClick={logout}>LOG OUT</Button>
           </box>
           
           </Toolbar>

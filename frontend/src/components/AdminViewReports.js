@@ -220,7 +220,13 @@ const [open, setOpen] = React.useState(false);
 const toggleDrawer = () => {
  setOpen(!open);
   };
-
+  const logout = async () => {
+    const response = await axios.post('http://localhost:8000/logout')
+    .catch(err => console.log(err));
+    
+    if(response.status===200)
+    window.location.href='/';
+  }
   const handleClose = async () => {
     const response = await axios.get(`http://localhost:8000/admin/changeProgressP?reportId=${reportId}&progress=${progress}`)
     .catch(err=>console.log(err))
@@ -314,7 +320,7 @@ const handleClickOpen = (reportId) => {
 
           <box>
 
-          <Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}>Log out</Button>
+          <Button variant="contained"  sx={{ color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}onClick={logout}>Log out</Button>
           </box>
           &nbsp;&nbsp;&nbsp;
         
