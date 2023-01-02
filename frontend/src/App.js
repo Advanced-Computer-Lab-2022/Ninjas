@@ -53,7 +53,7 @@ import InstructorCrEx from './components/InstructorCrEx';
 import InstructorCrEx2 from './components/InstructorCrEx2';
 import ViewCorrectAnswer from './components/viewTheCorrectAnswers';
 import InstructorCreateEx2 from './components/InstructorCreateEx2';
-
+import Promotion from './nav/Promotion';
 
 
 function App() {
@@ -64,7 +64,7 @@ function App() {
       <Route path='/InstructorCrEx2' element={<InstructorCrEx2/>}></Route>
       <Route path='/InstructorCrEx' element={<InstructorCrEx/>}></Route>
       <Route path='/InstructorCreateEx2' element={<InstructorCreateEx2/>}></Route>
-
+      <Route path='/promotion' element={<Promotion/>}></Route>
       <Route path='/viewCorrectAnswers' element={<ViewCorrectAnswer/>}></Route>
       <Route path='/searchInstructor' element={<SearchInstructor/>}></Route>
       <Route path='/InstructorCreate' element={<InstructorCreate/>}></Route>

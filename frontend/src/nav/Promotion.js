@@ -28,7 +28,7 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import TextField from "@mui/material/TextField";
-import mainListItems from './listItems';
+import mainListItems from '../components/listItems';
 
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
@@ -254,7 +254,7 @@ const mdTheme = createTheme();
 
 
   const [courses, setCourses] = useState(async () => {
-    await axios.get(`http://localhost:8000/admin/getAllCoursesss`)
+    await axios.get(`http://localhost:8000/admin/getAllCoursesInst`)
         .then(res => { setCourses(res.data)})
         .catch((error) => alert(error.response.data.message))
 })

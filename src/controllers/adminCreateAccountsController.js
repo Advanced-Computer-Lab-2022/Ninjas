@@ -301,6 +301,35 @@ const adminCreateAccountsController =
  
         }
       },
+      async getAllCoursesInst({userId}){ //All courses
+
+     
+        try{
+            let c = [];
+            const theCourses = await Course.find();
+            let p = 0;
+            for(var z =0; z<theCourses.length ; z++){
+                if(theCourse[z].instructors._id==userId){
+                const t = theCourses[z].title;
+                const s = theCourses[z].subject;
+                if(theCourses[z].promoted == 'Promoted' && theCourses[z].startDate < Date.now() && theCourses[z].discountDuration < Date.now()){
+                    p = theCourses[z].price - theCourses[z].price*theCourses[z].discount ;        
+                }
+                else{
+                    p = theCourses[z].price ; 
+                }
+                const prom = theCourses[z].promoted
+            //return theCourses;
+            c.push({t,s,p,prom})
+
+        }}
+        return c; 
+        }
+        catch(err){
+            throw new DomainError('error internally', 500);
+ 
+        }
+      },
    
       async setPromotion({selectedCourses, promotion, startDate, endDate}){
         try{
