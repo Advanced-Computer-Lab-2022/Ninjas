@@ -284,6 +284,7 @@ const adminCreateAccountsController =
             const theCourses = await Course.find();
             let p = 0;
             for(var z =0; z<theCourses.length ; z++){
+                const _id= theCourses[z]._id;
                 const t = theCourses[z].title;
                 const s = theCourses[z].subject;
                 if(theCourses[z].promoted == 'Promoted' && theCourses[z].startDate < Date.now() && theCourses[z].discountDuration < Date.now()){
@@ -294,7 +295,7 @@ const adminCreateAccountsController =
                 }
                 const prom = theCourses[z].promoted
             //return theCourses;
-            c.push({t,s,p,prom})
+            c.push({_id,t,s,p,prom})
 
         }
         return c; 
@@ -372,74 +373,6 @@ const adminCreateAccountsController =
         }
       },
    
-      async setPromotion({selectedCourses, promotion, startDay, endDay, startMonth, endMonth ,startYear, endYear}){ //All courses
-        //discountDuration end date
-        //startDate
-        let stDate="";
-        let endate="";
-        console.log(startMonth)
-        let c = [];
-
-        if ( parseInt(startMonth) < 10)
-        startMonth = "0"+startMonth;
-        if ( parseInt(endMonth) < 10)
-        endMonth = "0"+endMonth;
-        if ( parseInt(startDay) < 10)
-        startDay = "0"+startDay;
-        if ( parseInt(endDay) < 10)
-        endDay = "0"+endDay;
-        
-        console.log(startMonth);
-        console.log(endMonth);
-
-        stDate = startYear + "-" + startMonth + "-"+ startDay;
-        endate = endYear + "-" + endMonth + "-"+ endDay;
-
-        let startDate1 = new Date(startYear,startMonth,startDay,8,00,00,000)
-        let endDate1 = new Date(endYear,endMonth,endDay,8,00,00,000)
-
-console.log(startDate1);
-console.log(endDate1);
-
-
-        if(startDate1 < endDate1){
-            if(promotion > 0){
-                for(var j=0; j<selectedCourses ; j++){
-                    if(selectedCourses[j].promoted == 'Not Promoted' ){
-                        let title = selectedCourses[j].title;
-                        let subject = selectedCourses[j].subject;
-                        let price = selectedCourses[j].price - selectedCourses[j].price * (promotion/100);
-                        let prom = 'Promoted';
-
-                        c.push({title, subject, price, prom});
-
-                    }
-                    else{
-                        if(selectedCourses[j].startDate > startDate1 && selectedCourses[j].startDate < endDate1 ){
-                            //throw new doman error already promoted
-                            throw new DomainError("Course is already promoted", 400)
-                        }
-                    
-
-                    }
-                }
-                return c;
-            }
-             else{
-                 //you can not promote by -ve number
-                 throw new DomainError("Promotion can not be negative number", 400)
-
-              }
-        }
-        else{
-            //wrong dates
-            throw new DomainError("Wrong dates", 400)
-
-        }
-
-      },
-   
-
 
 
     async viewRefundRequest(){ //refunded courses

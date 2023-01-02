@@ -269,6 +269,7 @@ const mdTheme = createTheme();
 
 const [ready, setReady] = useState(false);
 useEffect(() => {
+   console.log(courses)
     if (courses.length)
         setReady(true);
 }, [courses])
