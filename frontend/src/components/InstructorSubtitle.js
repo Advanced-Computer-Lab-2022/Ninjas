@@ -226,6 +226,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
   const [open, setOpen] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
+  const [open3, setOpen3] = React.useState(false);
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -233,6 +236,12 @@ const mdTheme = createTheme();
   const handleClose = async () => {
     window.location.href=`/InstructorCreateEx2?courseId=${courseId}&subtitleId=${subtitleId}`; //proceed to create exercise
     setOpen(false);
+  };
+  const handleClose20 = async () => {
+    setOpen2(false);
+  };
+  const handleClose30 = async () => {
+    setOpen3(false);
   };
   const handleClose2 = async () => {
         window.location.href='/InstructorSubtitle'; //add another subtitle
@@ -242,6 +251,10 @@ const mdTheme = createTheme();
         setOpen(false);
       };      
   const handleClickOpen = async ()=>{ //Add subtitle
+    setfirst2(1)
+    if(subText != '' && hours != '' && videoTitle != '' && videoLink != '' && description != ''){
+      if(hours > 0){
+
     const response = await axios.put(`http://localhost:8000/addSubtitle?courseId=${courseId}`,{
         text: subText,
         hours: hours,
@@ -255,7 +268,19 @@ const mdTheme = createTheme();
       setOpen(true);
       setSubtitleId(response.data._id)
       // alert(response.data);
-    }}
+    }
+  }
+  else{
+    setOpen3(true)
+
+  }
+  }
+  else{
+    setOpen2(true)
+
+  }
+  
+  }
  
 
   const[subText,setSubText]=useState('');
@@ -264,6 +289,7 @@ const mdTheme = createTheme();
   const[videoTitle,setVideoTitle]=useState('');
   const[description,setDescription]=useState('');
   const[subtitleId, setSubtitleId]=useState('');
+  const[first2, setfirst2] = useState(0);
   const params = new URLSearchParams(window.location.search);
   const courseId = params.get('courseId');
  
@@ -315,6 +341,7 @@ return (
           <Grid container spacing={2}  sx={{ ml: 5 }}>
           <Grid item xs={5}>
                 <TextField
+                  error={first2==1 && subText==''}
                   required
                   fullWidth
                   name="Subtitle Title"
@@ -327,6 +354,7 @@ return (
         
               <Grid item xs={5}>
                 <TextField
+                  error={first2==1 && hours==''}
                   required
                   fullWidth
                   name="Subtitle Hours"
@@ -339,6 +367,8 @@ return (
 
               <Grid item xs={5}>
                 <TextField
+                  error={first2==1 && videoTitle==''}
+
                   required
                   fullWidth
                   name="Video Title"
@@ -351,6 +381,7 @@ return (
               
               <Grid item xs={5}>
                 <TextField
+                  error={first2==1 && videoLink==''}
                   required
                   fullWidth
                   name="Subtitle Video Link"
@@ -362,6 +393,7 @@ return (
               </Grid>
                <Grid item xs={5}>
                 <TextField 
+                  error={first2==1 && description==''}
                   required
                   fullWidth
                   id="Video Description"
@@ -403,6 +435,54 @@ return (
           onClick={() => handleClose2()}>
             Another Subtitle
           </Button> */}
+        </DialogActions>
+      </BootstrapDialog>
+
+      <BootstrapDialog
+        onClose={handleClose20}
+        aria-labelledby="customized-dialog-title"
+        open={open2}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose20}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Please fill all fields
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose20()}>
+            OK
+          </Button>
+         
+        </DialogActions>
+      </BootstrapDialog>
+
+      <BootstrapDialog
+        onClose={handleClose30}
+        aria-labelledby="customized-dialog-title"
+        open={open3}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose30}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Hours should be greater than zero
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose30()}>
+            OK
+          </Button>
+         
         </DialogActions>
       </BootstrapDialog>
 

@@ -378,10 +378,10 @@ useEffect(() => {
                   <br></br>
                     <box>
                 <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E' }} onClick={() =>
-                  handleClickOpen(card._id)}>Grant Access</Button>
+                  handleClickOpen(card.reqId)}>Grant Access</Button>
                   &nbsp;&nbsp;&nbsp;
                   <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E' }} onClick={() =>
-                  handleClickOpen2(card._id)}>Deny Access</Button>
+                  handleClickOpen2(card.reqId)}>Deny Access</Button>
             </box>
            
             <BootstrapDialog

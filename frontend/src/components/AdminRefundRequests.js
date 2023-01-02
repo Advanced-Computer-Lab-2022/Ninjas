@@ -342,13 +342,13 @@ const mdTheme = createTheme();
                 >
                 
                   <CardContent sx={{ flexGrow: 1 }}>
-                  <Typography sx={{ color: '#03045E', fontWeight:'bold'}}>Request #{(m)+=1} </Typography>
+                  <Typography sx={{ color: '#03045E', fontWeight:'bold'}}>Request </Typography>
 
                   <Typography sx={{ color: '#03045E'}}>Username: {card.uname} </Typography>
-                    <Typography sx={{ color: '#03045E'}}>User ID: {card.uid} </Typography>
+                    {/* <Typography sx={{ color: '#03045E'}}>User ID: {card.uid} </Typography> */}
                     
                     <Typography sx={{ color: '#03045E'}}>Course Title: {card.cname}</Typography>
-                    <Typography sx={{ color: '#03045E'}}>Course ID: {card.cid}</Typography>
+                    {/* <Typography sx={{ color: '#03045E'}}>Course ID: {card.cid}</Typography> */}
                   <br></br>
             <box>
                 <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E' }} onClick={() =>
