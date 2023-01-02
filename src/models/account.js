@@ -103,7 +103,9 @@ refundedCourses:{
     type:[Schema.Types.ObjectId],
     required: false
 },
-
+corporateName:{
+    type:String,
+}
 
 })
 

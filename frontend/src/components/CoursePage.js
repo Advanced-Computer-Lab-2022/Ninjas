@@ -744,7 +744,7 @@ const CoursePage = () => {
                                         sx={{ align: 'center', color: 'black', backgroundColor: '#CAF0F8', borderColor: '#CAF0F8' }}
                                         onClick={requestCourseAccess}
                                     >
-                                        You are not enrolled in the course. If you want to view all the resources, click here to request access
+                                          Want to enroll? request access
                                     </Button>
                                 }
                                 {

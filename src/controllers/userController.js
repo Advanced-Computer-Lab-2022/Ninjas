@@ -239,7 +239,7 @@ const userController = {
             console.log(minPrice)
             for (var i = 0; i < courses.length; i++) {
                 // price = price x factor x discount
-                if (courses[i].discountDuration && Date.now() > courses[i].discountDuration) { 
+                if (!(courses[i].discountDuration && Date.now() < courses[i].discountDuration && courses[i].startDate < Date.now() ) ) { 
                     courses[i].discount=0;
                 }
                 courses[i].price = courses[i].price * details.factor * ((100 - courses[i].discount) / 100);
@@ -1007,7 +1007,9 @@ async viewWallet({userId}) {   //lel inst
     async requestAccess(userId , courseId){
 
         try{
-        const requested = await RequestAccess.create({accountId: userId , courseId}).catch(() => {
+
+            const user = await Account.findOne({_id: userId})
+        const requested = await RequestAccess.create({accountId: userId , courseId , corporateName: user.corporateName}).catch(() => {
             throw new DomainError("try again and check course availability", 400)
         });
 
