@@ -46,8 +46,10 @@ import DialogActions from '@mui/material/DialogActions';
 import CloseIcon from '@mui/icons-material/Close';
 import PropTypes from 'prop-types';
 import InstructorNav from './InstructorNav';
+import TraineeNav from './TraineeNav';
 
 const instructorNav = {};
+const traineeNav = {};
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -220,8 +222,23 @@ const change = async (requestId) => {
         console.log(response)
     }
   }
+  const [user,setUser] = useState(async () => {
+    await axios.get('http://localhost:8000/userBySession')
+    .then(res => setUser(res.data))
+    .catch(err => {
+      if (err.response.status === 401) //you didn't login
+      window.location.href='/';
+    })
+  })
 
+  const [ready2, setReady2] = useState(false);
+  useEffect(() => {
+    if (user._id) {
+        setReady2(true);
 
+        
+    }
+}, [user])
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -229,7 +246,14 @@ const change = async (requestId) => {
         <CssBaseline />
         
           <CssBaseline />
+          {ready2 && user.type=='INSTRUCTOR' &&
           <InstructorNav post={instructorNav}/>
+          }
+
+        {ready2 && user.type!='INSTRUCTOR' &&
+          <TraineeNav post={traineeNav}/>
+          }
+
 
 
 

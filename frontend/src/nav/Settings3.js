@@ -582,7 +582,7 @@ export default function CustomizedDialogs() {
         helperText={first==1 && newPassword.length<6 && newPassword!=''? "Password must be at least 6 characters" : null}
         name="New Password"
         label="New Password"
-        type="New Password"
+        type="Password"
         id="New Password" 
         onChange={(event)=>{handleChangeNewPassword(event)}}
       />
@@ -598,8 +598,8 @@ export default function CustomizedDialogs() {
         helperText={  first==1 && confirmPassword!=newPassword? "The two passwords do not match." : null}
         name="Confrim New Password"
         label="Confrim New Password"
-        type="Confrim New Password"
         id="Confrim New Password"
+        type="Password"
         onChange={(event)=>{handleChangeConfirmPassword(event)}}
       />
     </Grid>
