@@ -161,7 +161,7 @@ const traineeNav = {};
             </Typography>
             <br></br>
 
-            { user.progress.filter( prog => prog.courseId.toString() === course._id.toString())[0].currentProgress === 100 &&
+            {user&&user.progress&& user.progress.filter( prog => prog.courseId.toString() === course._id.toString())[0]&&user.progress.filter( prog => prog.courseId.toString() === course._id.toString())[0].currentProgress &&user.progress.filter( prog => prog.courseId.toString() === course._id.toString())[0].currentProgress === 100 &&
               <Button onClick={()=>{
                 if(course.certificate === 'englishCertificate.pdf'){
                 onButtonClick(englishCertificate)}
