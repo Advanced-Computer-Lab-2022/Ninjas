@@ -226,6 +226,9 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
   const [open, setOpen] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
+  const [open3, setOpen3] = React.useState(false);
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -237,9 +240,19 @@ const mdTheme = createTheme();
   };
   const handleClose3 = async () => {
     setOpen(false);
+  };
+  const handleClose10 = async () => {
+    setOpen2(false);
   };  
+  const handleClose11 = async () => {
+    setOpen3(false);
+  };  
+
   const handleClickOpen = async ()=>{
+    setfirst2(1);
     //check on it
+    if(subject != '' && price != '' && hours != '' && summary != '' && title != '' && video != ''){
+      if(hours > 0 && price > 0){
     const response = await axios.put(`http://localhost:8000/createcourse/`,{
         subject: subject,
         price: price,
@@ -254,7 +267,17 @@ const mdTheme = createTheme();
       setCourseId(response.data._id);
       setOpen(true);
       // alert(response.data);
-    }}
+    }
+      }
+      else{
+        setOpen3(true)
+      }
+  }
+  else{
+    setOpen2(true);
+  }
+  
+  }
  
 
   const[title,setTitle]=useState('');
@@ -264,6 +287,7 @@ const mdTheme = createTheme();
   const[summary,setSummary]=useState('');
   const[subject,setSubject]=useState('');
   const[courseId,setCourseId]=useState('');
+  const[first2, setfirst2] = useState(0);
 
  
   const handleChangeTitle = (event) => {
@@ -319,6 +343,7 @@ return (
           <Grid container spacing={2}  sx={{ ml: 5 }}>
           <Grid item xs={5}>
                 <TextField
+                  error={first2==1 && title==''}
                   required
                   fullWidth
                   name="Course Title"
@@ -331,6 +356,7 @@ return (
             
               <Grid item xs={5}>
                 <TextField
+                  error={first2==1 && price==''}
                   required
                   fullWidth
                   name="Price"
@@ -343,6 +369,7 @@ return (
         
               <Grid item xs={5}>
                 <TextField
+                  error={first2==1 && hours==''}
                   required
                   fullWidth
                   name="Total Hours"
@@ -355,6 +382,8 @@ return (
               
               <Grid item xs={5}>
                 <TextField
+                error={first2==1 && video==''}
+
                   required
                   fullWidth
                   name="Preview Video Link"
@@ -366,6 +395,7 @@ return (
               </Grid>
               <Grid item xs={10}>
                 <TextField 
+                  error={first2==1 && summary==''}
                   required
                   fullWidth
                   id="Summary"
@@ -415,6 +445,52 @@ return (
           <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
           onClick={() => handleClose()}>
             proceed
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+
+      <BootstrapDialog
+        onClose={handleClose10}
+        aria-labelledby="customized-dialog-title"
+        open={open2}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose10}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Please fill all fields
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose10()}>
+            ok
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+
+      <BootstrapDialog
+        onClose={handleClose11}
+        aria-labelledby="customized-dialog-title"
+        open={open3}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose11}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Something wrong with hours or price
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose11()}>
+            ok
           </Button>
         </DialogActions>
       </BootstrapDialog>

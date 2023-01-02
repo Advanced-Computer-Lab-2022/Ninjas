@@ -197,6 +197,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
   const [open, setOpen] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
+  const [open3, setOpen3] = React.useState(false);
+
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
@@ -205,7 +209,20 @@ const mdTheme = createTheme();
     window.location.href='/AdminAddUser';
     setOpen(false);
   };
+
+  const handleClose2 = async () => {
+   // window.location.href='/AdminAddUser';
+    setOpen2(false);
+  };
+  const handleClose3 = async () => {
+    // window.location.href='/AdminAddUser';
+     setOpen3(false);
+   };
+
   const handleClickOpen = async ()=>{
+    setfirst2(1);
+    if(username != '' && password !='' && firstName !='' && lastName!= '' && email != '' && gender != '' && type != ''){
+      if(password == confirmPassword){
     const response = await axios.put(`http://localhost:8000/admin/create/`,{
     username:username,
     password:password,
@@ -213,13 +230,25 @@ const mdTheme = createTheme();
     lastName:lastName,
     email: email,
     gender: gender,
-    type: type}).
+    type: type,
+    corporateName: corporate}).
     catch( (error) => alert(error.response.data.message)) 
     console.log(response.data)
     if(response.status===200){
       setOpen(true);
+
       // alert(response.data);
-    }}
+    }
+  }
+  else{
+    setOpen3(true);
+  }
+}
+  else{
+    setOpen2(true);
+  }
+  
+  }
  
 
   const[firstName,setFirstName]=useState('');
@@ -229,9 +258,10 @@ const mdTheme = createTheme();
   const[password,setPassword]=useState('');
   const[gender,setGender]=useState('');
   const[type,setType]=useState('');
+  const[corporate,setCorporate]=useState('');
   const[confirmPassword,setConfirmPassword]=useState('');
   const [errMsg, setMsg] = useState('');
-
+ const[first2, setfirst2] = useState(0);
 
   const handleChangeFirstName = (event) => {
     setFirstName(event.target.value);
@@ -257,7 +287,9 @@ const handleChangeGender = (event) => {
 const handleChangeType = (event) => {
   setType(event.target.value);
 }
-
+const handleChangeCorporate = (event) => {
+  setCorporate(event.target.value);
+}
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -332,6 +364,7 @@ const handleChangeType = (event) => {
           <Grid container spacing={2}  sx={{ ml: 5 }}>
           <Grid item xs={5}>
                 <TextField
+                  error={first2==1 && firstName==''}
                   required
                   fullWidth
                   name="First Name"
@@ -343,6 +376,7 @@ const handleChangeType = (event) => {
               </Grid>
               <Grid item xs={5}>
                 <TextField
+                  error={first2==1 && lastName==''}
                   required
                   fullWidth
                   name="Last Name"
@@ -355,6 +389,7 @@ const handleChangeType = (event) => {
              
 <Grid item xs={5}>
                 <TextField 
+                  error={first2==1 && username==''}
                   required
                   fullWidth
                   id="Username"
@@ -365,6 +400,7 @@ const handleChangeType = (event) => {
               </Grid>
               <Grid item xs={5}>
                 <TextField
+                  error={first2==1 && email==''}
                   required
                   fullWidth
                   name="Email"
@@ -377,6 +413,7 @@ const handleChangeType = (event) => {
         
               <Grid item xs={5}>
                 <TextField
+                  error={first2==1 && password==''}
                   required
                   fullWidth
                   name="password"
@@ -388,6 +425,7 @@ const handleChangeType = (event) => {
               </Grid>
               <Grid item xs={5}>
                 <TextField
+                  error={first2==1 && confirmPassword==''}
                   required
                   fullWidth
                   name="password"
@@ -426,9 +464,24 @@ const handleChangeType = (event) => {
   </RadioGroup>
 </FormControl>
               </Grid>
+            
+              <Grid item xs={5}  sx={{ml:7, mr: 24, mt: 2}}>
+              <TextField
+                  error={first2==1 && corporate==''}
+                  required
+                  fullWidth
+                  name="corporate name"
+                  label="Corporate Name only if user is corporate trainee otherwise write NA"
+                  type="corporate name"
+                  id="corporateName"
+                  onChange={(event)=>{handleChangeCorporate(event)}}
+                />
+                </Grid>
+                
+
              
 <box>
-                <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E', mt:2, ml: 8 }} 
+                <Button variant="outlined" sx={{ color: 'white', backgroundColor:'#03045E', mt:2, ml: 7 }} 
                 onClick={()=> {handleClickOpen()}}>Add User</Button>
 </box>
 <BootstrapDialog
@@ -449,7 +502,53 @@ const handleChangeType = (event) => {
         <DialogActions>
           <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
           onClick={() => handleClose()}>
-            YES
+            OK
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+
+      <BootstrapDialog
+        onClose={handleClose2}
+        aria-labelledby="customized-dialog-title"
+        open={open2}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose2}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Sorry you should fill all text boxes
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose2()}>
+            OK
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+
+      <BootstrapDialog
+        onClose={handleClose3}
+        aria-labelledby="customized-dialog-title"
+        open={open3}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose3}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Password and Confirm Password do not match
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => handleClose3()}>
+            OK
           </Button>
         </DialogActions>
       </BootstrapDialog>

@@ -28,7 +28,7 @@ adminRouter.put('/create', async (req, res) => {
  const session = sessionDetails.getSession(req.session.id);
  const userId = session.userId;
  console.log(userId);
-    const {username, password, firstName, lastName, email, gender, type } = req.body;
+    const {username, password, firstName, lastName, email, gender, type, corporateName } = req.body;
 
     const theUser  = await Account.findOne({ _id: userId }).catch((err) => { throw new DomainError("Wrong ID", 401) });
     console.log(theUser);
@@ -40,7 +40,7 @@ adminRouter.put('/create', async (req, res) => {
       
     }
     
-    const flag = await adminCreateAccountsController.adminCreateAccounts({ username, password, firstName, lastName, email, gender, type});
+    const flag = await adminCreateAccountsController.adminCreateAccounts({ username, password, firstName, lastName, email, gender, type, corporateName});
     if (!flag)
       res.status(500).send("notCreated");
     else res.status(200).send()

@@ -682,7 +682,7 @@ const userController = {
         }
 
     },
-    async payForCourse({userId, courseId}){ //from wallet needs testing//////////////////
+    async payForCourse({userId, courseId, coursePrice}){ //from wallet needs testing//////////////////
         try{
             const theUser = await Account.findOne({_id: userId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
@@ -725,7 +725,7 @@ const userController = {
 
         }
 
-    },
+            },
 
     async payForCourse2({userId, courseId, cardNo}){ //name & postal code
         //sheeeeeelyyy el countryy
@@ -1209,6 +1209,6 @@ async exerciseHistory({ userId, courseId }) {
 
 
 
-
+    
 
 module.exports = userController;
