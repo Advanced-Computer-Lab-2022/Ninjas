@@ -682,14 +682,14 @@ const userController = {
         }
 
     },
-    async payForCourse({userId, courseId, coursePrice}){ //from wallet needs testing//////////////////
+    async payForCourse({userId, courseId}){ //from wallet needs testing//////////////////
         try{
             const theUser = await Account.findOne({_id: userId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });
             const thisCourse =  await Course.findOne({_id: courseId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
-            });
+            });;
 
             //check if he has enough in the wallet
             if (theUser.wallet >= thisCourse.price) {
@@ -961,7 +961,7 @@ async folllowUp( userId , courseId , problem ) {
     }
     },
 
-async viewWallet({userId}) {
+async viewWallet({userId}) {   //lel inst 
 
 
       try {
@@ -1067,9 +1067,10 @@ async getCourse({ courseId, userType, userId }) {
             //update the local course object
             course.discountDuration = null;
             course.discount = 0;
+            course.promoted = 'Not Promoted'
 
             //update the value in the DB
-            await Course.updateOne({ _id: courseId }, { discountDuration: null, discount:0 });
+            await Course.updateOne({ _id: courseId }, { discountDuration: null, discount:0, promoted: 'Not Promoted' });
         }
 
         const response = { course }

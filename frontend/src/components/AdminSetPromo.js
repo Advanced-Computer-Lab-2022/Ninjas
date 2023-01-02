@@ -33,7 +33,10 @@ import mainListItems from './listItems';
 import Checkbox from '@mui/material/Checkbox';
 import FormGroup from '@mui/material/FormGroup';
 
-import { CircularProgress } from '@mui/material';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Alert, AlertTitle, Backdrop, CircularProgress } from '@mui/material';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
@@ -43,6 +46,30 @@ import PropTypes from 'prop-types';
 
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
+
+// import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+// // or for Day.js
+//import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+// // or for Luxon
+// import { AdapterLuxon } from '@mui/x-date-pickers/AdapterLuxon';
+// // or for Moment.js
+// import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+
+//import { DatePicker } from '@mui/x-date-pickers-pro/DatePicker';
+// or
+//import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+// or
+//import { DatePicker } from '@mui/x-date-pickers-pro';
+// or
+//import { DatePicker } from '@mui/x-date-pickers';
+
+// function App({ children }) {
+//   return (
+//     <LocalizationProvider dateAdapter={AdapterDayjs}>
+//       {children}
+//     </LocalizationProvider>
+//   );}
+
 
 const  change2 =()=>{
   window.location.href=`/AdminViewReports`
@@ -191,24 +218,39 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme();
 
   const [open, setOpen] = React.useState(false);
+  const [open2, setOpen2] = React.useState(false);
+
   const toggleDrawer = () => {
     setOpen(!open);
   };
 
+  //error handling
+  const [errPopup, seterrPopup] = useState(false);
   const handleClose = async () => {
     const response = await axios.put(`http://localhost:8000/admin/setPromotion`,
-    { selectedCourses: selects, promotion })
+    {
+      selectedCourses: selects,
+      promotion,
+      startDate,
+      endDate
+    })
     .catch(err=>console.log(err))
 
     if (response.status === 200)
     {
-      window.location.href='/AdminSetPromo';
+      window.location.reload();
     }
-    setOpen(false)
   };
 
+  const handleClose2 = async () => {
+    window.location.href='/AdminSetPromo';
+    setOpen2(false);
+  };
+  
+
   const [selects, setSelected] = useState([]);
-  const [promotion, setPromotion] = useState('');
+  const [promotion, setPromotion] = useState(null);
+
 
 
   const [courses, setCourses] = useState(async () => {
@@ -216,6 +258,14 @@ const mdTheme = createTheme();
         .then(res => { setCourses(res.data)})
         .catch((error) => alert(error.response.data.message))
 })
+
+
+// const [courses2, setCourses2] = useState(async () => {
+//   await axios.get(`http://localhost:8000/admin/getAllCoursesss2`)
+//       .then(res => { setCourses2(res.data)})
+//       .catch((error) => alert(error.response.data.message))
+// })
+
 
 const [ready, setReady] = useState(false);
 useEffect(() => {
@@ -236,10 +286,19 @@ const handleChangePromotion = (event) => {
   setPromotion(event.target.value);
 }
 
+
 const handleClickOpen = () => {
-  //console.log(reportId)
+  if (!startDate || selects.length === 0 || !endDate || !promotion || promotion <= 0)
+  {
+    seterrPopup(true);
+    return;
+  }
   setOpen(true);
 };
+
+const [startDate, setStartDate] = useState(null);
+const [endDate, setEndDate] = useState(null);
+
 useEffect( () => {
   console.log(selects)
 
@@ -318,7 +377,32 @@ useEffect( () => {
              color="#03045E"
              glutterBottom
             >Please specify promotion amount and select course(s)</Typography>
-            <TextField  label="Promotion" sx={{ml: 20}}  id="promo" variant="outlined" onChange={(event)=>{handleChangePromotion(event)}}/>
+
+<TextField type="number"  label="Promotion" sx={{ml: 20}}  id="promo" variant="outlined" onChange={(event)=>{handleChangePromotion(event)}}/>
+            
+            <LocalizationProvider  dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="Start Date"
+                value={startDate}
+                onChange={(newValue) => {
+                  setStartDate(newValue);
+                }}
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </LocalizationProvider>
+
+
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <DatePicker
+                label="End date"
+                value={endDate}
+                onChange={(newValue) => {
+                  setEndDate(newValue);
+                }}
+                renderInput={(params) => <TextField {...params} />}
+              />
+            </LocalizationProvider>
+
             <Button  variant="contained"  sx={{ color: 'white', backgroundColor: '#03045E', borderColor: '#03045E', ml:4, mt:1 }} onClick={() =>
                   handleClickOpen()}>Set Promotion</Button>
 
@@ -336,14 +420,14 @@ useEffect( () => {
                   <CardContent sx={{ flexGrow: 1 }}>
                  
                     <Typography gutterBottom variant="h5" component="h2" sx={{ color: '#03045E', fontWeight:'bold'}}>
-                       {card.title}<Checkbox
+                       {card.t}<Checkbox
                       onChange={(event)=>
                       { 
                         event.target.checked? setSelected([...selects, card._id]) : setSelected(selects.filter( c => c!==(card._id)))
                       }}/>
                       </Typography>
                     <Typography >
-                    Subject: {card.subject}
+                    Subject: {card.s}
                     </Typography>
                     {/* <Typography>
                     Summary: {card.summary}
@@ -352,14 +436,14 @@ useEffect( () => {
                     {card.rating}
                     </Typography> */}
                     <Typography >
-                    Price: {card.price}
+                    Price: {card.p}
                     </Typography>
                     {/* <Typography id="courseId" >
                       {card._id}
                     </Typography> */}
                     <Typography id="status" align="center" size="small" 
                     sx={{ color: 'white', backgroundColor: '#00B4D8', fontWeight: 'bold', mt:2 }}>
-                        {card.promoted}</Typography>
+                        {card.prom}</Typography>
 
   <BootstrapDialog
         onClose={handleClose}
@@ -383,6 +467,29 @@ useEffect( () => {
           </Button>
         </DialogActions>
       </BootstrapDialog>
+
+      {/* <BootstrapDialog
+        onClose={handleClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <BootstrapDialogTitle id="customized-dialog-title" onClose={handleClose}>
+        <Typography gutterBottom component="h1" variant="h5" sx={{color:'#03045E'}}>
+          Alert
+        </Typography>
+        </BootstrapDialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+            Sorry you can't promote already promoted course(s)
+          </Typography>   
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E'  }} 
+          onClick={() => {handleClose2()}}>
+            OK
+          </Button>
+        </DialogActions>
+      </BootstrapDialog> */}
                   </CardContent>
                   <CardActions>
                     
@@ -395,7 +502,24 @@ useEffect( () => {
 </main>
 
 
-         
+          <Backdrop
+
+            sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+            open={errPopup}
+            onClick={() => seterrPopup(false)}
+          >
+          <Alert severity="error">
+          <AlertTitle>Error</AlertTitle>
+          <strong>Please make sure to:
+              <br></br><br></br>
+              1. Enter both start and end dates, with the start date BEFORE the end date,
+              <br></br>
+              2. Set a promotion value that is greater than zero <br></br>
+              3. Select at least one course to apply the promotion on <br></br><br></br>
+              Click anywhere to continue
+              </strong>
+            </Alert>
+          </Backdrop>
       
 
 
