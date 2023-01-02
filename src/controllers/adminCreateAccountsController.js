@@ -304,6 +304,20 @@ const adminCreateAccountsController =
  
         }
       },
+   
+      async setPromotion({selectedCourses, promotion, startDate, endDate}){
+        try{
+             await Course.updateMany({ _id: { $in: selectedCourses }}, {
+                discount: promotion,
+                startDate,
+                discountDuration: endDate,
+                promoted: 'Promoted'
+             });
+        } catch(err){
+            throw new DomainError('error internally', 500);
+ 
+        }
+        },      
 
       async getAllCoursesss2(){ //All courses
 

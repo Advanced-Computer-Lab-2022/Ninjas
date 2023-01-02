@@ -104,10 +104,8 @@ refundedCourses:{
     required: false
 },
 corporateName:{
-    type: String,
-    required: false
+    type:String,
 }
-
 
 })
 

@@ -309,33 +309,17 @@ const Login = () => {
                   </Typography>
                 </BootstrapDialogTitle>
                 <DialogContent dividers>
-                  <Typography gutterBottom>
+                <Typography gutterBottom>
                     Students who register for a training course occasionally change their mind for one reason or another.
                     Regardless of the reason, we believe there should be a definite refund policy for students who decide not to take the course.
                     Refunds for online courses are only given under the following circumstances:
                   </Typography>
                   <Typography gutterBottom>
-                    1. The student/user accessed 50% of the online course AND the student/user requests a refund, in writing via email within three business days from the date of the registration (email notification sent).
-                    There will be no refunds for any online courses (or curricula) once a course has been accessed in any manner.
+                    1. The student/user who accessed more than 50% of the online course AND the student/user requests a refund, through the system.
+                    There will be no refunds for any online courses (or curricula) once a student is done with 50% of the course's progress in any manner.
                   </Typography>
                   <Typography gutterBottom>
-                    2. A full refund will be issued less an administrative fee of $100.
-                  </Typography>
-                  <Typography gutterBottom component="h1" variant="h5">
-                    Online Professional Development Refund Policy
-                  </Typography>
-                  <Typography gutterBottom>
-                    The student/user did not access any portion of the online course AND the student/user requests a refund,
-                    in writing via email within 72 hours of enrolling in the course.
-                    We are unable to offer refunds after the exam has been attempted.
-                  </Typography>
-                  <Typography gutterBottom component="h1" variant="h5">
-                    Online Enrichment Course Refund Policy
-                  </Typography>
-                  <Typography gutterBottom>
-                    The student/user did not access any portion of the online course AND the student/user requests a refund, in writing via email within 72 hours of enrolling in the course.
-                    We are unable to offer refunds after the exam has been attempted.
-                    A refund will be issued less the materials fee for the course.
+                    2. The student/user who only watched less than 50% of the course's vidoes will recieve a full refund will be issued.
                   </Typography>
                 </DialogContent>
                 <DialogActions>
@@ -371,7 +355,7 @@ const Login = () => {
                   <Typography gutterBottom>
                   Salaries and/or wages are to be calculated monthly and paid semi-monthly according to number of registered trainees in
                   each course and course price.
-                  Courses Plant has the right to 40% of the profits made on each video by number of registered trainees.
+                  Courses Plant has the right to 14% of the profits made on each video by number of registered trainees.
                   </Typography>
                 </DialogContent>
                 <DialogActions>

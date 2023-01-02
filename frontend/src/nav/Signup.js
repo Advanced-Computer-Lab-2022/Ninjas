@@ -155,106 +155,13 @@ export default function Signup() {
   };
 
 
-  //handling errors in fields
-
-  // const [firstNameErr, setFirstNameErr] = useState();
-  // const [lastNameErr, setLastNameErr] = useState();
-  // const [emailErr, setEmailErr] = useState();
-  // const [passwordErr, setPasswordErr] = useState();
-  // const [confirmErr, setConfirmErr] = useState();
-  // const [genderErr, setGenderErr] = useState();
-  // const [usernameErr, setUsernameErr] = useState();
   const[confirm,setConfirm]=useState('');
    const[responseErr, setresErr] = useState('');
 
-  // const falsify = () => {
-  //   setFirstNameErr(true);
-  //   setLastNameErr(true);
-  //   setEmailErr(true);
-  //   setPasswordErr(true);
-  //   setConfirmErr(true);
-  //   setGenderErr(true);
-  //   setUsernameErr(true);
-  //   console.log("in in")
-  // }
-
-  // const allCorrect = () => {
-  //   const bool = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
-  //   //they all have to be set to false
-  //   return !bool;
-  // }
-
-
-  // const handleSubmit =  async (event)  => {
-  //   event.preventDefault();
-  //   const data = new FormData(event.currentTarget);
-
-  //   //set the values to false, in case something was corrected
-  //   //falsify();
-    
-  //   //before proceeding we have to make sure that the data is correct
-  //   if (data.get('firstName').trim().length < 2){
-  //     setFirstNameErr(true);}
-  //   else{
-  //     setFirstNameErr(false);}
-  //     console.log(firstNameErr)
-
-  //   if (data.get('lastName').trim().length < 2)
-  //     setLastNameErr(true);
-  //     else
-  //     setLastNameErr(false);
-
-  //   if (!validateEmail(data.get('email')))
-  //     setEmailErr(true);
-  //     else
-  //     setEmailErr(false);
-
-  //   if (data.get('username').trim().length < 6)
-  //     setUsernameErr(true);
-  //     else
-  //     setUsernameErr(false);
-
-  //   if (data.get('password').trim().length < 6)
-  //     setPasswordErr(true);
-  //     else
-  //     setPasswordErr(false);
-
-  //   if (!(data.get('password') === data.get('confirmpassword')) || data.get('confirmpassword').trim().length < 6) //passwords do not match
-  //     setConfirmErr(true);
-  //     else
-  //     setConfirmErr(false);
-
-
-  //   if (!data.get('maleButton') && !data.get('femaleButton')) //they did not choose their gender
-  //     setGenderErr(true);
-  //     else
-  //     setGenderErr(false);
-  //    return; 
-  //      console.log(firstNameErr);
-  //   // if(firstNameErr==false && lastNameErr==false && emailErr==false && passwordErr==false && confirmErr==false && genderErr==false &&
-  //   //   usernameErr==false  ){
-  //   //     handleClickOpen();
-  //   //     console.log("in")
-  //   //     //setInital(true)
-  //   // }
-    
-    
-  //   // if(inital==true){
-  //   //   handleClickOpen();
-  //   // }
-
-
-  //   //if all the inputs are valid, open the contract dialogue
-  //   //let errorsExist= false;
-  //   //errorsExist = firstNameErr || lastNameErr || emailErr || passwordErr || confirmErr || genderErr || usernameErr;
-  //   //setError(!errorsExist);
-  //  // console.log(errorsExist)
-  //   //if (errorsExist)
-  //   //console.log(true);
-  //   //else
-  //  // handleClickOpen();
-  // };
-
+  
+  
+ 
+ 
   const[first, setFirst] = useState(0);
 
   const handleChangeChange2 =  async ()  => {
@@ -266,7 +173,7 @@ export default function Signup() {
     if (response.status === 200) {
       }
       console.log(firstName)
-    if(!firstName=='' && !lastName=='' && !username=='' && !email=='' && !password==''  ){
+    if(!firstName=='' && !lastName=='' && !username=='' && !email=='' && !password=='' && !gender=='' && validateEmail(email) ){
       console.log('in')
       handleClickOpen();
     }
@@ -330,7 +237,7 @@ export default function Signup() {
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
                   <TextField
-                    error={first==1 && firstName==''}
+                    error={first==1 && firstName.length<2}
                     helperText={first==1 && firstName.length<2 ? "Please enter at least 2 characters." : null}
                     autoComplete="given-name"
                     name="firstName"
@@ -346,7 +253,7 @@ export default function Signup() {
                   <TextField
                     required
                     fullWidth
-                    error={first==1 && lastName==''}
+                    error={first==1 && lastName.length<2}
                     helperText={first==1 && lastName.length<2 ? "Please enter at least 2 characters." : null}
                     id="lastName"
                     label="Last Name"
@@ -359,8 +266,8 @@ export default function Signup() {
                   <TextField
                     required
                     fullWidth
-                    error={first==1 &&  username==''}
-                    helperText={first==1 && username.length<2 ? "Please enter at least 6 characters." : null}
+                    error={first==1 &&  username.length<6}
+                    helperText={first==1 && username.length<6 ? "Please enter at least 6 characters." : null}
                     name="username"
                     label="Username"
                     id="username"
@@ -373,7 +280,7 @@ export default function Signup() {
                     required
                     fullWidth
                     error={first==1 && email==''}
-                    //helperText={emailErr ? "Please enter a valid email." : null}
+                    helperText={first==1 && !validateEmail(email) ? "Please enter a valid email." : null}
                     id="email"
                     label="Email Address"
                     name="email"
@@ -385,8 +292,8 @@ export default function Signup() {
                   <TextField
                     required
                     fullWidth
-                    error={first==1 && password==''}
-                    helperText={first==1 && password.length<2 ? "Please enter at least 6 characters." : null}
+                    error={first==1 && password.length<6}
+                    helperText={first==1 && password.length<6? "Please enter at least 6 characters." : null}
                     name="password"
                     label="Password"
                     type="password"
@@ -399,8 +306,8 @@ export default function Signup() {
                   <TextField
                     required
                     fullWidth
-                    //error={}
-                   // helperText={ ? "The two passwords do not match." : null}
+                    error={first==1 && confirm!=password}
+                    helperText={  first==1 && confirm!=password? "The two passwords do not match." : null}
                     name="confirmpassword"
                     label="Confirm Password"
                     type="password"
@@ -463,28 +370,14 @@ export default function Signup() {
                     Refunds for online courses are only given under the following circumstances:
                   </Typography>
                   <Typography gutterBottom>
-                    1. The student/user did not access any portion of the online course AND the student/user requests a refund, in writing via email within three business days from the date of the registration (email notification sent).
-                    There will be no refunds for any online courses (or curricula) once a course has been accessed in any manner.
+                    1. The student/user who accessed more than 50% of the online course AND the student/user requests a refund, through the system.
+                    There will be no refunds for any online courses (or curricula) once a student is done with 50% of the course's progress in any manner.
                   </Typography>
                   <Typography gutterBottom>
-                    2. A full refund will be issued less an administrative fee of $100.
+                    2. The student/user who only watched less than 50% of the course's vidoes will recieve a full refund will be issued.
                   </Typography>
-                  <Typography gutterBottom component="h1" variant="h5">
-                    Online Professional Development Refund Policy
-                  </Typography>
-                  <Typography gutterBottom>
-                    The student/user did not access any portion of the online course AND the student/user requests a refund,
-                    in writing via email within 72 hours of enrolling in the course.
-                    We are unable to offer refunds after the exam has been attempted.
-                  </Typography>
-                  <Typography gutterBottom component="h1" variant="h5">
-                    Online Enrichment Course Refund Policy
-                  </Typography>
-                  <Typography gutterBottom>
-                    The student/user did not access any portion of the online course AND the student/user requests a refund, in writing via email within 72 hours of enrolling in the course.
-                    We are unable to offer refunds after the exam has been attempted.
-                    A refund will be issued less the materials fee for the course.
-                  </Typography>
+
+  
                 </DialogContent>
                 <DialogActions>
                   <Button autoFocus sx={{ color: '#CAF0F8', backgroundColor: '#03045E', borderColor: '#03045E' }} onClick={change}>

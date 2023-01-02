@@ -239,7 +239,7 @@ const userController = {
             console.log(minPrice)
             for (var i = 0; i < courses.length; i++) {
                 // price = price x factor x discount
-                if (courses[i].discountDuration && Date.now() > courses[i].discountDuration) { 
+                if (!(courses[i].discountDuration && Date.now() < courses[i].discountDuration && courses[i].startDate < Date.now() ) ) { 
                     courses[i].discount=0;
                 }
                 courses[i].price = courses[i].price * details.factor * ((100 - courses[i].discount) / 100);
@@ -690,12 +690,6 @@ const userController = {
             const thisCourse =  await Course.findOne({_id: courseId}).catch(() => {
                 throw new DomainError("Wrong Id", 400)
             });;
-                if(theUser.wallet >= thisCourse.price){
-                   await Course.updateOne({_id: courseId}, {$push: { students: userId}});
-                   let newWallet = theUser.wallet - thisCourse.price;
-                   await Account.updateOne({_id: userId} ,{wallet: newWallet});
-                }
-
 
             //check if he has enough in the wallet
             if (theUser.wallet >= thisCourse.price) {
@@ -967,7 +961,7 @@ async folllowUp( userId , courseId , problem ) {
     }
     },
 
-async viewWallet({userId}) {
+async viewWallet({userId}) {   //lel inst 
 
 
       try {
@@ -1013,7 +1007,9 @@ async viewWallet({userId}) {
     async requestAccess(userId , courseId){
 
         try{
-        const requested = await RequestAccess.create({accountId: userId , courseId}).catch(() => {
+
+            const user = await Account.findOne({_id: userId})
+        const requested = await RequestAccess.create({accountId: userId , courseId , corporateName: user.corporateName}).catch(() => {
             throw new DomainError("try again and check course availability", 400)
         });
 
@@ -1073,9 +1069,10 @@ async getCourse({ courseId, userType, userId }) {
             //update the local course object
             course.discountDuration = null;
             course.discount = 0;
+            course.promoted = 'Not Promoted'
 
             //update the value in the DB
-            await Course.updateOne({ _id: courseId }, { discountDuration: null, discount:0 });
+            await Course.updateOne({ _id: courseId }, { discountDuration: null, discount:0, promoted: 'Not Promoted' });
         }
 
         const response = { course }
