@@ -435,6 +435,8 @@ This software uses several open source packages. This includes, but is not limit
 - [Mongoose](https://mongoosejs.com/)
 - Emojis are mostly taken from [here](https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md#face-hand)
 - [Markdown Badges](https://github.com/Ileriayo/markdown-badges)
+-[MERN Stack tutorial](https://youtu.be/7CqJlxBYj-M)
+-[React tutorial](https://youtu.be/ZEKBDXGnD4s)
 
 ## License
 >You can check out the full license [here](https://github.com/Advanced-Computer-Lab-2022/Ninjas/blob/main/src/LICENSE.TXT)
