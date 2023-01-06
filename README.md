@@ -9,7 +9,7 @@ Online learning websites indeed allow the future generations to access the best 
 
 ## Build Status
 
-On the 2nd of January 2023, the project will be completed and **not** deployed. Most if not all of the errors are handled in the code except for a problem in the reports' follow up not being responsive; users should not worry about anything going wrong on their part. In the unlikely event, if a problem occurs, feel free to file a ticket and the bug shall be fixed as soon as possible.
+On the 2nd of January 2023, the project will be completed and **not** deployed. Most if not all of the errors are handled in the code except for a problem in the reports' follow up not being responsive and that the user till now can sign up even if confirmed password is not correct. Otherwise, users should not worry about anything going wrong on their part. In the unlikely event, if a problem occurs, feel free to file a ticket and the bug shall be fixed as soon as possible.
 
 ## Code Style
 
