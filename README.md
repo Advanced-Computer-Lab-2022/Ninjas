@@ -478,7 +478,7 @@ password incorrect error:
 
 **GET** `localhost:8000/didRateInstructor?userId={}&instructorId={}`
 
-This route is to check if the user had rated the instructor or not.
+This route is to check if the user had rated the instructor before or not.
 
 The response will be either:
 
@@ -498,7 +498,52 @@ Status:200
     "rated": true
 }
 ```
-#### View correct Answer
+#### View correct Answers
+
+**GET** `localhost:8000/viewCorrectAnswers?courseId={}&subtitleId={}&exersiseId={}`
+
+This route is to get the correct answers of a specific exercise.
+
+A success response will be :
+
+Status:200
+
+```js
+{
+    "subtitleId": "635c2db4512c884aec044402",
+    "exercises": {
+        "title": "exersise1",
+        "questions": [
+            {
+                "userAnswer": null,
+                "_id": "6386069b637e9186118e0231",
+                "questionText": "which ia a voul",
+                "correctAnswer": "a",
+                "mcqs": [
+                    "a",
+                    "z",
+                    "3",
+                    "q"
+                ]
+            }
+        ],
+        "_id": "6384ef97dfd8a313b11706f4"
+    }
+}
+```
+Trying to get the corrrect answers for a non-existing exercise will have different response
+
+The response will be:
+
+Status:400
+
+```js
+{
+    "message": "not found exersise"
+}
+```
+
+#### Exercise grade
 
 ## How to Use?
 
