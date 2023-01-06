@@ -382,7 +382,7 @@ TOKEN = 'ABCDEFGHIJKLMNOPQRSTUVWKYZ'
 
 #### Get all Refund Requests
 
-```http
+```js
   GET /admin/viewRefundRequests
 ```
 
