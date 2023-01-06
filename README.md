@@ -382,6 +382,8 @@ All tests for endpoints were done using postman to compare the desired output an
 
 ### Examples of API tests and responses
 
+NOTE: Instead of real values in the request body and params, curly brackets '{ }' are used as values vary in each test to get different responses.
+
 #### Rate
 
 **PUT** `localhost:8000/rateInstructor?instructorId={}&userId={}&ratingNumber={}&ratingText={}`
@@ -1134,6 +1136,349 @@ Status:500
     "message": "internal error"
 }
 ```
+#### Change Password
+**PUT** `localhost:8000/changePassword`
+
+This route is for logged in instructors, individal trainees, and corporate trainess to change their password.
+
+Body of **request** must be JSON.sample:
+```json
+{
+    "oldPassowrd":{},
+    "newPassword":{}
+}
+```
+A success response will be:
+
+Status:200
+
+
+```js
+{
+   "Update Succesfully"
+}
+```
+
+A response if trying to change password with length less than 6:
+
+Status:400
+
+```js
+{
+    "code": 400,
+    "message": "Password Length must be atleast 6"
+}
+```
+
+A response if old password entered doesn't match the user's old password:
+
+Status:400
+
+```js
+{
+    "code": 400,
+    "message": "Old Password is incorrect, try again"
+}
+```
+
+#### Change Email
+**PUT** `localhost:8000/editEmail`
+
+This route is for logged in instructors to change their email.
+
+Body of **request** must be JSON.sample:
+```json
+{
+ "newEmail":{}
+}
+```
+A success response will be:
+
+Status:200
+
+
+```js
+{
+   "Update Succesfully"
+}
+```
+
+A response if new email entered is not in the proper email format:
+
+Status:400
+
+```js
+{
+    "code": 400,
+    "message": "Wrong email format"
+}
+```
+
+A response if email entered already exists:
+
+Status:400
+
+```js
+{
+    "code": 400,
+    "message": "email already exits"
+}
+```
+#### Edit Biography
+**PUT** `localhost:8000/editBiography`
+
+This route is for logged in instructors to update their biography.
+
+Body of **request** must be JSON.sample:
+```json
+{
+ "newText":{}
+}
+```
+A success response will be:
+
+Status:200
+
+
+```js
+{
+   "Update Succesfully"
+}
+```
+
+A response if the biography is less than 20 characters:
+
+Status:400
+
+```js
+{
+    "code": 400,
+    "message": "Biography must be at least 20 characters"
+}
+```
+#### Request Refund
+**POST** `localhost:8000/requestRefund?courseId={}`
+
+This route is for individual trainees to request a refund on a course.
+
+Body of **request** must be JSON.sample:
+```json
+{
+ "courseId":{},
+}
+```
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    "Request is waiting for review"
+}
+```
+
+A response if their progress is more than or equal 50% in the course:
+
+Status:400
+
+```js
+{
+    "Can't refund course with progress more than 50%"
+}
+```
+
+#### Pay for course using wallet
+**PUT** `localhost:8000/payForCourse`
+
+This route is for individual trainees to pay for a course using balance in their wallet.
+
+Body of **request** must be JSON.sample:
+```json
+{
+ "courseId":{},
+ "coursePrice":{}
+}
+```
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    "You have paid successfully"
+}
+```
+
+If there is not enough balance in their wallet:
+
+Status:400
+
+```js
+{
+    "not enough balance"
+}
+```
+
+#### Report Course
+**POST** `localhost:8000/reportCourse?userId={}&courseId={}&problem={}&description={}`
+
+This route is for an instructor, individual trainee, and corporate trainee to report a course.
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    "message": "Done"
+}
+```
+
+If the problem was already reported before:
+
+Status:400
+
+```js
+{
+    "message": "you already reported"
+}
+```
+
+#### View my reports
+**GET** `localhost:8000/viewMyReports`
+
+This route is for an instructor, individual trainee, and corporate trainee to view their reports.
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    [
+    {
+        "_id": "63b82ca133c1d17cd2287fcb",
+        "accountId": "639e10e4740580502414c0b9",
+        "courseId": "639c89bef768e2f4d7261177",
+        "problem": "technical",
+        "description": "Very bad",
+        "progress": "INITIAL",
+        "seen": false,
+        "followUp": false,
+        "__v": 0
+    }
+]
+
+}
+```
+
+If the user doesn't have any reports:
+
+Status:200
+
+```js
+{
+    []
+}
+```
+
+#### Rate Course
+**POST** `localhost:8000/rateCourse?userId={}&courseId={}`
+
+This route is for an individual trainee and corporate trainee to rate a course.
+
+Body of **request** must be JSON.sample:
+```json
+{
+ "rating":{},
+ "text":{}
+}
+```
+A success response will be:
+
+Status:200
+
+```js
+{
+    "message": "your rating was submitted successfully."
+}
+```
+
+If the course Id doesn't exist:
+
+Status:400
+
+```js
+{
+   "message": "Course doesn't exist"
+}
+```
+#### View Course Requests
+**GET** `localhost:8000/checkRequestedAccess?userId={}&courseId={}`
+
+This route is for corporate trainees to view whether they requestes access or not for a course.
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    "_id": "63b5352b4b00f9b4f2b20486",
+    "accountId": "63b22331795806103da16a80",
+    "courseId": "639c89bef768e2f4d7261177",
+    "corporateName": "MasterCard",
+    "__v": 0
+}
+
+```
+
+If the trainee didn't request access:
+
+Status:400
+
+```js
+{
+    "message": "access was not requested"
+}
+
+```
+#### Forgot Password
+**POST** `localhost:8000/forgotPassword'
+
+This route is for instructor, individual trainee, corporate trainee to request an email to change their password.
+
+Body of **request** must be JSON.sample:
+```json
+{
+ "username":{}
+}
+```
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    "message": "A reset password email has been sent. Please check your email. "
+}
+
+```
+
+If the user didn't enter their username before requesting an email to change their password:
+
+Status:400
+
+```js
+{
+    "message": "Please enter your username."
+}
+
+```
+
 
 
 ## How to Use?
