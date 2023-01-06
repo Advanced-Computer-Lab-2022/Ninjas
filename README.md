@@ -382,11 +382,14 @@ All tests for endpoints were done using postman to compare the desired output an
 
 ### Examples of API tests and responses
 
+#### Rate
+
 **PUT** `localhost:8000/rateInstructor?instructorId={}&userId={}&ratingNumber={}&ratingText={}`
 
 This route can be used for a user to rate an instructor.
 
 The  response will be:
+
 Status:200
 
 ```json
@@ -398,6 +401,7 @@ Status:200
 For authentication and authorization accessing any API without being logged in will have the same response for all APIs and the user will be forwarded to the log in page.
 
 Response will be:
+
 Status:401
 
 ```json
@@ -405,6 +409,8 @@ Status:401
     "message": "you did not login"
 }
 ```
+
+#### Rate check
 
 ## How to Use?
 
