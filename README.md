@@ -378,23 +378,25 @@ TOKEN = 'ABCDEFGHIJKLMNOPQRSTUVWKYZ'
 
 ## Tests
 
-### Health Check and APIKey Test
+All tests for endpoints were done using postman to compare the desired output and the actual status and output viwed after calling the endpoints using various cases.
 
-**GET** `http://localhost:3000/`
+### Examples of API tests and responses
 
-This base route can be used to check if the API is currently running. If the server is running there should always be a response.
+**PUT** `localhost:8000/rateInstructor?instructorId={}&userId={}&ratingNumber={}&ratingText={}`
 
-However, it will check for a valid API key too. The value of the key is `MyUniqueApiKey`. It needs to be sent from the client as a value for an `x-api-key` header.
+This route can be used for a user to rate an instructor.
 
-The successful response will be:
+The  response will be:
 
 ```json
 {
-  "STATUS": "Good to go!"
+    "Done": true
 }
 ```
 
-A response for an invalid key will be:
+For authentication and authorization accessing any API without being logged in will have the same response for all APIs and the user will be forwarded to the log in page.
+
+Response will be:
 
 ```json
 {
@@ -405,7 +407,6 @@ A response for an invalid key will be:
 }
 ```
 
-This is the only route in the API that looks for this `x-api-key` header.
 
 ## How to Use?
 
