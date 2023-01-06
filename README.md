@@ -545,6 +545,79 @@ Status:400
 
 #### Exercise grade
 
+**GET** `localhost:8000/viewExerciseGrade?exersiseId={}&userId={}`
+
+This route is to get the user grade for a specific exercise.
+
+A response for an exercise solved by the user will be :
+
+Status:200
+
+```js
+{
+    "userGrade": 10,
+    "gradePercentage": 100,
+    "totalGrade": 10,
+    "solved": true
+}
+```
+A response for an exercise not yet solved by the user will be :
+
+Status:200
+
+```js
+{
+    "userGrade": 0,
+    "gradePercentage": 0,
+    "totalGrade": 0,
+    "solved": false
+}
+```
+
+#### Watch video
+
+**GET** `localhost:8000/viewVideo?courseId={}&subtitleId={}`
+
+This route is to get a link of a video under a specific subtitle in a specific course.
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    "_id": "635e871a279caf15701643f0",
+    "title": "v123",
+    "link": "https://youtu.be/v1YR-yPWl28"
+}
+```
+If on video link exisited response will be:
+
+Status:400
+
+```js
+{
+    "message": "no video"
+}
+```
+
+If course or subtitle IDs were wrong response will be:
+
+Status:500
+
+```js
+{
+    "message": "error internally"
+}
+```
+
+#### Search
+
+**GET** `localhost:8000/search?userId=null&subject=science&minPrice=&maxPrice=&rating=&title=null&instructor=`
+
+
+
+
 ## How to Use?
 
 After setting up the application, use two terminals to run the server using the following steps
