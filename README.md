@@ -456,6 +456,8 @@ Status:200
 ```
 error responses will be:
 
+Status:400
+
 username incorrect error:
 
 ```js
@@ -474,8 +476,29 @@ password incorrect error:
 
 #### Rate check
 
+**GET** `localhost:8000/didRateInstructor?userId={}&instructorId={}`
 
+This route is to check if the user had rated the instructor or not.
 
+The response will be either:
+
+Status:200
+
+```js
+{
+    "rated": false
+}
+```
+or:
+
+Status:200
+
+```js
+{
+    "rated": true
+}
+```
+#### View correct Answer
 
 ## How to Use?
 
