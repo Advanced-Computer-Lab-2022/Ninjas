@@ -386,14 +386,13 @@ TOKEN = 'ABCDEFGHIJKLMNOPQRSTUVWKYZ'
   GET /admin/viewRefundRequests
 ```
 
-| Parameter | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| no        |          |                            |
-| parameters|          | **Not Required**           |
+| Parameter     | Type     | Description                |
+| :------------ | :------- | :------------------------- |
+| no parameters |          | **Not Required**           |
 
 #### Get acceptRefundRequests
 
-```http
+```js
   GET /admin/acceptRefundRequest?refundRequestid=${reqId}
 ```
 
@@ -407,19 +406,19 @@ Takes id of refund request accepts it and remove it from refunds schema and get 
 
 #### Get all Access Courses Requests
 
-```http
+```js
   GET /admin/viewCorporateRequest
 ```
 
-| Parameter | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| no        |          |                            |
-| parameters|          | **Not Required**           |
+| Parameter     | Type     | Description                |
+| :------------ | :------- | :------------------------- |
+| no parameters |          | **Not Required**           |
+
 
 
 #### Get Corporate Requests after accepting or rejecting them
 
-```http
+```js
   GET /admin/acceptCorporateRequest?requestId=${requestId}
 ```
 
@@ -431,7 +430,7 @@ Takes id of refund request accepts it and remove it from refunds schema and get 
 
 Takes id of access course request accepts it and remove it from request schema and get the remaining access course requests and adds the corporate trainee that request course access to the course registered students
 
-```http
+```js
   GET /admin/rejectCorporateRequest?requestId=${requestId}
 ```
 
@@ -446,18 +445,16 @@ Takes id of access course request rejects it and remove it from request schema a
 
 #### Get all Reported Problems
 
-```http
+```js
   GET /admin/viewReportedProblems
 ```
-
-| Parameter | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| no        |          |                            |
-| parameters|          | **Not Required**           |
+| Parameter     | Type     | Description                |
+| :------------ | :------- | :------------------------- |
+| no parameters |          | **Not Required**           |
 
 #### Get all reported problems after updating their status 
 
-```http
+```js
   GET /admin/changeProgressP?reportId=${reportId}&progress=${progress}
 ```
 
@@ -473,7 +470,7 @@ Takes id of reported problem changes its progress from initial to pending or res
 
 #### Get all reported problems after unboxing one of the unseen reports 
 
-```http
+```js
   GET /admin/viewUnseenProblems?reportId=${reportId}
 ```
 
@@ -489,7 +486,7 @@ Takes id of reported problem and view its non-visible details and adds it to see
 
 #### PUT create an account for (Admin, Corporate Trianee, Instructor) 
 
-```http
+```js
   PUT /admin/create
 ```
 PUT Request JSON Body
@@ -511,18 +508,17 @@ Takes JSON body of put request and creates an account whether it is Corporate Tr
 
 #### Get all Courses
 
-```http
+```js
   GET /admin/getAllCoursesss
 ```
 
-| Parameter | Type     | Description                |
-| :-------- | :------- | :------------------------- |
-| no        |          |                            |
-| parameters|          | **Not Required**           |
+| Parameter     | Type     | Description                |
+| :------------ | :------- | :------------------------- |
+| no parameters |          | **Not Required**           |
 
 #### PUT set a discount/promotion to a course(s) from a start date to an end date
 
-```http
+```js
   PUT /admin/setPromotion
 ```
 PUT Request JSON Body
@@ -537,7 +533,7 @@ PUT Request JSON Body
 
 ### POST Logout
 
-```http
+```js
   POST /logout
 ```
 | Parameter | Type      | Description                                          |
@@ -550,7 +546,7 @@ PUT Request JSON Body
 
 ### PUT Create Course
 
-```http
+```js
   PUT /createcourse
 ```
 PUT Request JSON Body
@@ -571,7 +567,7 @@ PUT Request JSON Body
 
 ### PUT Add Subtitle
 
-```http
+```js
   PUT /addSubtitle?courseId=${courseId}
 ```
 PUT Request JSON Body
@@ -593,7 +589,7 @@ PUT Request JSON Body
 
 ### POST Create Exercise(s)
 
-```http
+```js
   POST /createExercise
 ```
 POST Request JSON Body
@@ -608,7 +604,7 @@ POST Request JSON Body
 
 ### POST Add Question(s)
 
-```http
+```js
   POST /addQuestion2
 ```
 POST Request JSON Body
@@ -627,7 +623,7 @@ POST Request JSON Body
 
 #### Get User Profile with all information about the courses they view 
 
-```http
+```js
   GET /login?username=${username}&password=${password}
 ```
 
@@ -643,7 +639,7 @@ Takes username and password of the user and finds them in accounts schema db col
 
 #### Post User Profile with all information about the courses they view 
 
-```http
+```js
   POST /signUp
 ```
 POST Request JSON Body
@@ -663,7 +659,7 @@ Takes username,firstName, lastName, email, password, gender of the user and uses
 
 #### Post User Profile with all information about the courses they view 
 
-```http
+```js
   POST /payForCourse2
 ```
 POST Request JSON Body
@@ -683,7 +679,7 @@ Takes course Id from above params in URL and card number supplied by user and us
 
 #### Get Search Results in Instructor Home 
 
-```http
+```js
   GET /search?userId=${userId}&subject=${subject}&minPrice=${mintemp}&maxPrice=${maxtemp}&rating=${rating}&title=${search}&instructor=${inst}
 
 ```
@@ -704,13 +700,13 @@ Takes parameters and get set of courses that includes any of these parameters
 
 #### Get Most Popular Courses 
 
-```http
+```js
   GET /mostPopularCourses
 
 ```
-| Parameter | Type      | Description      |
-| :-------- | :-------- | :--------------- |
-| no params |           | **Not Required** |
+| Parameter     | Type      | Description      |
+| :--------     | :-------- | :--------------- |
+| no parameters |           | **Not Required** |
 
 
 #### mostPopularCourses()
@@ -719,7 +715,7 @@ get all courses that has highest number of enrolled students
 
 #### Post Rate a Course 
 
-```http
+```js
   POST /rateCourse?userId=${user._id}&courseId=${course._id}
 ```
 POST Request JSON Body
@@ -739,7 +735,7 @@ Takes course Id from above params in URL and user Id from session and applies th
 
 #### Put Rate an Instructor 
 
-```http
+```js
   PUT /rateInstructor?userId=${user._id}&instructorId=${course.instructors[0]._id}&ratingNumber=${rating}&ratingText=${text}
 ```
 
@@ -757,7 +753,7 @@ Takes all above parameters and submits rating to instructor
 
 #### Get Delete Rating for Instructor 
 
-```http
+```js
   GET /didRateInstructor?userId=${user._id}&instructorId=${course.instructors[0]._id}&deleteR=${didRateDelete}
 
 ```
@@ -775,7 +771,7 @@ Takes all above parameters and makes sure that user is deleting a rating for an 
 
 #### Get Information about the selected course 
 
-```http
+```js
   GET /course/${courseId}
 
 ```
@@ -792,7 +788,7 @@ Takes all above parameters and gets all course information to open course page
 
 #### Get Information about current user
 
-```http
+```js
   GET /currentUser
 
 ```
@@ -809,7 +805,7 @@ Takes above parameters and gets all user information that may be needed to be us
 
 #### Get Requested Course Access
 
-```http
+```js
   GET /checkRequestedAccess?userId=${user._id}&courseId=${course._id}
 
 ```
@@ -826,7 +822,7 @@ Takes above parameters and gets all user information that may be needed to be us
 
 #### Post Request Course Access
 
-```http
+```js
   POST /requestAccess?userId=${user._id}&courseId=${course._id}
 
 ```
@@ -841,7 +837,7 @@ Takes above parameters and gets all user information that may be needed to be us
 
 #### Post Delete course rating
 
-```http
+```js
   POST /deleteCourseRating?userId=${user._id}&courseId=${course._id}
 
 ```
@@ -856,7 +852,7 @@ Takes above parameters and gets all user information that may be needed to be us
 
 #### Post Report Course
 
-```http
+```js
   POST /reportCourse?userId=${user._id}&courseId=${course._id}&problem=${problem}&description=${RD}
 
 ```
@@ -873,7 +869,7 @@ Takes above parameters and gets all user information that may be needed to be us
 
 #### Get Report Course
 
-```http
+```js
   GET /viewExerciseGrade?exersiseId=${exerciseId}&userId=${user._id}
 
 ```
@@ -888,7 +884,7 @@ Takes above parameters and gets all user information that may be needed to be us
 
 #### Get Refund Requests
 
-```http
+```js
   GET /requestedTheRefund?userId=${user._id}&courseId=${course._id}
 
 ```
@@ -903,7 +899,7 @@ Takes above parameters and gets all user information that may be needed to be us
 
 #### Post Refund Requests
 
-```http
+```js
   POST /requestRefund?courseId=${course._id}
 
 ```
@@ -918,7 +914,7 @@ Takes above parameters and gets all user information that may be needed to be us
 
 #### Get view video
 
-```http
+```js
   GET /viewVideo?subtitleId=${subtitleId}&courseId=${courseId}
 ```
 
@@ -932,7 +928,7 @@ Takes above parameters and gets all user information that may be needed to be us
 
 #### Get average exercise grade
 
-```http
+```js
   GET /averageExerciseGrade?courseId=${courseId}
 ```
 
@@ -945,7 +941,7 @@ Takes above parameters and gets all user information that may be needed to be us
 
 #### Put pay for course from wallet
 
-```http
+```js
   PUT /payForCourse
 ```
 PUT Request JSON Body
@@ -961,7 +957,7 @@ PUT Request JSON Body
 
 #### Get exercise history
 
-```http
+```js
   GET /exerciseHistory?courseId=${courseId}&userId=${user._id}
 ```
 
@@ -976,7 +972,7 @@ PUT Request JSON Body
 
 #### Post reset password
 
-```http
+```js
   POST /resetPassword/${userId}
 ```
 POST Request JSON Body
@@ -994,7 +990,7 @@ POST Request JSON Body
 
 #### Post forgot password
 
-```http
+```js
   POST /forgotPassword
 ```
 POST Request JSON Body
@@ -1008,7 +1004,7 @@ POST Request JSON Body
 
 #### Get solve exercise
 
-```http
+```js
   GET /solveExercise?userId=${userId}&courseId=${courseId}&exerciseId=${exerciseId}&subtitleId=${subtitleId}
 ```
 
@@ -1024,7 +1020,7 @@ POST Request JSON Body
 
 #### Post submit exercise
 
-```http
+```js
   POST /submitExercise?userId=${userId}
 ```
 POST Request JSON Body
@@ -1043,7 +1039,7 @@ POST Request JSON Body
 
 #### Post submit exercise
 
-```http
+```js
   POST /submitExercise?userId=${userId}
 ```
 POST Request JSON Body
@@ -1062,7 +1058,7 @@ POST Request JSON Body
 
 #### Get view correct answers
 
-```http
+```js
   GET /viewCorrectAnswers?subtitleId=${subtitleId}&exersiseId=${exerciseId}&courseId=${courseId}
 ```
 
@@ -1078,7 +1074,7 @@ POST Request JSON Body
 
 #### Get view exercise grade
 
-```http
+```js
   GET /viewExerciseGrade?exersiseId=${exerciseId}&userId=${userId}
 ```
 
@@ -1092,7 +1088,7 @@ POST Request JSON Body
 
 #### Get user by session
 
-```http
+```js
   GET /userBySession
 ```
 | Parameter       | Type      | Description                                  |
@@ -1104,7 +1100,7 @@ POST Request JSON Body
 
 #### Put edit email
 
-```http
+```js
   PUT /editEmail
 ```
 PUT Request JSON Body
@@ -1122,7 +1118,7 @@ PUT Request JSON Body
 
 #### Put edit biography
 
-```http
+```js
   PUT /editBiography
 ```
 PUT Request JSON Body
@@ -1140,7 +1136,7 @@ PUT Request JSON Body
 
 #### Put change password
 
-```http
+```js
   PUT /changePassword
 ```
 PUT Request JSON Body
@@ -1158,7 +1154,7 @@ PUT Request JSON Body
 
 #### Post select country
 
-```http
+```js
   POST /selectCountry
 ```
 POST Request JSON Body
@@ -1175,7 +1171,7 @@ POST Request JSON Body
 
 #### Get search for a course
 
-```http
+```js
   GET /search?userId=${userId}&subject=${subject}&minPrice=${minPrice}&maxPrice=${maxPrice}&rating=${rating}&title=${title}instructor=${instructor}&totalHours=${totalHours}
 ```
 
@@ -1196,7 +1192,7 @@ POST Request JSON Body
 
 #### Get user by session
 
-```http
+```js
   GET /viewEnrolledCourses
 ```
 | Parameter       | Type      | Description                                  |
@@ -1208,7 +1204,7 @@ POST Request JSON Body
 
 #### Get currency of user based on their country
 
-```http
+```js
   GET /myCurrency?country=${user.country}
 ```
 | Parameter       | Type      | Description                                                                      |
@@ -1220,7 +1216,7 @@ POST Request JSON Body
 
 #### Get owed money of instructor
 
-```http
+```js
   GET /owedMoney
 ```
 | Parameter       | Type      | Description                                  |
@@ -1233,7 +1229,7 @@ POST Request JSON Body
 
 #### Get update a user(Trainee/ Instructor) wallet after a refund
 
-```http
+```js
   GET /updateWallet
 ```
 GET Request JSON Body
