@@ -390,7 +390,7 @@ TOKEN = 'ABCDEFGHIJKLMNOPQRSTUVWKYZ'
 | :------------ | :------- | :------------------------- |
 | no parameters |          | **Not Required**           |
 
-#### Get acceptRefundRequests
+##### acceptRefundRequests()
 
 ```js
   GET /admin/acceptRefundRequest?refundRequestid=${reqId}
@@ -400,7 +400,7 @@ TOKEN = 'ABCDEFGHIJKLMNOPQRSTUVWKYZ'
 | :-------- | :-------   | :----------------------------------  |
 | `reqId`   | `ObjectId` | **Required**. Id of request to fetch |
 
-#### acceptRefundRequest({refundRequestid})
+##### acceptRefundRequest({refundRequestid})
 
 Takes id of refund request accepts it and remove it from refunds schema and get the remaining refund requests
 
@@ -426,7 +426,7 @@ Takes id of refund request accepts it and remove it from refunds schema and get 
 | :---------- | :--------- | :----------------------------------- |
 | `requestId` | `ObjectId` | **Required**. Id of request to fetch |
 
-#### acceptCorporateRequest({requestId})
+##### acceptCorporateRequest({requestId})
 
 Takes id of access course request accepts it and remove it from request schema and get the remaining access course requests and adds the corporate trainee that request course access to the course registered students
 
@@ -439,7 +439,7 @@ Takes id of access course request accepts it and remove it from request schema a
 | `requestId` | `ObjectId` | **Required**. Id of request to fetch |
 
 
-#### rejectCorporateRequest({requestId})
+##### rejectCorporateRequest({requestId})
 
 Takes id of access course request rejects it and remove it from request schema and get the remaining access course requests
 
@@ -464,7 +464,7 @@ Takes id of access course request rejects it and remove it from request schema a
 | `progress`  |`string`    | **Required**. progress value to update this report status |                    
                                               
 
-#### changeProgressP({ reportId, progress})
+##### changeProgressP({ reportId, progress})
 
 Takes id of reported problem changes its progress from initial to pending or resolved and get all reported problems after their status is updated to pending or resolved or left as is
 
@@ -480,7 +480,7 @@ Takes id of reported problem changes its progress from initial to pending or res
           
                                               
 
-#### viewUnseenProblems({reportId})
+##### viewUnseenProblems({reportId})
 
 Takes id of reported problem and view its non-visible details and adds it to seen problems section and get all reported problems after this update
 
@@ -502,7 +502,7 @@ PUT Request JSON Body
 }
         
 
-#### adminCreateAccounts({username, password, firstName, lastName, email, gender, type, corporateName})
+##### adminCreateAccounts({username, password, firstName, lastName, email, gender, type, corporateName})
 
 Takes JSON body of put request and creates an account whether it is Corporate Trianee, Instructor or another admin and adds it to accounts data collection in our database mongo db
 
@@ -516,7 +516,7 @@ Takes JSON body of put request and creates an account whether it is Corporate Tr
 | :------------ | :------- | :------------------------- |
 | no parameters |          | **Not Required**           |
 
-#### PUT set a discount/promotion to a course(s) from a start date to an end date
+##### PUT set a discount/promotion to a course(s) from a start date to an end date
 
 ```js
   PUT /admin/setPromotion
@@ -529,9 +529,9 @@ PUT Request JSON Body
     "endDate": "Date"
 }
 
-### setPromotion({selectedCourses, promotion, startDate, endDate})
+##### setPromotion({selectedCourses, promotion, startDate, endDate})
 
-### POST Logout
+#### POST Logout
 
 ```js
   POST /logout
@@ -541,10 +541,10 @@ PUT Request JSON Body
 | `userId`  |`ObjectId` | **Required**. Id of user from user session to logout |
 | `username`| `string`  | **Required**. username to from user session logout   |
 
-### logout route in backend POST /logout has the function logic of getting username and id from session and kill this session
+##### logout route in backend POST /logout has the function logic of getting username and id from session and kill this session
 
 
-### PUT Create Course
+#### PUT Create Course
 
 ```js
   PUT /createcourse
@@ -563,9 +563,9 @@ PUT Request JSON Body
 | :-------------- | :-------- | :--------------------------------------------------- |
 | `instructorId`  |`ObjectId` | **Required**. Id of instructor from user session     |
 
-### createcourse({subject, price, totalHours, summary, title, instructorId ,videoLink })
+##### createcourse({subject, price, totalHours, summary, title, instructorId ,videoLink })
 
-### PUT Add Subtitle
+#### PUT Add Subtitle
 
 ```js
   PUT /addSubtitle?courseId=${courseId}
@@ -584,10 +584,10 @@ PUT Request JSON Body
 | `instructorId`  |`ObjectId` | **Required**. Id of instructor from user session                                        |
 | `courseId`      |`ObjectId` | **Required**. Id of created course passed in URL above to add a subtitle to this course |
 
-### addsubtitle({instructorId, courseId, text, hours, title, videoLink, description })
+##### addsubtitle({instructorId, courseId, text, hours, title, videoLink, description })
 
 
-### POST Create Exercise(s)
+#### POST Create Exercise(s)
 
 ```js
   POST /createExercise
@@ -599,10 +599,10 @@ POST Request JSON Body
    "title": "string"
 }  
 
-### createExercise({ courseId ,subtitleId, title})
+##### createExercise({ courseId ,subtitleId, title})
 
 
-### POST Add Question(s)
+#### POST Add Question(s)
 
 ```js
   POST /addQuestion2
@@ -618,7 +618,7 @@ POST Request JSON Body
       "totalCredit": "Number"
 }
 
-### addQuestion2({ questionText, mcq1,mcq2,mcq3,mcq4, correctAnswer, totalCredit})
+##### addQuestion2({ questionText, mcq1,mcq2,mcq3,mcq4, correctAnswer, totalCredit})
 
 
 #### Get User Profile with all information about the courses they view 
@@ -632,7 +632,7 @@ POST Request JSON Body
 | `username`  |`string`  | **Required**. username enterd by user |
 | `password`  |`string`  | **Required**. password enterd by user |
 
-#### login({ username, password })
+##### login({ username, password })
 
 Takes username and password of the user and finds them in accounts schema db collection in mongo and navigate user through their view of course page according to their type (Instructor, Individual Trainee, Corporate Trainee) or to the Admin page
 
@@ -652,7 +652,7 @@ POST Request JSON Body
       "gender": "string",
 }
 
-#### signUp({ username, firstName, lastName, email, password, gender })
+##### signUp({ username, firstName, lastName, email, password, gender })
 
 Takes username,firstName, lastName, email, password, gender of the user and uses them to create a new record JSON object in accounts schema db collection in mongo
 
@@ -672,7 +672,7 @@ POST Request JSON Body
 | :-------- | :-------- | :----------------------------------------- |
 | `userId`  |`ObjectId` | **Required**. Id of user from user session |
 
-#### payForCourse2({userId, courseId, cardNo})
+##### payForCourse2({userId, courseId, cardNo})
 
 Takes course Id from above params in URL and card number supplied by user and user Id from user session and uses them to pay for a course
 
@@ -694,7 +694,7 @@ Takes course Id from above params in URL and card number supplied by user and us
 | `inst`    |`string`   | **Required**. Instructor name that teaches the course                                 |
 
 
-#### getSearchResult({ userId, subject, minPrice, maxPrice, rating, title, instructor})
+##### getSearchResult({ userId, subject, minPrice, maxPrice, rating, title, instructor})
 
 Takes parameters and get set of courses that includes any of these parameters
 
@@ -709,7 +709,7 @@ Takes parameters and get set of courses that includes any of these parameters
 | no parameters |           | **Not Required** |
 
 
-#### mostPopularCourses()
+##### mostPopularCourses()
 
 get all courses that has highest number of enrolled students
 
@@ -729,7 +729,7 @@ POST Request JSON Body
 | `userId`  |`ObjectId` | **Required**. Id of user from user session        |
 | `courseId`|`ObjectId` | **Required**. Id of course from URL Search params |
 
-#### rateCourse({ userId, courseId, rating, text })
+##### rateCourse({ userId, courseId, rating, text })
 
 Takes course Id from above params in URL and user Id from session and applies this user rating to this course
 
@@ -747,7 +747,7 @@ Takes course Id from above params in URL and user Id from session and applies th
 | `ratingText`    |`string`   | **Required**.                                         |
 
 
-#### rateInstructor(instructorId, userId, ratingNumber, ratingText)
+##### rateInstructor(instructorId, userId, ratingNumber, ratingText)
 
 Takes all above parameters and submits rating to instructor
 
@@ -765,7 +765,7 @@ Takes all above parameters and submits rating to instructor
 | `deleteR`       |`Boolean`  | **Required**. whether user rated this instructor or not |
 
 
-#### didRatedInst (instructorId , userId ,deleteR)
+##### didRatedInst (instructorId , userId ,deleteR)
 
 Takes all above parameters and makes sure that user is deleting a rating for an instructor they already rated
 
@@ -782,7 +782,7 @@ Takes all above parameters and makes sure that user is deleting a rating for an 
 | `courseId`      |`ObjectId` | **Required**. Id of instructor from URL Search params   |
 
 
-#### getCourse({ courseId, userType, userId })
+##### getCourse({ courseId, userType, userId })
 
 Takes all above parameters and gets all course information to open course page
 
@@ -798,7 +798,7 @@ Takes all above parameters and gets all course information to open course page
 | `userId`        |`ObjectId` | **Required**. Id of user from user session              |
 
 
-#### getUserData({ userId })
+##### getUserData({ userId })
 
 Takes above parameters and gets all user information that may be needed to be used later
 
@@ -816,7 +816,7 @@ Takes above parameters and gets all user information that may be needed to be us
 | `courseId`      |`ObjectId` | **Required**. Id of course from URL search params       |
 
 
-#### checkRequestedAccess({ userId, courseId })
+##### checkRequestedAccess({ userId, courseId })
 
 
 
@@ -832,7 +832,7 @@ Takes above parameters and gets all user information that may be needed to be us
 | `userId`        |`ObjectId` | **Required**. Id of user from user session              |
 | `courseId`      |`ObjectId` | **Required**. Id of course from URL search params       |
 
-#### requestAccess(userId, courseId);
+##### requestAccess(userId, courseId);
 
 
 #### Post Delete course rating
@@ -847,7 +847,7 @@ Takes above parameters and gets all user information that may be needed to be us
 | `userId`        |`ObjectId` | **Required**. Id of user from user session              |
 | `courseId`      |`ObjectId` | **Required**. Id of course from URL search params       |
 
-#### deleteCourseRating({ userId, courseId })
+##### deleteCourseRating({ userId, courseId })
 
 
 #### Post Report Course
@@ -864,7 +864,7 @@ Takes above parameters and gets all user information that may be needed to be us
 | `problem`       |`string`   | **Required**. problem type                              |
 | `RD`            |`string`   | **Required**. problem description                       |
 
-#### ReportCourse( userId,courseId,problem,description)
+##### ReportCourse( userId,courseId,problem,description)
 
 
 #### Get Report Course
@@ -879,7 +879,7 @@ Takes above parameters and gets all user information that may be needed to be us
 | `userId`        |`ObjectId` | **Required**. Id of user from user session              |
 | `exerciseId`    |`ObjectId` | **Required**. Id of exercise                            |
 
-#### viewExersiseGrade(exersiseId, userId)
+##### viewExersiseGrade(exersiseId, userId)
 
 
 #### Get Refund Requests
@@ -894,7 +894,7 @@ Takes above parameters and gets all user information that may be needed to be us
 | `userId`        |`ObjectId` | **Required**. Id of user from user session              |
 | `courseId`      |`ObjectId` | **Required**. Id of course                              |
 
-#### checkRequestedRefund({ userId, courseId })
+##### checkRequestedRefund({ userId, courseId })
 
 
 #### Post Refund Requests
@@ -909,7 +909,7 @@ Takes above parameters and gets all user information that may be needed to be us
 | `userId`        |`ObjectId` | **Required**. Id of user from user session              |
 | `courseId`      |`ObjectId` | **Required**. Id of course                              |
 
-#### requestRefund({ userId,courseId})
+##### requestRefund({ userId,courseId})
 
 
 #### Get view video
@@ -923,7 +923,7 @@ Takes above parameters and gets all user information that may be needed to be us
 | `subtitleId`,   |`ObjectId` | **Required**. Id of subtitle |
 | `courseId`      |`ObjectId` | **Required**. Id of course   |
 
-#### viewVideo(courseId, subtitleId, userId)
+##### viewVideo(courseId, subtitleId, userId)
 
 
 #### Get average exercise grade
@@ -936,7 +936,7 @@ Takes above parameters and gets all user information that may be needed to be us
 | :-------------- | :-------- | :--------------------------- |
 | `courseId`      |`ObjectId` | **Required**. Id of course   |
 
-#### averageExerciseGrade({ courseId })
+##### averageExerciseGrade({ courseId })
 
 
 #### Put pay for course from wallet
@@ -952,7 +952,7 @@ PUT Request JSON Body
     "instId": "ObjectId"
 }
 
-#### payForCourse({userId, courseId, coursePrice})
+##### payForCourse({userId, courseId, coursePrice})
 
 
 #### Get exercise history
@@ -967,7 +967,7 @@ PUT Request JSON Body
 | `userId`        |`ObjectId` | **Required**. Id of user from user session   |
 
 
-#### exerciseHistory({ userId, courseId })
+##### exerciseHistory({ userId, courseId })
 
 
 #### Post reset password
@@ -985,7 +985,7 @@ POST Request JSON Body
 | :-------------- | :-------- | :------------------------------------------- |
 | `userId`        |`ObjectId` | **Required**. Id of user from user session   |
 
-#### resetPassword({ userId, password })
+##### resetPassword({ userId, password })
 
 
 #### Post forgot password
@@ -999,7 +999,7 @@ POST Request JSON Body
     "username": "string"
 }
 
-#### forgotMyPassword({ username })
+##### forgotMyPassword({ username })
 
 
 #### Get solve exercise
@@ -1015,7 +1015,7 @@ POST Request JSON Body
 | `exerciseId`    |`ObjectId` | **Required**. Id of exrcise                  |
 | `subtitleId`    |`ObjectId` | **Required**. Id of subtitle                 |
 
-#### solveExercise({ userId, exerciseId, courseId, subtitleId })
+##### solveExercise({ userId, exerciseId, courseId, subtitleId })
 
 
 #### Post submit exercise
@@ -1034,7 +1034,7 @@ POST Request JSON Body
 | `userId`        |`ObjectId` | **Required**. Id of user from user session   |
 | `subtitleId`    |`ObjectId` | **Required**. Id of subtitle                 |
 
-#### submitExercise({ userId, subtitleId, solvedExercise })
+##### submitExercise({ userId, subtitleId, solvedExercise })
 
 
 #### Post submit exercise
@@ -1053,7 +1053,7 @@ POST Request JSON Body
 | `userId`        |`ObjectId` | **Required**. Id of user from user session   |
 | `subtitleId`    |`ObjectId` | **Required**. Id of subtitle                 |
 
-#### submitExercise({ userId, subtitleId, solvedExercise })
+##### submitExercise({ userId, subtitleId, solvedExercise })
 
 
 #### Get view correct answers
@@ -1069,7 +1069,7 @@ POST Request JSON Body
 | `exerciseId`    |`ObjectId` | **Required**. Id of exercise                 |
 | `courseId`      |`ObjectId` | **Required**. Id of course                   |
 
-#### viewCorrectAnswers(exersiseId, subtitleId, courseId, userId)
+##### viewCorrectAnswers(exersiseId, subtitleId, courseId, userId)
 
 
 #### Get view exercise grade
@@ -1083,7 +1083,7 @@ POST Request JSON Body
 | `userId`        |`ObjectId` | **Required**. Id of user from user session   |
 | `exerciseId`    |`ObjectId` | **Required**. Id of exercise                 |
 
-#### viewExersiseGrade(exersiseId, userId)
+##### viewExersiseGrade(exersiseId, userId)
 
 
 #### Get user by session
@@ -1095,7 +1095,7 @@ POST Request JSON Body
 | :-------------- | :-------- | :------------------------------------------- |
 | `userId`        |`ObjectId` | **Required**. Id of user from user session   |
 
-#### getUserData({ userId })
+##### getUserData({ userId })
 
 
 #### Put edit email
@@ -1113,7 +1113,7 @@ PUT Request JSON Body
 | :-------------- | :-------- | :------------------------------------------- |
 | `userId`        |`ObjectId` | **Required**. Id of user from user session   |
 
-#### editEmail({ userId, newEmail })
+##### editEmail({ userId, newEmail })
 
 
 #### Put edit biography
@@ -1131,7 +1131,7 @@ PUT Request JSON Body
 | :-------------- | :-------- | :------------------------------------------- |
 | `userId`        |`ObjectId` | **Required**. Id of user from user session   |
 
-#### editBiography({ userId, newText })
+##### editBiography({ userId, newText })
 
 
 #### Put change password
@@ -1149,7 +1149,7 @@ PUT Request JSON Body
 | :-------------- | :-------- | :------------------------------------------- |
 | `userId`        |`ObjectId` | **Required**. Id of user from user session   |
 
-#### changePassword({ userId, oldPassword, newPassword })
+##### changePassword({ userId, oldPassword, newPassword })
 
 
 #### Post select country
@@ -1166,7 +1166,7 @@ POST Request JSON Body
 | :-------------- | :-------- | :------------------------------------------- |
 | `userId`        |`ObjectId` | **Required**. Id of user from user session   |
 
-#### changeUserCountry({ userId, type, selectedCountry })
+##### changeUserCountry({ userId, type, selectedCountry })
 
 
 #### Get search for a course
@@ -1186,7 +1186,7 @@ POST Request JSON Body
 | `instructor`|`string`   | **Required**. Instructor name that teaches the course                                 |
 | `totalHours`|`Number`   | **Required**. Number of course total hours                                            |
 
-#### getSearchResult({ userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours})
+##### getSearchResult({ userId, subject, minPrice, maxPrice, rating, title, instructor, totalHours})
 
 
 
@@ -1199,7 +1199,7 @@ POST Request JSON Body
 | :-------------- | :-------- | :------------------------------------------- |
 | `userId`        |`ObjectId` | **Required**. Id of user from user session   |
 
-#### viewEnrolledCourses({userId})
+##### viewEnrolledCourses({userId})
 
 
 #### Get currency of user based on their country
@@ -1223,7 +1223,7 @@ POST Request JSON Body
 | :-------------- | :-------- | :------------------------------------------- |
 | `userId`        |`ObjectId` | **Required**. Id of user from user session   |
 
-### owedMoney({ userId })
+##### owedMoney({ userId })
 
 
 
@@ -1237,7 +1237,7 @@ GET Request JSON Body
     "userId": "ObjectId",
     "instructorId": "ObjectId"
 }
-### updateWallet({userId, instructorId})
+##### updateWallet({userId, instructorId})
 
 
 
