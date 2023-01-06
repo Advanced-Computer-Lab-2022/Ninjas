@@ -9,7 +9,7 @@ Online learning websites indeed allow the future generations to access the best 
 
 ## Build Status
 
-On the 2nd of January 2023, the project will be completed and **not** deployed. Most if not all of the errors are handled in the code; users should not worry about anything going wrong on their part. In the unlikely event, if a problem occurs, feel free to file a ticket and the bug shall be fixed as soon as possible.
+On the 2nd of January 2023, the project will be completed and **not** deployed. Most if not all of the errors are handled in the code except for a problem in the reports' follow up not being responsive and that the user till fixed can sign up even if confirmed password is not correct. Otherwise, users should not worry about anything going wrong on their part. In the unlikely event, if a problem occurs, feel free to file a ticket and the bug shall be fixed as soon as possible.
 
 ## Code Style
 
@@ -1836,6 +1836,1110 @@ export default App;
 
 ``` 
 
+## Tests
+
+All tests for endpoints were done using postman to compare the desired output and the actual status and output viwed after calling the endpoints using various cases.
+
+### Examples of API tests and responses
+
+NOTE: Instead of real values in the request body and params, curly brackets '{ }' are used as values vary in each test to get different responses.
+
+#### Rate
+
+**PUT** `localhost:8000/rateInstructor?instructorId={}&userId={}&ratingNumber={}&ratingText={}`
+
+This route can be used for a user to rate an instructor.
+
+The  response will be:
+
+Status:200
+
+```json
+{
+    "Done": true
+}
+```
+
+For authentication and authorization accessing any API without being logged in will have the same response for all APIs and the user will be forwarded to the log in page.
+
+Response will be:
+
+Status:401
+
+```json
+{
+    "message": "you did not login"
+}
+```
+
+#### Log in
+
+**GET** `localhost:8000/login?username={}&password={}`
+
+This route is used for log in.
+
+A success response will be:
+
+Status:200
+
+```json
+{
+    "wallet": 0,
+    "_id": "639e10e4740580502414c0b9",
+    "username": "toty123",
+    "password": "$2b$10$mBwj5YjIizSfHyQ4gxw5COJV.rHZYczVs/kQzw35dcMLIBHok98o.",
+    "firstName": "Torta",
+    "lastName": "Cute",
+    "email": "tarteelabdelfattah206@gmail.com",
+    "gender": "FEMALE",
+    "country": "Egypt",
+    "type": "INDIVIDUAL_TRAINEE",
+    "rating": 0,
+    "contractStatus": false,
+    "certificates": [
+        "englishCertificate.pdf"
+    ],
+    "companyPolicy": false,
+    "refundedCourses": [],
+    "review": [],
+    "progress": [
+        {
+            "courseId": "639c89bef768e2f4d7261177",
+            "videosWatched": [
+                "639c89baf768e2f4d726113d",
+                "639c89bcf768e2f4d7261161"
+            ],
+            "currentProgress": 100,
+            "_id": "63a1a018ef267d277780ced2"
+        }
+    ],
+    "__v": 0
+}
+```
+error responses will be:
+
+Status:400
+
+username incorrect error:
+
+```js
+{
+    "message": "username is incorrect"
+}
+```
+
+password incorrect error:
+
+```js
+{
+    "message": ""password is incorrect""
+}
+```
+
+#### Rate check
+
+**GET** `localhost:8000/didRateInstructor?userId={}&instructorId={}`
+
+This route is to check if the user had rated the instructor before or not.
+
+The response will be either:
+
+Status:200
+
+```js
+{
+    "rated": false
+}
+```
+or:
+
+Status:200
+
+```js
+{
+    "rated": true
+}
+```
+#### View correct Answers
+
+**GET** `localhost:8000/viewCorrectAnswers?courseId={}&subtitleId={}&exersiseId={}`
+
+This route is to get the correct answers of a specific exercise.
+
+A success response will be :
+
+Status:200
+
+```js
+{
+    "subtitleId": "635c2db4512c884aec044402",
+    "exercises": {
+        "title": "exersise1",
+        "questions": [
+            {
+                "userAnswer": null,
+                "_id": "6386069b637e9186118e0231",
+                "questionText": "which ia a voul",
+                "correctAnswer": "a",
+                "mcqs": [
+                    "a",
+                    "z",
+                    "3",
+                    "q"
+                ]
+            }
+        ],
+        "_id": "6384ef97dfd8a313b11706f4"
+    }
+}
+```
+Trying to get the corrrect answers for a non-existing exercise will have different response
+
+The response will be:
+
+Status:400
+
+```js
+{
+    "message": "not found exersise"
+}
+```
+
+#### Exercise grade
+
+**GET** `localhost:8000/viewExerciseGrade?exersiseId={}&userId={}`
+
+This route is to get the user grade for a specific exercise.
+
+A response for an exercise solved by the user will be :
+
+Status:200
+
+```js
+{
+    "userGrade": 10,
+    "gradePercentage": 100,
+    "totalGrade": 10,
+    "solved": true
+}
+```
+A response for an exercise not yet solved by the user will be :
+
+Status:200
+
+```js
+{
+    "userGrade": 0,
+    "gradePercentage": 0,
+    "totalGrade": 0,
+    "solved": false
+}
+```
+
+#### Watch video
+
+**GET** `localhost:8000/viewVideo?courseId={}&subtitleId={}`
+
+This route is to get a link of a video under a specific subtitle in a specific course.
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    "_id": "635e871a279caf15701643f0",
+    "title": "v123",
+    "link": "https://youtu.be/v1YR-yPWl28"
+}
+```
+If on video link exisited response will be:
+
+Status:400
+
+```js
+{
+    "message": "no video"
+}
+```
+
+If course or subtitle IDs were wrong response will be:
+
+Status:500
+
+```js
+{
+    "message": "error internally"
+}
+```
+
+#### Search
+
+**GET** `localhost:8000/search?userId={}&subject={}&minPrice={}&maxPrice={}&rating={}&title={}&instructor={}`
+
+This route is to get a filtered set of courses accourding to the search and filter inputs provided by the user.
+
+A response if no search text was chosen but filters were applied will be:
+
+Status:200
+
+```js
+{
+    "data": {
+        "courses": [
+            {
+                "certificate": "generalCertificate.pdf",
+                "_id": "635abfe7c60b98fddf3ada37",
+                "subject": "Math",
+                "price": 900,
+                "totalHours": 5,
+                "summary": "just a new course",
+                "title": "Calculus I",
+                "instructors": [
+                    {
+                        "username": "toty7elwa",
+                        "password": "anatotycute",
+                        "firstName": "tarteel",
+                        "lastName": "7elwa gdn",
+                        "gender": "MALE",
+                        "type": "INSTRUCTOR",
+                        "_id": "6354d435c164224c85ccd87a",
+                        "__v": 0
+                    }
+                ],
+                "subtitles": [
+                    {
+                        "text": "Initial Subtitle",
+                        "hours": 5,
+                        "_id": "635abfe7c60b98fddf3ada35",
+                        "__v": 0,
+                        "videoTitles": {
+                            "title": "introduction",
+                            "_id": "635e888f279caf15701643f1"
+                        },
+                        "exercises": [
+                           
+                            {
+                                "totalGrade": 0,
+                                "title": "Chapter 1",
+                                "subtitleId": "635abfe7c60b98fddf3ada35",
+                                "questions": [
+                                    {
+                                        "questionText": "What is 111 in binary",
+                                        "mcqs": [
+                                            "7",
+                                            "111",
+                                            "2",
+                                            "-1"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "111",
+                                        "totalCredit": 1,
+                                        "_id": "63af52aadf98f553aaa2861e",
+                                        "__v": 0
+                                    }
+                                ],
+                                "_id": "63af52aedf98f553aaa28626",
+                                "__v": 0
+                            },
+                ],
+                "exercises": [],
+                "discount": 0,
+                "__v": 0,
+                "rating": 4,
+                "reviews": [
+                    {
+                        "rating": 5,
+                        "text": "wow gamed",
+                        "_id": "637f83476753ac5f16a32391",
+                        "__v": 0
+                    },
+                    {
+                        "rating": 5,
+                        "text": "wow gamed",
+                        "_id": "637f83676753ac5f16a3239a",
+                        "__v": 0
+                    },
+                    {
+                        "rating": 3,
+                        "text": "wow gamed",
+                        "_id": "637f837e6753ac5f16a323a4",
+                        "__v": 0
+                    }
+                ],
+                "discountDuration": null,
+                "videoLink": "https://www.youtube.com/watch?v=14RLvkzbHFc",
+                "students": [
+                    "6395a3a7e55ecb4fe0313297",
+                    "6393446941b37a31dfaee90f",
+                    "63a1ce981c18d89b281f01bb",
+                    "63b20a0494f441872cee0248",
+                    "63b2087894f441872cee0089",
+                    "63b527438e222b76212ecd33",
+                    "63b22331795806103da16a80",
+                    "639e10e4740580502414c0b9"
+                ],
+                "promoted": "Promoted"
+            },
+            {
+                "_id": "63b1c686c0f96761f34897d7",
+                "subject": "English",
+                "rating": 0,
+                "price": 240,
+                "totalHours": 2,
+                "summary": "veryyy",
+                "title": "ccc",
+                "instructors": [
+                    {
+                        "country": "United States",
+                        "rating": 0,
+                        "certificates": [],
+                        "refundedCourses": [],
+                        "_id": "6354d435c164224c85ccd87a",
+                        "username": "toty7elwa",
+                        "password": "$2b$10$mDCt/uvPmT.1CLeTJ1WVqumSjttLLv5K5D0rzv4hAXutQqRecR3AS",
+                        "firstName": "tarteel",
+                        "lastName": "7elwa gdn",
+                        "gender": "MALE",
+                        "type": "INSTRUCTOR",
+                        "__v": 0,
+                        "review": [
+                            ""
+                        ],
+                        "contractStatus": true,
+                        "wallet": 87,
+                        "companyPolicy": true,
+                        "progress": []
+                    }
+                ],
+                "discount": 0,
+                "videoLink": "https://www.youtube.com/watch?v=ht9GwXQMgpo",
+                "students": [],
+                "certificate": "generalCertificate.pdf",
+                "promoted": "Not Promoted",
+                "subtitles": [
+                    {
+                        "text": "sssss",
+                        "hours": 1,
+                        "exercises": [],
+                        "_id": "63b1c699c0f96761f34897dd"
+                    },
+                    {
+                        "text": "",
+                        "hours": null,
+                        "exercises": [],
+                        "_id": "63b1c73bc0f96761f34897e5"
+                    }
+                ],
+                "exercises": [],
+                "reviews": [],
+                "__v": 0
+            },
+            {
+                "_id": "63b1d1a3451eaeea4b158c58",
+                "subject": "English",
+                "rating": 0,
+                "price": 40,
+                "totalHours": 12,
+                "summary": "bbb",
+                "title": "c",
+                "instructors": [
+                    {
+                        "country": "United States",
+                        "rating": 0,
+                        "certificates": [],
+                        "refundedCourses": [],
+                        "_id": "6354d435c164224c85ccd87a",
+                        "username": "toty7elwa",
+                        "password": "$2b$10$mDCt/uvPmT.1CLeTJ1WVqumSjttLLv5K5D0rzv4hAXutQqRecR3AS",
+                        "firstName": "tarteel",
+                        "lastName": "7elwa gdn",
+                        "gender": "MALE",
+                        "type": "INSTRUCTOR",
+                        "__v": 0,
+                        "review": [
+                            ""
+                        ],
+                        "contractStatus": true,
+                        "wallet": 87,
+                        "companyPolicy": true,
+                        "progress": []
+                    }
+                ],
+                "discount": 0,
+                "videoLink": "https://www.youtube.com/watch?v=ht9GwXQMgpo",
+                "students": [],
+                "certificate": "generalCertificate.pdf",
+                "promoted": "Not Promoted",
+                "subtitles": [
+                    {
+                        "text": "s",
+                        "hours": 1,
+                        "exercises": [
+                            {
+                                "title": "e1",
+                                "subtitleId": "63b1d1b1451eaeea4b158c5e",
+                                "questions": [],
+                                "totalGrade": 0,
+                                "_id": "63b1d1d4451eaeea4b158c66",
+                                "__v": 0
+                            }
+                        ],
+                        "_id": "63b1d1b1451eaeea4b158c5e"
+                    }
+                ],
+                "exercises": [],
+                "reviews": [],
+                "__v": 0
+            },
+            {
+                "_id": "63b3f16532c63675a0e13908",
+                "subject": "English",
+                "rating": 0,
+                "price": 1000,
+                "totalHours": 5,
+                "summary": "shoka w skeena",
+                "title": "Cooking",
+                "instructors": [
+                    {
+                        "rating": 0,
+                        "certificates": [],
+                        "wallet": 0,
+                        "refundedCourses": [],
+                        "_id": "637f660b3f6448ae53fa08cb",
+                        "username": "tarteelelattar",
+                        "password": "$2b$10$bOoUOBkkcB7NhNyFMYwvb.xm3QfNr3LvnzTJ9LM32ethRKPUJNiFy",
+                        "firstName": "Tarteel",
+                        "lastName": "Elattar",
+                        "email": "tarteelafattahibrahim@gmail.com",
+                        "gender": "FEMALE",
+                        "country": "Egypt",
+                        "type": "INSTRUCTOR",
+                        "__v": 0,
+                        "companyPolicy": true,
+                        "contractStatus": true,
+                        "review": [],
+                        "progress": []
+                    }
+                ],
+                "discount": 0,
+                "videoLink": "https://www.youtube.com/watch?v=bx4nk7kBS10&list=PL4cUxeGkcC9iJ_KkrkBZWZRHVwnzLIoUE&index=8",
+                "students": [],
+                "certificate": "generalCertificate.pdf",
+                "promoted": "Not Promoted",
+                "subtitles": [
+                    {
+                        "text": "Wow",
+                        "hours": 2,
+                        "exercises": [
+                            {
+                                "title": "ABC",
+                                "subtitleId": "63b3f17c32c63675a0e1390e",
+                                "questions": [],
+                                "totalGrade": 0,
+                                "_id": "63b3f18832c63675a0e13916",
+                                "__v": 0
+                            },
+                            {
+                                "title": "ABC",
+                                "subtitleId": "63b3f17c32c63675a0e1390e",
+                                "questions": [],
+                                "totalGrade": 0,
+                                "_id": "63b3f1a432c63675a0e1391d",
+                                "__v": 0
+                            }
+                        ],
+                        "_id": "63b3f17c32c63675a0e1390e"
+                    }
+                ],
+                "exercises": [],
+                "reviews": [],
+                "__v": 0
+            }
+        ],
+        "currency": "EGP",
+        "userType": "INDIVIDUAL_TRAINEE"
+    }
+}
+```
+
+A response if search text chosen with filters will be:
+
+Status:200
+
+```js
+{
+    "data": {
+        "courses": [
+            {
+                "_id": "63b1d1a3451eaeea4b158c58",
+                "subject": "English",
+                "rating": 0,
+                "price": 40,
+                "totalHours": 12,
+                "summary": "bbb",
+                "title": "c",
+                "instructors": [
+                    {
+                        "country": "United States",
+                        "rating": 0,
+                        "certificates": [],
+                        "refundedCourses": [],
+                        "_id": "6354d435c164224c85ccd87a",
+                        "username": "toty7elwa",
+                        "password": "$2b$10$mDCt/uvPmT.1CLeTJ1WVqumSjttLLv5K5D0rzv4hAXutQqRecR3AS",
+                        "firstName": "tarteel",
+                        "lastName": "7elwa gdn",
+                        "gender": "MALE",
+                        "type": "INSTRUCTOR",
+                        "__v": 0,
+                        "review": [
+                            ""
+                        ],
+                        "contractStatus": true,
+                        "wallet": 87,
+                        "companyPolicy": true,
+                        "progress": []
+                    }
+                ],
+                "discount": 0,
+                "videoLink": "https://www.youtube.com/watch?v=ht9GwXQMgpo",
+                "students": [],
+                "certificate": "generalCertificate.pdf",
+                "promoted": "Not Promoted",
+                "subtitles": [
+                    {
+                        "text": "s",
+                        "hours": 1,
+                        "exercises": [
+                            {
+                                "title": "e1",
+                                "subtitleId": "63b1d1b1451eaeea4b158c5e",
+                                "questions": [],
+                                "totalGrade": 0,
+                                "_id": "63b1d1d4451eaeea4b158c66",
+                                "__v": 0
+                            }
+                        ],
+                        "_id": "63b1d1b1451eaeea4b158c5e"
+                    }
+                ],
+                "exercises": [],
+                "reviews": [],
+                "__v": 0
+            }
+        ],
+        "currency": "EGP",
+        "userType": "INDIVIDUAL_TRAINEE"
+    }
+}
+```
+
+A response if nothing matches the search and filters combination will be:
+
+Status:200
+
+```js
+{
+    "data": {
+        "courses": [],
+        "currency": "EGP",
+        "userType": "INDIVIDUAL_TRAINEE"
+    }
+}
+```
+
+A response if an admin is trying to reach the API will be:
+
+Status:401
+
+```js
+{
+    "message": "Unauthorized user"
+}
+```
+
+#### Accept refund
+
+**GET** `http://localhost:8000/admin/acceptRefundRequest?refundRequestid=63b52d278e222b76212eec08`
+
+This route is for admin to accept a specific refund request previously done by a user.
+
+A success response will be:
+
+Status:200
+
+```js
+[]
+```
+
+A response of trying to accept a refund requed with a non-existing Id will be:
+
+Status:500
+
+```js
+{
+    "code": 500,
+    "message": "error internally"
+}
+```
+
+#### Admin add users
+
+**PUT** `http://localhost:8000/admin/create`
+
+This route is for admin to create an account for specific types of users.
+
+request body will be :
+
+```js
+{
+    "username":{},
+    "password":{},
+    "firstName":{},
+    "lastName":{},
+    "email": {},
+    "gender": {},
+    "type": {},
+    "corporateName": {}
+    
+    }
+```
+
+A success response will be :
+
+Status:201
+
+```js
+
+```
+
+A response for violating any of the schema validations while inserting will be :
+
+Status:400
+
+```js
+validation Error
+```
+
+A response for using a repeated username will be :
+
+Status:400
+
+```js
+username is not unique
+```
+
+A response for a user which is not an admin trying to access the API will be :
+
+Status:401
+
+```js
+you are not an admin
+```
+
+#### Sign up
+
+**POST** `http://localhost:8000/signUp`
+
+This route is for guests to sign up and have an accounts to be able to use more of our facilites.
+
+request body will be :
+
+```js
+{
+    "username":{},
+    "password":{},
+    "firstName":{},
+    "lastName":{},
+    "email": {},
+    "gender": {},
+    "type": {},
+    "corporateName": {}
+    
+    }
+```
+
+A success response will be:
+
+Status:201
+
+```js
+{
+    "username": "username12",
+    "password": "$2b$10$TidEe0Tr5XkULEtVLU3aFegcscSisuiBZUjJkGcC76Y.JfPGUlw6S",
+    "firstName": "firstName1",
+    "lastName": "lastName1",
+    "email": "user3@gmail.com",
+    "gender": "FEMALE",
+    "country": "United States",
+    "type": "INDIVIDUAL_TRAINEE",
+    "rating": 0,
+    "contractStatus": false,
+    "certificates": [],
+    "companyPolicy": true,
+    "wallet": 0,
+    "refundedCourses": [],
+    "_id": "63b807d3830d3c346bbf1f65",
+    "review": [],
+    "progress": [],
+    "__v": 0
+}
+```
+
+A response for using a repeated username:
+
+Status:500
+
+```js
+{
+    "message": "internal error"
+}
+```
+#### Change Password
+**PUT** `localhost:8000/changePassword`
+
+This route is for logged in instructors, individal trainees, and corporate trainess to change their password.
+
+Body of **request** must be JSON.sample:
+```json
+{
+    "oldPassowrd":{},
+    "newPassword":{}
+}
+```
+A success response will be:
+
+Status:200
+
+
+```js
+{
+   "Update Succesfully"
+}
+```
+
+A response if trying to change password with length less than 6:
+
+Status:400
+
+```js
+{
+    "code": 400,
+    "message": "Password Length must be atleast 6"
+}
+```
+
+A response if old password entered doesn't match the user's old password:
+
+Status:400
+
+```js
+{
+    "code": 400,
+    "message": "Old Password is incorrect, try again"
+}
+```
+
+#### Change Email
+**PUT** `localhost:8000/editEmail`
+
+This route is for logged in instructors to change their email.
+
+Body of **request** must be JSON.sample:
+```json
+{
+ "newEmail":{}
+}
+```
+A success response will be:
+
+Status:200
+
+
+```js
+{
+   "Update Succesfully"
+}
+```
+
+A response if new email entered is not in the proper email format:
+
+Status:400
+
+```js
+{
+    "code": 400,
+    "message": "Wrong email format"
+}
+```
+
+A response if email entered already exists:
+
+Status:400
+
+```js
+{
+    "code": 400,
+    "message": "email already exits"
+}
+```
+#### Edit Biography
+**PUT** `localhost:8000/editBiography`
+
+This route is for logged in instructors to update their biography.
+
+Body of **request** must be JSON.sample:
+```json
+{
+ "newText":{}
+}
+```
+A success response will be:
+
+Status:200
+
+
+```js
+{
+   "Update Succesfully"
+}
+```
+
+A response if the biography is less than 20 characters:
+
+Status:400
+
+```js
+{
+    "code": 400,
+    "message": "Biography must be at least 20 characters"
+}
+```
+#### Request Refund
+**POST** `localhost:8000/requestRefund?courseId={}`
+
+This route is for individual trainees to request a refund on a course.
+
+Body of **request** must be JSON.sample:
+```json
+{
+ "courseId":{},
+}
+```
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    "Request is waiting for review"
+}
+```
+
+A response if their progress is more than or equal 50% in the course:
+
+Status:400
+
+```js
+{
+    "Can't refund course with progress more than 50%"
+}
+```
+
+#### Pay for course using wallet
+**PUT** `localhost:8000/payForCourse`
+
+This route is for individual trainees to pay for a course using balance in their wallet.
+
+Body of **request** must be JSON.sample:
+```json
+{
+ "courseId":{},
+ "coursePrice":{}
+}
+```
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    "You have paid successfully"
+}
+```
+
+If there is not enough balance in their wallet:
+
+Status:400
+
+```js
+{
+    "not enough balance"
+}
+```
+
+#### Report Course
+**POST** `localhost:8000/reportCourse?userId={}&courseId={}&problem={}&description={}`
+
+This route is for an instructor, individual trainee, and corporate trainee to report a course.
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    "message": "Done"
+}
+```
+
+If the problem was already reported before:
+
+Status:400
+
+```js
+{
+    "message": "you already reported"
+}
+```
+
+#### View my reports
+**GET** `localhost:8000/viewMyReports`
+
+This route is for an instructor, individual trainee, and corporate trainee to view their reports.
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    [
+    {
+        "_id": "63b82ca133c1d17cd2287fcb",
+        "accountId": "639e10e4740580502414c0b9",
+        "courseId": "639c89bef768e2f4d7261177",
+        "problem": "technical",
+        "description": "Very bad",
+        "progress": "INITIAL",
+        "seen": false,
+        "followUp": false,
+        "__v": 0
+    }
+]
+
+}
+```
+
+If the user doesn't have any reports:
+
+Status:200
+
+```js
+{
+    []
+}
+```
+
+#### Rate Course
+**POST** `localhost:8000/rateCourse?userId={}&courseId={}`
+
+This route is for an individual trainee and corporate trainee to rate a course.
+
+Body of **request** must be JSON.sample:
+```json
+{
+ "rating":{},
+ "text":{}
+}
+```
+A success response will be:
+
+Status:200
+
+```js
+{
+    "message": "your rating was submitted successfully."
+}
+```
+
+If the course Id doesn't exist:
+
+Status:400
+
+```js
+{
+   "message": "Course doesn't exist"
+}
+```
+#### View Course Requests
+**GET** `localhost:8000/checkRequestedAccess?userId={}&courseId={}`
+
+This route is for corporate trainees to view whether they requestes access or not for a course.
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    "_id": "63b5352b4b00f9b4f2b20486",
+    "accountId": "63b22331795806103da16a80",
+    "courseId": "639c89bef768e2f4d7261177",
+    "corporateName": "MasterCard",
+    "__v": 0
+}
+
+```
+
+If the trainee didn't request access:
+
+Status:400
+
+```js
+{
+    "message": "access was not requested"
+}
+
+```
+#### Forgot Password
+**POST** `localhost:8000/forgotPassword'
+
+This route is for instructor, individual trainee, corporate trainee to request an email to change their password.
+
+Body of **request** must be JSON.sample:
+```json
+{
+ "username":{}
+}
+```
+
+A success response will be:
+
+Status:200
+
+```js
+{
+    "message": "A reset password email has been sent. Please check your email. "
+}
+
+```
+
+If the user didn't enter their username before requesting an email to change their password:
+
+Status:400
+
+```js
+{
+    "message": "Please enter your username."
+}
+
+```
+
+
 
 ## How to Use?
 
@@ -1895,6 +2999,8 @@ This software uses several open source packages. This includes, but is not limit
 - [Mongoose](https://mongoosejs.com/)
 - Emojis are mostly taken from [here](https://github.com/ikatyang/emoji-cheat-sheet/blob/master/README.md#face-hand)
 - [Markdown Badges](https://github.com/Ileriayo/markdown-badges)
+-[MERN Stack tutorial](https://youtu.be/7CqJlxBYj-M)
+-[React tutorial](https://youtu.be/ZEKBDXGnD4s)
 
 ## License
 >You can check out the full license [here](https://github.com/Advanced-Computer-Lab-2022/Ninjas/blob/main/src/LICENSE.TXT)
