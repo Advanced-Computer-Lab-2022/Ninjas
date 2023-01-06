@@ -387,6 +387,7 @@ All tests for endpoints were done using postman to compare the desired output an
 This route can be used for a user to rate an instructor.
 
 The  response will be:
+Status:200
 
 ```json
 {
@@ -397,16 +398,13 @@ The  response will be:
 For authentication and authorization accessing any API without being logged in will have the same response for all APIs and the user will be forwarded to the log in page.
 
 Response will be:
+Status:401
 
 ```json
 {
-  "error": {
-    "code": 999,
-    "message": "Invalid API key"
-  }
+    "message": "you did not login"
 }
 ```
-
 
 ## How to Use?
 
