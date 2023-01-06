@@ -376,6 +376,36 @@ TOKEN = 'ABCDEFGHIJKLMNOPQRSTUVWKYZ'
 ``` 
   - Please do not set the port to 3000 as the frontend project uses this port number. 
 
+## Tests
+
+### Health Check and APIKey Test
+
+**GET** `http://localhost:3000/`
+
+This base route can be used to check if the API is currently running. If the server is running there should always be a response.
+
+However, it will check for a valid API key too. The value of the key is `MyUniqueApiKey`. It needs to be sent from the client as a value for an `x-api-key` header.
+
+The successful response will be:
+
+```json
+{
+  "STATUS": "Good to go!"
+}
+```
+
+A response for an invalid key will be:
+
+```json
+{
+  "error": {
+    "code": 999,
+    "message": "Invalid API key"
+  }
+}
+```
+
+This is the only route in the API that looks for this `x-api-key` header.
 
 ## How to Use?
 
