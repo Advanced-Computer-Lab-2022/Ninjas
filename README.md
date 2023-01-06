@@ -613,9 +613,826 @@ Status:500
 
 #### Search
 
-**GET** `localhost:8000/search?userId=null&subject=science&minPrice=&maxPrice=&rating=&title=null&instructor=`
+**GET** `localhost:8000/search?userId={}&subject={}&minPrice={}&maxPrice={}&rating={}&title={}&instructor={}`
 
+This route is to get a filtered set of courses accourding to the search and filter inputs provided by the user.
 
+A response if no search text was chosen but filters were applied will be:
+
+Status:200
+
+```js
+{
+    "data": {
+        "courses": [
+            {
+                "certificate": "generalCertificate.pdf",
+                "_id": "635abfe7c60b98fddf3ada37",
+                "subject": "Math",
+                "price": 900,
+                "totalHours": 5,
+                "summary": "just a new course",
+                "title": "Calculus I",
+                "instructors": [
+                    {
+                        "username": "toty7elwa",
+                        "password": "anatotycute",
+                        "firstName": "tarteel",
+                        "lastName": "7elwa gdn",
+                        "gender": "MALE",
+                        "type": "INSTRUCTOR",
+                        "_id": "6354d435c164224c85ccd87a",
+                        "__v": 0
+                    }
+                ],
+                "subtitles": [
+                    {
+                        "text": "Initial Subtitle",
+                        "hours": 5,
+                        "_id": "635abfe7c60b98fddf3ada35",
+                        "__v": 0,
+                        "videoTitles": {
+                            "title": "introduction",
+                            "_id": "635e888f279caf15701643f1"
+                        },
+                        "exercises": [
+                            {
+                                "totalGrade": 0,
+                                "title": "bgvtgvyub",
+                                "subtitleId": "635abfe7c60b98fddf3ada35",
+                                "questions": [],
+                                "_id": "63ac2b30e7cb9ec528c94406",
+                                "__v": 0
+                            },
+                            {
+                                "totalGrade": 0,
+                                "title": "Chapter 1",
+                                "subtitleId": "635abfe7c60b98fddf3ada35",
+                                "questions": [
+                                    {
+                                        "questionText": "What is 111 in binary",
+                                        "mcqs": [
+                                            "7",
+                                            "111",
+                                            "2",
+                                            "-1"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "111",
+                                        "totalCredit": 1,
+                                        "_id": "63af52aadf98f553aaa2861e",
+                                        "__v": 0
+                                    }
+                                ],
+                                "_id": "63af52aedf98f553aaa28626",
+                                "__v": 0
+                            },
+                            {
+                                "totalGrade": 0,
+                                "title": "Chapter 3",
+                                "subtitleId": "635abfe7c60b98fddf3ada35",
+                                "questions": [
+                                    {
+                                        "questionText": "What is 3+2 in binary",
+                                        "mcqs": [
+                                            "011",
+                                            "101",
+                                            "1111",
+                                            "110"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "101",
+                                        "totalCredit": 2,
+                                        "_id": "63af534cdf98f553aaa28664",
+                                        "__v": 0
+                                    },
+                                    {
+                                        "questionText": "What is 5+1 in binary",
+                                        "mcqs": [
+                                            "110",
+                                            "101",
+                                            "1111",
+                                            "110"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "110",
+                                        "totalCredit": 2,
+                                        "_id": "63af535cdf98f553aaa28666",
+                                        "__v": 0
+                                    }
+                                ],
+                                "_id": "63af5365df98f553aaa28670",
+                                "__v": 0
+                            },
+                            {
+                                "totalGrade": 0,
+                                "title": "Chapyer 4",
+                                "subtitleId": "635abfe7c60b98fddf3ada35",
+                                "questions": [
+                                    {
+                                        "questionText": "Chapter 3",
+                                        "mcqs": [
+                                            "d",
+                                            "d",
+                                            "v",
+                                            "p"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "p",
+                                        "totalCredit": 1,
+                                        "_id": "63b015d76df63213620f1026",
+                                        "__v": 0
+                                    }
+                                ],
+                                "_id": "63b015e76df63213620f1033",
+                                "__v": 0
+                            },
+                            {
+                                "totalGrade": 0,
+                                "title": "Question 1",
+                                "subtitleId": "635abfe7c60b98fddf3ada35",
+                                "questions": [
+                                    {
+                                        "questionText": "Chapter 10",
+                                        "mcqs": [
+                                            "b",
+                                            "a",
+                                            "x",
+                                            "d"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "d",
+                                        "totalCredit": 1,
+                                        "_id": "63b0171b6df63213620f109a",
+                                        "__v": 0
+                                    },
+                                    {
+                                        "questionText": "jhgyuhgbyh",
+                                        "mcqs": [
+                                            "2",
+                                            "3",
+                                            "4",
+                                            "5"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "5",
+                                        "totalCredit": 1,
+                                        "_id": "63b022836df63213620f136d",
+                                        "__v": 0
+                                    },
+                                    {
+                                        "questionText": "Question 1",
+                                        "mcqs": [
+                                            "a",
+                                            "c",
+                                            "b",
+                                            "d"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "c",
+                                        "totalCredit": 1,
+                                        "_id": "63b0237a6df63213620f1396",
+                                        "__v": 0
+                                    },
+                                    {
+                                        "questionText": "Question 1",
+                                        "mcqs": [
+                                            "2",
+                                            "5",
+                                            "3",
+                                            "4"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "4",
+                                        "totalCredit": 1,
+                                        "_id": "63b023c66df63213620f139a",
+                                        "__v": 0
+                                    }
+                                ],
+                                "_id": "63b023f36df63213620f13a9",
+                                "__v": 0
+                            },
+                            {
+                                "title": "Chapter 1 Exercise",
+                                "subtitleId": "635abfe7c60b98fddf3ada35",
+                                "questions": [
+                                    {
+                                        "questionText": "Chapter 1 Question 1",
+                                        "mcqs": [
+                                            "a",
+                                            "c",
+                                            "b",
+                                            "d"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "d",
+                                        "totalCredit": 1,
+                                        "_id": "63b21b6594f441872cee35dc",
+                                        "__v": 0
+                                    },
+                                    {
+                                        "questionText": "Question 2",
+                                        "mcqs": [
+                                            "a",
+                                            "x",
+                                            "b",
+                                            "d"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "d",
+                                        "totalCredit": 1,
+                                        "_id": "63b21b9e94f441872cee35e0",
+                                        "__v": 0
+                                    }
+                                ],
+                                "totalGrade": 0,
+                                "_id": "63b21ba494f441872cee35f6",
+                                "__v": 0
+                            },
+                            {
+                                "title": "Chapter 5",
+                                "subtitleId": "635abfe7c60b98fddf3ada35",
+                                "questions": [
+                                    {
+                                        "questionText": "What is the weather today",
+                                        "mcqs": [
+                                            "a",
+                                            "x",
+                                            "b",
+                                            "d"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "d",
+                                        "totalCredit": 1,
+                                        "_id": "63b21cfd94f441872cee3602",
+                                        "__v": 0
+                                    }
+                                ],
+                                "totalGrade": 0,
+                                "_id": "63b21d3994f441872cee361b",
+                                "__v": 0
+                            },
+                            {
+                                "title": "Chapter 5",
+                                "subtitleId": "635abfe7c60b98fddf3ada35",
+                                "questions": [],
+                                "totalGrade": 0,
+                                "_id": "63b21d7c94f441872cee3638",
+                                "__v": 0
+                            },
+                            {
+                                "title": "LAST",
+                                "subtitleId": "635abfe7c60b98fddf3ada35",
+                                "questions": [
+                                    {
+                                        "questionText": "q1",
+                                        "mcqs": [
+                                            "w",
+                                            "s",
+                                            "c",
+                                            "a"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "a",
+                                        "totalCredit": 1,
+                                        "_id": "63b21e5f94f441872cee363e",
+                                        "__v": 0
+                                    },
+                                    {
+                                        "questionText": "What is the weather",
+                                        "mcqs": [
+                                            "1",
+                                            "3",
+                                            "2",
+                                            "4"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "4",
+                                        "totalCredit": 1,
+                                        "_id": "63b21ef294f441872cee3646",
+                                        "__v": 0
+                                    },
+                                    {
+                                        "questionText": "What is your name",
+                                        "mcqs": [
+                                            "a",
+                                            "c",
+                                            "b",
+                                            "d"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "d",
+                                        "totalCredit": 1,
+                                        "_id": "63b21f0394f441872cee364a",
+                                        "__v": 0
+                                    }
+                                ],
+                                "totalGrade": 0,
+                                "_id": "63b21f0394f441872cee3666",
+                                "__v": 0
+                            },
+                            {
+                                "title": "Last bgd",
+                                "subtitleId": "635abfe7c60b98fddf3ada35",
+                                "questions": [
+                                    {
+                                        "questionText": "Chapter 1",
+                                        "mcqs": [
+                                            "2",
+                                            "4",
+                                            "3",
+                                            "5"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "5",
+                                        "totalCredit": 2,
+                                        "_id": "63b2217494f441872cee3672",
+                                        "__v": 0
+                                    }
+                                ],
+                                "totalGrade": 0,
+                                "_id": "63b2217594f441872cee3692",
+                                "__v": 0
+                            },
+                            {
+                                "title": "Chapter 3",
+                                "subtitleId": "635abfe7c60b98fddf3ada35",
+                                "questions": [
+                                    {
+                                        "questionText": "1",
+                                        "mcqs": [
+                                            "2",
+                                            "4",
+                                            "3",
+                                            "5"
+                                        ],
+                                        "userAnswer": null,
+                                        "correctAnswer": "5",
+                                        "totalCredit": 1,
+                                        "_id": "63b2220494f441872cee369a",
+                                        "__v": 0
+                                    }
+                                ],
+                                "totalGrade": 0,
+                                "_id": "63b2220494f441872cee36bc",
+                                "__v": 0
+                            }
+                        ]
+                    }
+                ],
+                "exercises": [],
+                "discount": 0,
+                "__v": 0,
+                "rating": 4,
+                "reviews": [
+                    {
+                        "rating": 5,
+                        "text": "wow gamed",
+                        "_id": "637f83476753ac5f16a32391",
+                        "__v": 0
+                    },
+                    {
+                        "rating": 5,
+                        "text": "wow gamed",
+                        "_id": "637f83676753ac5f16a3239a",
+                        "__v": 0
+                    },
+                    {
+                        "rating": 3,
+                        "text": "wow gamed",
+                        "_id": "637f837e6753ac5f16a323a4",
+                        "__v": 0
+                    }
+                ],
+                "discountDuration": null,
+                "videoLink": "https://www.youtube.com/watch?v=14RLvkzbHFc",
+                "students": [
+                    "6395a3a7e55ecb4fe0313297",
+                    "6393446941b37a31dfaee90f",
+                    "63a1ce981c18d89b281f01bb",
+                    "63b20a0494f441872cee0248",
+                    "63b2087894f441872cee0089",
+                    "63b527438e222b76212ecd33",
+                    "63b22331795806103da16a80",
+                    "639e10e4740580502414c0b9"
+                ],
+                "promoted": "Promoted"
+            },
+            {
+                "_id": "63b1c686c0f96761f34897d7",
+                "subject": "English",
+                "rating": 0,
+                "price": 240,
+                "totalHours": 2,
+                "summary": "veryyy",
+                "title": "ccc",
+                "instructors": [
+                    {
+                        "country": "United States",
+                        "rating": 0,
+                        "certificates": [],
+                        "refundedCourses": [],
+                        "_id": "6354d435c164224c85ccd87a",
+                        "username": "toty7elwa",
+                        "password": "$2b$10$mDCt/uvPmT.1CLeTJ1WVqumSjttLLv5K5D0rzv4hAXutQqRecR3AS",
+                        "firstName": "tarteel",
+                        "lastName": "7elwa gdn",
+                        "gender": "MALE",
+                        "type": "INSTRUCTOR",
+                        "__v": 0,
+                        "review": [
+                            ""
+                        ],
+                        "contractStatus": true,
+                        "wallet": 87,
+                        "companyPolicy": true,
+                        "progress": []
+                    }
+                ],
+                "discount": 0,
+                "videoLink": "https://www.youtube.com/watch?v=ht9GwXQMgpo",
+                "students": [],
+                "certificate": "generalCertificate.pdf",
+                "promoted": "Not Promoted",
+                "subtitles": [
+                    {
+                        "text": "sssss",
+                        "hours": 1,
+                        "exercises": [],
+                        "_id": "63b1c699c0f96761f34897dd"
+                    },
+                    {
+                        "text": "",
+                        "hours": null,
+                        "exercises": [],
+                        "_id": "63b1c73bc0f96761f34897e5"
+                    }
+                ],
+                "exercises": [],
+                "reviews": [],
+                "__v": 0
+            },
+            {
+                "_id": "63b1d1a3451eaeea4b158c58",
+                "subject": "English",
+                "rating": 0,
+                "price": 40,
+                "totalHours": 12,
+                "summary": "bbb",
+                "title": "c",
+                "instructors": [
+                    {
+                        "country": "United States",
+                        "rating": 0,
+                        "certificates": [],
+                        "refundedCourses": [],
+                        "_id": "6354d435c164224c85ccd87a",
+                        "username": "toty7elwa",
+                        "password": "$2b$10$mDCt/uvPmT.1CLeTJ1WVqumSjttLLv5K5D0rzv4hAXutQqRecR3AS",
+                        "firstName": "tarteel",
+                        "lastName": "7elwa gdn",
+                        "gender": "MALE",
+                        "type": "INSTRUCTOR",
+                        "__v": 0,
+                        "review": [
+                            ""
+                        ],
+                        "contractStatus": true,
+                        "wallet": 87,
+                        "companyPolicy": true,
+                        "progress": []
+                    }
+                ],
+                "discount": 0,
+                "videoLink": "https://www.youtube.com/watch?v=ht9GwXQMgpo",
+                "students": [],
+                "certificate": "generalCertificate.pdf",
+                "promoted": "Not Promoted",
+                "subtitles": [
+                    {
+                        "text": "s",
+                        "hours": 1,
+                        "exercises": [
+                            {
+                                "title": "e1",
+                                "subtitleId": "63b1d1b1451eaeea4b158c5e",
+                                "questions": [],
+                                "totalGrade": 0,
+                                "_id": "63b1d1d4451eaeea4b158c66",
+                                "__v": 0
+                            }
+                        ],
+                        "_id": "63b1d1b1451eaeea4b158c5e"
+                    }
+                ],
+                "exercises": [],
+                "reviews": [],
+                "__v": 0
+            },
+            {
+                "_id": "63b3f16532c63675a0e13908",
+                "subject": "English",
+                "rating": 0,
+                "price": 1000,
+                "totalHours": 5,
+                "summary": "shoka w skeena",
+                "title": "Cooking",
+                "instructors": [
+                    {
+                        "rating": 0,
+                        "certificates": [],
+                        "wallet": 0,
+                        "refundedCourses": [],
+                        "_id": "637f660b3f6448ae53fa08cb",
+                        "username": "tarteelelattar",
+                        "password": "$2b$10$bOoUOBkkcB7NhNyFMYwvb.xm3QfNr3LvnzTJ9LM32ethRKPUJNiFy",
+                        "firstName": "Tarteel",
+                        "lastName": "Elattar",
+                        "email": "tarteelafattahibrahim@gmail.com",
+                        "gender": "FEMALE",
+                        "country": "Egypt",
+                        "type": "INSTRUCTOR",
+                        "__v": 0,
+                        "companyPolicy": true,
+                        "contractStatus": true,
+                        "review": [],
+                        "progress": []
+                    }
+                ],
+                "discount": 0,
+                "videoLink": "https://www.youtube.com/watch?v=bx4nk7kBS10&list=PL4cUxeGkcC9iJ_KkrkBZWZRHVwnzLIoUE&index=8",
+                "students": [],
+                "certificate": "generalCertificate.pdf",
+                "promoted": "Not Promoted",
+                "subtitles": [
+                    {
+                        "text": "Wow",
+                        "hours": 2,
+                        "exercises": [
+                            {
+                                "title": "ABC",
+                                "subtitleId": "63b3f17c32c63675a0e1390e",
+                                "questions": [],
+                                "totalGrade": 0,
+                                "_id": "63b3f18832c63675a0e13916",
+                                "__v": 0
+                            },
+                            {
+                                "title": "ABC",
+                                "subtitleId": "63b3f17c32c63675a0e1390e",
+                                "questions": [],
+                                "totalGrade": 0,
+                                "_id": "63b3f1a432c63675a0e1391d",
+                                "__v": 0
+                            }
+                        ],
+                        "_id": "63b3f17c32c63675a0e1390e"
+                    }
+                ],
+                "exercises": [],
+                "reviews": [],
+                "__v": 0
+            }
+        ],
+        "currency": "EGP",
+        "userType": "INDIVIDUAL_TRAINEE"
+    }
+}
+```
+
+A response if search text chosen with filters will be:
+
+Status:200
+
+```js
+{
+    "data": {
+        "courses": [
+            {
+                "_id": "63b1d1a3451eaeea4b158c58",
+                "subject": "English",
+                "rating": 0,
+                "price": 40,
+                "totalHours": 12,
+                "summary": "bbb",
+                "title": "c",
+                "instructors": [
+                    {
+                        "country": "United States",
+                        "rating": 0,
+                        "certificates": [],
+                        "refundedCourses": [],
+                        "_id": "6354d435c164224c85ccd87a",
+                        "username": "toty7elwa",
+                        "password": "$2b$10$mDCt/uvPmT.1CLeTJ1WVqumSjttLLv5K5D0rzv4hAXutQqRecR3AS",
+                        "firstName": "tarteel",
+                        "lastName": "7elwa gdn",
+                        "gender": "MALE",
+                        "type": "INSTRUCTOR",
+                        "__v": 0,
+                        "review": [
+                            ""
+                        ],
+                        "contractStatus": true,
+                        "wallet": 87,
+                        "companyPolicy": true,
+                        "progress": []
+                    }
+                ],
+                "discount": 0,
+                "videoLink": "https://www.youtube.com/watch?v=ht9GwXQMgpo",
+                "students": [],
+                "certificate": "generalCertificate.pdf",
+                "promoted": "Not Promoted",
+                "subtitles": [
+                    {
+                        "text": "s",
+                        "hours": 1,
+                        "exercises": [
+                            {
+                                "title": "e1",
+                                "subtitleId": "63b1d1b1451eaeea4b158c5e",
+                                "questions": [],
+                                "totalGrade": 0,
+                                "_id": "63b1d1d4451eaeea4b158c66",
+                                "__v": 0
+                            }
+                        ],
+                        "_id": "63b1d1b1451eaeea4b158c5e"
+                    }
+                ],
+                "exercises": [],
+                "reviews": [],
+                "__v": 0
+            }
+        ],
+        "currency": "EGP",
+        "userType": "INDIVIDUAL_TRAINEE"
+    }
+}
+```
+
+A response if nothing matches the search and filters combination will be:
+
+Status:200
+
+```js
+{
+    "data": {
+        "courses": [],
+        "currency": "EGP",
+        "userType": "INDIVIDUAL_TRAINEE"
+    }
+}
+```
+
+A response if an admin is trying to reach the API will be:
+
+Status:401
+
+```js
+{
+    "message": "Unauthorized user"
+}
+```
+
+#### Accept refund
+
+**GET** `http://localhost:8000/admin/acceptRefundRequest?refundRequestid=63b52d278e222b76212eec08`
+
+This route is for admin to accept a specific refund request previously done by a user.
+
+A success response will be:
+
+Status:200
+
+```js
+[]
+```
+
+A response of trying to accept a refund requed with a non-existing Id will be:
+
+Status:500
+
+```js
+{
+    "code": 500,
+    "message": "error internally"
+}
+```
+
+#### Admin add users
+
+**PUT** `http://localhost:8000/admin/create`
+
+This route is for admin to create an account for specific types of users.
+
+request body will be :
+
+```js
+{
+    "username":{},
+    "password":{},
+    "firstName":{},
+    "lastName":{},
+    "email": {},
+    "gender": {},
+    "type": {},
+    "corporateName": {}
+    
+    }
+```
+
+A success response will be :
+
+Status:201
+
+```js
+
+```
+
+A response for violating any of the schema validations while inserting will be :
+
+Status:400
+
+```js
+validation Error
+```
+
+A response for using a repeated username will be :
+
+Status:400
+
+```js
+username is not unique
+```
+
+A response for a user which is not an admin trying to access the API will be :
+
+Status:401
+
+```js
+you are not an admin
+```
+
+#### Sign up
+
+**POST** `http://localhost:8000/signUp`
+
+This route is for guests to sign up and have an accounts to be able to use more of our facilites.
+
+request body will be :
+
+```js
+{
+    "username":{},
+    "password":{},
+    "firstName":{},
+    "lastName":{},
+    "email": {},
+    "gender": {},
+    "type": {},
+    "corporateName": {}
+    
+    }
+```
+
+A success response will be:
+
+Status:201
+
+```js
+{
+    "username": "username12",
+    "password": "$2b$10$TidEe0Tr5XkULEtVLU3aFegcscSisuiBZUjJkGcC76Y.JfPGUlw6S",
+    "firstName": "firstName1",
+    "lastName": "lastName1",
+    "email": "user3@gmail.com",
+    "gender": "FEMALE",
+    "country": "United States",
+    "type": "INDIVIDUAL_TRAINEE",
+    "rating": 0,
+    "contractStatus": false,
+    "certificates": [],
+    "companyPolicy": true,
+    "wallet": 0,
+    "refundedCourses": [],
+    "_id": "63b807d3830d3c346bbf1f65",
+    "review": [],
+    "progress": [],
+    "__v": 0
+}
+```
+
+A response for using a repeated username:
+
+Status:500
+
+```js
+{
+    "message": "internal error"
+}
+```
 
 
 ## How to Use?
