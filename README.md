@@ -410,7 +410,70 @@ Status:401
 }
 ```
 
+#### Log in
+
+**GET** `localhost:8000/login?username={}&password={}`
+
+This route is used for log in.
+
+A success response will be:
+
+Status:200
+
+```json
+{
+    "wallet": 0,
+    "_id": "639e10e4740580502414c0b9",
+    "username": "toty123",
+    "password": "$2b$10$mBwj5YjIizSfHyQ4gxw5COJV.rHZYczVs/kQzw35dcMLIBHok98o.",
+    "firstName": "Torta",
+    "lastName": "Cute",
+    "email": "tarteelabdelfattah206@gmail.com",
+    "gender": "FEMALE",
+    "country": "Egypt",
+    "type": "INDIVIDUAL_TRAINEE",
+    "rating": 0,
+    "contractStatus": false,
+    "certificates": [
+        "englishCertificate.pdf"
+    ],
+    "companyPolicy": false,
+    "refundedCourses": [],
+    "review": [],
+    "progress": [
+        {
+            "courseId": "639c89bef768e2f4d7261177",
+            "videosWatched": [
+                "639c89baf768e2f4d726113d",
+                "639c89bcf768e2f4d7261161"
+            ],
+            "currentProgress": 100,
+            "_id": "63a1a018ef267d277780ced2"
+        }
+    ],
+    "__v": 0
+}
+```
+error responses will be:
+
+username incorrect error:
+
+``js
+{
+    "message": "username is incorrect"
+}
+```
+
+password incorrect error:
+
+``js
+{
+    "message": ""password is incorrect""
+}
+```
+
 #### Rate check
+
 
 
 
